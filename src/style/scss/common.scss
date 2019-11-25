@@ -1,0 +1,182 @@
+.c-form {
+  margin-top: 3rem;
+  width: 500px;
+}
+
+.el-dialog {
+  width: 500px!important;
+  .c-form {
+    width: 400px;
+    margin: 0 auto;
+  }
+  .el-cascader {
+    width: 100%;
+  }
+  .el-input {
+    width: 100%;
+  }
+  .el-select {
+    width: 100%;
+  }
+  .el-date-editor {
+    .el-input {
+      width: 100%;
+    }
+  }
+}
+
+/* el-table */
+//表头颜色
+.el-table thead {
+  background-color: $headbg;
+}
+.el-table tr {
+  background-color: transparent;
+}
+.el-table th {
+  background-color: transparent;
+}
+.el-table td {
+  background-color: #fff;
+}
+//高度
+.el-table th > .cell {
+  line-height: 24px;
+  color: $c00;
+  font-size: 14px;
+  font-weight: 700;
+}
+.el-table--mini td{
+  padding:0;
+}
+
+.el-submenu .el-menu-item {
+  color: $c00;
+}
+
+.el-table__body .el-button:hover, .el-button:focus{
+  color: $blue;
+  border-color: transparent;
+  background-color: transparent;
+}
+.el-table__body .el-button--text {
+  color: #222;
+}
+
+.el-button:hover, .el-button:focus {
+  background-color: transparent;
+  border-color: $blueHover;
+  color: $blueHover;
+}
+.el-button--primary:hover, .el-button--primary:focus {
+  background-color: $blueHover;
+  border-color: $blueHover;
+  color: #fff;
+}
+
+.el-button--mini, .el-button--primary {
+  border: 1px solid $blue;
+  background: $blue;
+  color: #fff;
+  background-repeat: repeat-x;
+  border-radius: 4px;
+}
+// 全局设置table row:hover 颜色
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+  background-color: $hover;
+}
+// 全局设置table row:clicked 颜色（table 设置row点击事件才会生效）
+.el-table__body tr.current-row>td{
+  background-color: $hover !important;
+}
+.el-tree-node__content:hover {
+  background-color: $hover;
+}
+.el-tree-node__content:focus {
+  background-color: $headbg;
+}
+.el-menu-item:hover {
+  background-color: $hover;
+}
+.el-menu-item:focus {
+  background-color: $headbg;
+}
+.el-menu-item.is-active {
+  color: #222;
+  background-color: $activity;
+}
+
+.el-tree-node__label {
+  font-size: 12px;
+}
+
+.el-select-dropdown.el-popper .el-select-dropdown__item.selected{
+  color: $select;
+  background: $headbg;
+}
+.el-select-dropdown.el-popper .el-select-dropdown__item.hover{
+  color: $select;
+  background: $hover;
+}
+
+.el-tree .el-checkbox__input.is-checked .el-checkbox__inner,
+.el-tree .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+  color: $fblue;
+  background: $fblue;
+}
+
+.el-cascader-node.is-selectable.in-checked-path, .el-cascader-node.is-active {
+  color: $select;
+}
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: $fblue;
+  background: $fblue;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled):hover {
+  color: $blue;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: $blue;
+  color: #fff;
+}
+
+//table fixed hover背景色
+.el-table__body tr.hover-row>td, .el-table__body tr.hover-row.el-table__row--striped>td {
+  background-color: $hover;
+}
+
+.el-button--primary.is-disabled {
+  color: $disabled;
+}
+.el-button.is-disabled {
+  color: $disabled;
+}
+.el-button--primary.is-disabled, .el-button--primary.is-disabled:hover {
+  color: $disabled;
+}
+.el-button.is-disabled, .el-button.is-disabled:hover {
+  color: $disabled;
+}
+
+.el-radio__input.is-checked + .el-radio__label {
+  color: #000;
+}
+
+.custom-button {
+  background: #383F52 !important;
+  border: 1px solid #383F52 !important;
+  border-radius: 4px !important;
+}
+
+// 修改弹窗样式
+.el-dialog__header {
+  background: #343844;
+}
+
+.el-dialog__title {
+  font-size: 16px;
+  font-family: FZLTTHB--B51-0,FZLTTHB--B51;
+  font-weight: normal;
+  color:rgba(255,255,255,1);
+}
