@@ -3,7 +3,7 @@ import i18n from '@/lang'
 
 // 菜单栏配置
 const state = {
-  menuList: [],  // 导航数据(左侧)
+  menuList: [], // 导航数据(左侧)
   isChange: false, // 资源是否变化
   // 导航数据（头部）
   navList: [{
@@ -56,6 +56,12 @@ const state = {
       icon: "el-icon-chat-dot-square",
       url: "/system-manage/system-log",
       level: 26
+    }, {
+      id: "2-7",
+      name: '资源管理',
+      icon: "el-icon-menu",
+      url: "/system-manage/system-wealth",
+      level: 27
     }]
   }, {
     name: i18n.t('nav.deviceManage'),
@@ -102,7 +108,7 @@ const state = {
       icon: "el-icon-menu",
       url: "/file-manage/import",
       level: 42
-    },{
+    }, {
       id: "4-3",
       name: "用户水型",
       icon: "el-icon-menu",
@@ -135,7 +141,7 @@ const state = {
     //   icon: "el-icon-menu",
     //   url: "/meter-reading/nb-iot",
     //   level: 52
-    // } 
+    // }
     {
       id: "5-3",
       name: i18n.t('nav.manual'),
@@ -194,11 +200,11 @@ const actions = {
   setIsChange ({ commit }, boo) {
     commit('SET_IS_CHANGE', boo)
   },
-  setMenuList ( { commit }, boo) {
+  setMenuList ({ commit }, boo) {
     setSesStorage("MENU_LIST", boo)
     commit('SET_MENU_LIST', boo)
   },
-  setNavList ( { commit }, boo ) {
+  setNavList ({ commit }, boo) {
     setSesStorage("NAV_LIST", boo)
     commit('SET_NAV_LIST', boo)
   }

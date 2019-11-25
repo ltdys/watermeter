@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="layout_header">
-      <my-header></my-header>
+      <my-header />
     </div>
     <div class="layout_sidebar">
       <div :style="{height: (slidebarHeight) + 'px'}">
@@ -20,7 +20,7 @@
             <el-col v-show="cachedViews.length > 0" :span="24" class="content-wrapper">
               <transition name="fade" mode="out-in">
                 <!-- <keep-alive :include="cachedViews"> -->
-                  <router-view :key="key" />
+                <router-view :key="key" />
                 <!-- </keep-alive> -->
               </transition>
             </el-col>
@@ -36,6 +36,7 @@ import myMenu from "@/components/common/menu"
 import myHeader from '@/components/common/header'
 import tagsViews from "@/components/TagsView/index"
 import { treeData, recursionDelete } from '@/utils/publicUtil'
+import { getUserResource } from '@/service/api'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
 
@@ -78,10 +79,21 @@ export default {
   },
 
   created () {
-    
+    this.init()
   },
 
   methods: {
+    init () {
+      this.getUserResource()
+    },
+    async getUserResource () { // 菜单资源查询
+      const self = this;
+      const param = {
+        userId: self.userId
+      }
+      const resData = await getUserResource(param)
+      console.log('resData', resData)
+    }
   }
 };
 </script>

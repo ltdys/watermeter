@@ -13,8 +13,7 @@ export const findCompany = params => axios.post('/watermeter/findCompany', param
 // 组织删除
 export const deleteCompany = params => axios.post('/watermeter/deleteCompany', params);
 
-
-//用户管理
+// 用户管理
 // 用户登录
 export const login = params => axios.post('/watermeter/login', params);
 
@@ -27,8 +26,7 @@ export const userAddRole = params => axios.post('/watermeter/userAddRole', param
 // 用户查询
 export const getUserDetailed = params => axios.post('/watermeter/getUserDetailed', params);
 
-
-//角色管理
+// 角色管理
 // 角色添加
 export const addRole = params => axios.post('/watermeter/addRole', params);
 
@@ -42,7 +40,7 @@ export const getRoleList = params => axios.post('/watermeter/getRoleList', param
 export const delRole = params => axios.post('/watermeter/delRole', params);
 
 // 设备管理
-//获取集中器列表
+// 获取集中器列表
 export const getMeterConcentratorList = params => axios.post('/watermeter/getMeterConcentratorList', params);
 
 // 集中器查询
@@ -69,7 +67,7 @@ export const updateMeterNode = params => axios.post('/watermeter/updateMeterNode
 // 采集器删除
 export const deleteMeterNode = params => axios.post('/watermeter/deleteMeterNode', params);
 
-//nb-iot注册表
+// nb-iot注册表
 // 水表查询
 export const getMeterNbIotL = params => axios.post('/watermeter/getMeterNbIotL', params);
 
@@ -132,28 +130,14 @@ export const addMeterUser = params => axios.post('/watermeter/addMeterUser', par
 // 户表查询
 export const getMeterUserAndMeterNbIot = params => axios.post('/watermeter/getMeterUserAndMeterNbIot', params);
 
+// 菜单资源添加
+export const addResource = params => axios.post('watermeter/addResource', params)
 
+// 菜单资源删除
+export const delResource = params => axios.post('watermeter/delResource', params)
 
+// 菜单资源修改
+export const updResource = params => axios.post('watermeter/updResource', params)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// 菜单资源查询
+export const getUserResource = params => axios.post('watermeter/getUserResource', params)
