@@ -16,6 +16,9 @@
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
           </el-form-item>
           <el-form-item>
+            <el-button type="primary" icon="el-icon-refresh" size="mini" @click="refresh()">刷新</el-button>
+          </el-form-item>
+          <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="add1()">{{ $t('common.add') }}</el-button>
           </el-form-item>
         </el-form>
@@ -92,7 +95,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="$t('systemManageResource.dialogTitle')" :visible.sync="resourceVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="resourceVisible" @close="close">
       <el-form :model="form" ref="ruleForm" :rules="rules" label-width="120px">
         <el-form-item :label="$t('systemManageResource.dialogA')" prop="parentId" v-show="addType === 2">
           <el-select v-model="form.parentId">
@@ -163,6 +166,7 @@ export default {
   data () {
     return {
       treeData: [],
+      title: "添加组织",
       defaultProps: {
         children: 'children',
         label: 'companyName'
@@ -172,12 +176,13 @@ export default {
         id: '',
         areaName: '',
         areaCode: '',
-        companyName: ''
+        companyName: '',
+        parentId: ''
       },
       pageObj: {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
-        pageSize: 50, // 每页条数
+        pageSize: 5, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
       resourceVisible: false,  // 添加组织弹窗
@@ -238,6 +243,7 @@ export default {
       this.treeData = []
       if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
         let temp = resData.data.data
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
         this.$store.dispatch("user/setCompanyData", temp)
         // this.tableData = resData.data.data
         temp.forEach((item, index) => {
@@ -259,7 +265,13 @@ export default {
       let resData = await findCompany(params)
       this.tableData = []
       if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
-        this.tableData = resData.data.data || []
+        let temp = resData.data.data
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
+        temp.forEach((item, index) => {
+          if (item.parentId != 0) {
+            this.tableData.push(item)
+          }
+        })
       }
     },
     async getResourceManage () {
@@ -281,11 +293,14 @@ export default {
     },
     handleNodeClick(data) {
       console.log(data);
+      this.search.parentId = data.id
+      this.findCompany1()
     },
     searchSubmit () {
       this.findCompany1()
     },
     handleEdit (row) {
+      this.title = "编辑组织"
       this.id = row.id
       this.form.id = row.id
       this.form.areaName = row.areaName
@@ -303,6 +318,7 @@ export default {
       this.resourceVisible = true
     },
     add1() {
+      this.title = "添加组织"
       this.addType = 2
       this.type = 0
       this.form.parentId = ''
@@ -392,8 +408,8 @@ export default {
             <span>{node.label}</span>
           </span>
           <span>
-            <span style="font-size: 12px;color: #000;margin-right: 5px;" type="text" on-click={ () => this.edit(data) }>Edit</span>
-            <span style="font-size: 12px;color: #000;margin-right: 5px;" type="text" on-click={ () => this.delete(node, data) }>Delete</span>
+            <span style="font-size: 12px;color: #000;margin-right: 5px;" type="text" on-click={ () => this.edit(data) }>编辑</span>
+            <span style="font-size: 12px;color: #000;margin-right: 5px;" type="text" on-click={ () => this.delete(node, data) }>删除</span>
           </span>
         </span>);
     },
@@ -448,6 +464,16 @@ export default {
       } else {
         this.$message.warning(resData.data.message)
       }
+    },
+    refresh() {
+      this.search = {
+        id: '',
+        areaName: '',
+        areaCode: '',
+        companyName: '',
+        parentId: ''
+      }
+      this.init()
     }
   }
 }

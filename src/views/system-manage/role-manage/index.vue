@@ -66,7 +66,7 @@
       </el-table>
 
       <!-- 添加 -->
-      <el-dialog :visible.sync="addVisible" @close="close" title="添加角色">
+      <el-dialog :visible.sync="addVisible" @close="close" :title="title">
         <el-form :model="form" ref="ruleForm" :rules="rules" label-width="80px">
           <el-form-item label="组织" prop="companyId">
             <el-select v-model="form.companyId" clearable>
@@ -85,7 +85,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
-            <el-button @click="close">{{ $t('common.cancel') }}</el-button>
+            <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -116,6 +116,7 @@ export default {
 
   data () {
     return {
+      title: "添加角色",
       tableData: [],
       search: {
         roleName: '',
@@ -223,6 +224,7 @@ export default {
       this.init()
     },
     handleEdit (row) {
+      this.title = "编辑角色"
       this.form.companyId = row.companyId
       this.form.roleName = row.roleName
       this.form.note = row.note
@@ -296,6 +298,7 @@ export default {
       this.init()
     },
     handleAdd() {
+      this.title = "添加角色"
       this.type = 0
       this.addVisible = true
     },
