@@ -84,7 +84,7 @@ export default {
 
   methods: {
     init () {
-      this.getUserResource()
+      // this.getUserResource()
     },
     async getUserResource () { // 菜单资源查询
       const self = this;

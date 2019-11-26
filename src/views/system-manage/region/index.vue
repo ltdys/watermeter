@@ -22,18 +22,18 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick"></my-region>
+          <my-region @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
         <el-table
           :data="tableData"
-          border
           stripe
           style="width: 100%"
           size="mini"
           :height="tableHeightPage"
           highlight-current-row
+          default-expand-all
           row-key="id"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >
@@ -43,26 +43,27 @@
             label="#"
           />
           <el-table-column
-            prop="regionName"
+            prop="companyName"
             :label="$t('systemManageRegion.tableA')"
           />
           <el-table-column
-            prop="regionId"
+            prop="areaCode"
             :label="$t('systemManageRegion.tableB')"
-            width="120"
+            width="200"
           />
           <el-table-column
             prop="parentId"
             :label="$t('systemManageRegion.tableC')"
+            width="300"
           />
           <el-table-column
-            prop="navy"
+            prop="updateBy"
             :label="$t('systemManageRegion.tableD')"
           />
           <el-table-column fixed="right" :label="$t('common.operation')" width="320">
             <template slot-scope="scope">
-              <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
-              <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
+              <i class="el-icon-edit" @click="handleEdit(scope.row)" />
+              <i class="el-icon-delete" @click="handleDelete(scope.row)" />
               <span class="region-manage_operator">{{ $t('systemManageRegion.operationA') }}</span>
               <span class="region-manage_operator">{{ $t('systemManageRegion.operationB') }}</span>
             </template>
@@ -81,12 +82,13 @@
 
     <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" @close="close">
       <my-edit @close="close" />
-    </el-dialog>  
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRegion } from '@/service/system'
+import { findCompany } from '@/service/api'
 import myRegion from '@/components/common/region'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -127,6 +129,12 @@ export default {
     init () {
       this.getRegion()
     },
+    async findCompany (params) { // 获取组织机构列表
+      // const self = this;
+      console.log(params)
+      let res = await findCompany(params)
+      console.log('获取组织机构列表', res)
+    },
     async getRegion () {
       const params = {
         rows: this.pageObj.pageSize,
@@ -144,9 +152,6 @@ export default {
       this.pageObj.currentPage = data;
       this.init()
     },
-    handleNodeClick(data) {
-      console.log(data);
-    },
     searchSubmit () {
 
     },
@@ -157,7 +162,16 @@ export default {
 
     },
     handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
+      this.tableData = []
+      this.tableData.push(data)
+      // let params = {
+      //   userId: this.userId,
+      //   company: {
+
+      //   }
+      // }
+      // this.findCompany(params)
+      // this.$message.success(`切换${data.companyName}成功`)
     },
     close () {
       this.regionVisible = false
@@ -181,6 +195,11 @@ export default {
     &_operator {
       text-decoration: underline;
       color: #0084FF;
+    }
+    .scrollbar-page{
+      .el-scrollbar__view{
+        height: 100%;
+      }
     }
   }
 </style>

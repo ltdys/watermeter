@@ -40,3 +40,36 @@ export const recursionDelete = (list) => {
   })
   return list
 }
+
+/* 资源管理模块 --  将数据格式转换成树状格式*/
+export const wealthTreeData = (data) => {
+  let result = data.reduce(function (prev, item) {
+    item.parent = item.parent === null ? 0 : item.parent;
+    prev[item.parent] ? prev[item.parent].push(item) : prev[item.parent] = [item];
+    return prev;
+  }, {});
+  for (const prop in result) {
+    result[prop].forEach(function (item, i) {
+      result[item.id] ? item.children = result[item.id] : ''
+    });
+  }
+  result = result[0];
+  return JSON.stringify(result)
+}
+
+/* 组织管理模块 --  将数据格式转换成树状格式*/
+export const orgTreeData = (data) => {
+  let result = data.reduce(function (prev, item) {
+    item.parentId = item.parentId === null ? 0 : item.parentId;
+    prev[item.parentId] ? prev[item.parentId].push(item) : prev[item.parentId] = [item];
+    return prev;
+  }, {});
+  for (const prop in result) {
+    result[prop].forEach(function (item, i) {
+      result[item.id] ? item.children = result[item.id] : ''
+    });
+  }
+  result = result[0];
+  console.log('-------', result)
+  return JSON.stringify(result)
+}

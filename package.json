@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "vue-cli-service serve",
     "serve:dev": "vue-cli-service serve",
     "serve:online76": "vue-cli-service serve --mode developmentOnline",
     "serve:online38": "vue-cli-service serve --mode developmentOnline38",
