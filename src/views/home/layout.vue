@@ -39,6 +39,7 @@ import { treeData, recursionDelete, wealthTreeData } from '@/utils/publicUtil'
 import { getUserResource } from '@/service/api'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
+import { getSesStorage } from '@/utils/storageUtil.js'
 
 export default {
   name: 'home',
@@ -66,6 +67,9 @@ export default {
     },
     menuList () {
       return JSON.parse(this.$store.getters.getMenuList)
+    },
+    currentId () {
+      return this.$store.getters.getCurrentId
     }
   },
 
@@ -105,8 +109,15 @@ export default {
             self.$set(item, 'children', [])
           })
           let tableList = JSON.parse(wealthTreeData(list))
+          console.log('self.currentId', self.currentId)
           tableList.forEach(item => {
-            self.$set(item, 'isCheck', false)
+            if (self.currentId === '' && item.resName === '首页') {
+              self.$set(item, 'isCheck', true)
+            } else if (self.currentId == item.id) {
+              self.$set(item, 'isCheck', true)
+            } else {
+              self.$set(item, 'isCheck', false)
+            }
           })
           // let tableList = wealthTreeData2(list)
           self.$nextTick(() => {

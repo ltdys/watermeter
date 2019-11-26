@@ -47,6 +47,13 @@ const getters = {
     }
     return state.slidebar.navList
   },
+  getCurrentId: state => {
+    const status = getSesStorage("CURRENT_ID")
+    if (status) {
+      state.slidebar.currentId = status
+    }
+    return state.slidebar.currentId
+  },
   getCompanyData: state => {
     const status = getLocalStorage("COMPANY_DATA")
     if (status) {

@@ -18,7 +18,7 @@
         </el-select> -->
 
         <div class="header_main_header__center">
-          <div v-for="(item, index) in navList" :key="index" class="header_main_header__center___wrap" :class="[item.isCheck ? 'nav-ischeck' : 'nav-default']">
+          <div v-for="(item, index) in navList" :key="index" class="header_main_header__center___wrap" :class="[item.id == currentId ? 'nav-ischeck' : 'nav-default']">
             <span :title="item.name" @click="navChange(item)">{{ item.name }}</span>
           </div>
         </div>
@@ -72,8 +72,10 @@ export default {
 
   computed: {
     navList () {
-      console.log('navList', this.$store.getters.getNavList)
       return this.$store.getters.getNavList
+    },
+    currentId () {
+      return this.$store.getters.getCurrentId
     }
   },
 
@@ -83,12 +85,14 @@ export default {
 
   methods: {
     navChange (value) {
+      console.log(value)
       this.navList.forEach((item, index) => {
         item.isCheck = item.name === value.name
       })
 
       let currentTitle = value.children && value.children.length > 0 ? value.children[0].name : value.name
       this.$store.dispatch('slidebar/setMenuList', value.children)
+      this.$store.dispatch('slidebar/setCurrentId', value.id)
       this.$store.dispatch('tagsView/setCurrentTitle', currentTitle)
       this.$router.push(value.url)
     },

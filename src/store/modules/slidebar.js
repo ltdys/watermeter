@@ -5,6 +5,7 @@ import i18n from '@/lang'
 const state = {
   menuList: [], // 导航数据(左侧)
   isChange: false, // 资源是否变化
+  currentId: '',
   // 导航数据（头部）
   navList: [{
     name: i18n.t('nav.home'),
@@ -207,6 +208,10 @@ const actions = {
   setNavList ({ commit }, boo) {
     setSesStorage("NAV_LIST", boo)
     commit('SET_NAV_LIST', boo)
+  },
+  setCurrentId ({ commit }, boo) {
+    setSesStorage("CURRENT_ID", boo)
+    commit('SET_CURRENT_ID', boo)
   }
 }
 
@@ -219,6 +224,9 @@ const mutations = {
   },
   'SET_NAV_LIST' (state, boo) {
     state.navList = boo
+  },
+  'SET_CURRENT_ID' (state, boo) {
+    state.currentId = boo
   }
 }
 
