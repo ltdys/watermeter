@@ -33,7 +33,12 @@
           highlight-current-row
           :tree-props="{children: 'children'}"
         >
-          <el-table-column type="index" width="50" label="#" />
+          <!-- <el-table-column type="index" width="50" label="#" /> -->
+          <el-table-column label="资源ID" width="100">
+            <template slot-scope="scope">
+              {{ scope.row.id | fDataVal }}
+            </template>
+          </el-table-column>
           <el-table-column label="菜单资源名称" width="300">
             <template slot-scope="scope">
               {{ scope.row.resName | fDataVal }}
@@ -44,7 +49,7 @@
               {{ scope.row.displayName | fDataVal }}
             </template>
           </el-table-column>
-          <el-table-column label="跳转路径" width="250">
+          <el-table-column label="跳转路径" width="300">
             <template slot-scope="scope">
               {{ scope.row.router | fDataVal }}
             </template>
@@ -150,7 +155,7 @@
 // import myPagination from "@/components/pagination/my-pagination";
 import { wealthTreeData } from '@/utils/publicUtil'
 import { eleIconList } from '@/utils/eleIcon'
-import { getUserDetailed, addResource, delResource, updResource, getUserResource } from '@/service/api'
+import { addResource, delResource, updResource, getUserResource, getRoleList } from '@/service/api'
 import { list_mixins } from '@/mixins'
 export default {
   components: {
@@ -214,22 +219,22 @@ export default {
   },
   methods: {
     init () { // 初始化
-      // this.getUserDetailed()
+      // this.getRoleList()
       this.getUserResource()
     },
-    async getUserDetailed () { // 获取用户信息
+    async getRoleList () { // 获取角色信息列表
       const self = this;
       const param = {
         userId: self.userId
       }
-      const resData = await getUserDetailed(param)
-      console.log('获取用户信息', resData)
-      if (resData.status === 200 && resData.data.code === 1) {
+      const resData = await getRoleList(param)
+      console.log('获取角色信息列表', resData)
+      if (resData.status === 200) {
         const list = resData.data.data
         self.selectList = list.map(item => {
           return {
             id: item.userid,
-            name: item.companyname
+            name: item.username
           }
         })
       } else {
@@ -246,7 +251,9 @@ export default {
       console.log('获取菜单资源', resData)
       if (resData.status === 200) {
         const list = resData.data.data
-        self.tableList = JSON.parse(wealthTreeData(list))
+        if (list.length !== 0) {
+          self.tableList = JSON.parse(wealthTreeData(list))
+        }
         // self.tableList = list
       } else {
         self.$message.warning(resData.data.message)

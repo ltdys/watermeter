@@ -10,10 +10,10 @@
     :collapse-transition="false"
     :default-openeds="defaultOpeneds"
   >
-      <el-menu-item v-for="item in menus" :key="item.id" :index="item.url" :route="{path: item.url}" @click="menuClick(item)">
-        <i :class="item.icon"></i>
-        <span slot="title" :title="item.name">{{ item.name }}</span>
-      </el-menu-item>
+    <el-menu-item v-for="item in menus" :key="item.id" :index="item.url" :route="{path: item.url}" @click="menuClick(item)">
+      <i :class="item.icon" />
+      <span slot="title" :title="item.name">{{ item.name }}</span>
+    </el-menu-item>
     <!-- <submenu v-for="menu in menus" :key="menu.id" :menu="menu" /> -->
   </el-menu>
 </template>
@@ -26,6 +26,12 @@ export default {
   },
   props: ["menus", "collapse"],
 
+  data () {
+    return {
+      defaultOpeneds: ["/system"]
+    };
+  },
+
   computed: {
     visitedViews () {
       return this.$store.state.tagsView.visitedViews
@@ -33,12 +39,6 @@ export default {
     routes () {
       return this.$store.state.permission.routes
     }
-  },
-
-  data () {
-    return {
-      defaultOpeneds: ["/system"]
-    };
   },
 
   methods: {

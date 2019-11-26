@@ -35,7 +35,7 @@
 import myMenu from "@/components/common/menu"
 import myHeader from '@/components/common/header'
 import tagsViews from "@/components/TagsView/index"
-import { treeData, recursionDelete } from '@/utils/publicUtil'
+import { treeData, recursionDelete, wealthTreeData } from '@/utils/publicUtil'
 import { getUserResource } from '@/service/api'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
@@ -84,15 +84,54 @@ export default {
 
   methods: {
     init () {
-      // this.getUserResource()
+      this.getUserResource()
     },
-    async getUserResource () { // 菜单资源查询
+    async getUserResource () { // 获取菜单资源
       const self = this;
       const param = {
+        // userId: self.search.id
         userId: self.userId
       }
       const resData = await getUserResource(param)
-      console.log('resData', resData)
+      console.log('获取菜单资源', resData)
+      if (resData.status === 200) {
+        let list = resData.data.data
+        if (list.length !== 0) {
+          //         {
+          //   name: i18n.t('nav.home'),
+          //   value: 'index',
+          //   url: '/chart',
+          //   isCheck: true,
+          //   level: 1,
+          //   children: []
+          // }
+          list.forEach(item => {
+            // return {
+            //   id: item.id,
+            //   parent: item.parent,
+            //   name: item.resName,
+            //   value: item.displayName,
+            //   url: item.router,
+            //   isCheck: false,
+            //   level: item.id,
+            //   children: []
+            // }
+            self.$set(item, 'name', item.resName)
+            self.$set(item, 'value', item.displayName)
+            self.$set(item, 'url', item.router)
+            self.$set(item, 'isCheck', false)
+            self.$set(item, 'level', item.id)
+            self.$set(item, 'children', [])
+          })
+          let tableList = JSON.parse(wealthTreeData(list))
+          // let tableList = wealthTreeData2(list)
+          self.$nextTick(() => {
+            self.$store.dispatch("slidebar/setNavList", tableList)
+          })
+        }
+      } else {
+        self.$message.warning(resData.data.message)
+      }
     }
   }
 };

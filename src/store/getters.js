@@ -41,7 +41,7 @@ const getters = {
     return state.slidebar.menuList
   },
   getNavList: state => {
-    const status = getSesStorage("NAV_LIST")
+    const status = getSesStorage("NAV_LIST", 'json')
     if (status) {
       state.slidebar.navList = status
     }

@@ -7,7 +7,7 @@
           <hr>
           <span>{{ $t('nav.title') }}</span>
         </div>
-        
+
         <!-- <el-select v-model="lang" size="mini" @change="lanageChange()">
           <el-option
             v-for="item in options"
@@ -19,14 +19,14 @@
 
         <div class="header_main_header__center">
           <div v-for="(item, index) in navList" :key="index" class="header_main_header__center___wrap" :class="[item.isCheck ? 'nav-ischeck' : 'nav-default']">
-            <span @click="navChange(item)" :title="item.name">{{ item.name }}</span>
+            <span :title="item.name" @click="navChange(item)">{{ item.name }}</span>
           </div>
         </div>
         <div class="header_main_header__right">
-          <icon name="head_default" style="width: 32px;height: 40px"></icon>
-          <span class="header_main_header__right___we">{{ $t('nav.welcome') }}<span class="header_main_header__right___name">{{ userInfo.name}}</span></span>
+          <icon name="head_default" style="width: 32px;height: 40px" />
+          <span class="header_main_header__right___we">{{ $t('nav.welcome') }}<span class="header_main_header__right___name">{{ userInfo.name }}</span></span>
           <div class="header_main_header__right___wrap" @click="loginOut">
-            <icon name="login_out" style="width: 32px;height: 40px"></icon>
+            <icon name="login_out" style="width: 32px;height: 40px" />
           </div>
         </div>
       </div>
@@ -48,12 +48,6 @@ export default {
 
   mixins: [list_mixins, menu_list],
 
-  computed: {
-    navList () {
-      return this.$store.getters.getNavList
-    }
-  },
-
   data () {
     return {
       isHideSidebar: false,
@@ -72,11 +66,19 @@ export default {
         label: 'English',
         value: 'en'
       }],
-      lang: 'zh',
+      lang: 'zh'
     };
   },
 
+  computed: {
+    navList () {
+      console.log('navList', this.$store.getters.getNavList)
+      return this.$store.getters.getNavList
+    }
+  },
+
   created () {
+
   },
 
   methods: {
@@ -85,7 +87,7 @@ export default {
         item.isCheck = item.name === value.name
       })
 
-      let currentTitle = value.children && value.children.length > 0  ? value.children[0].name : value.name
+      let currentTitle = value.children && value.children.length > 0 ? value.children[0].name : value.name
       this.$store.dispatch('slidebar/setMenuList', value.children)
       this.$store.dispatch('tagsView/setCurrentTitle', currentTitle)
       this.$router.push(value.url)
@@ -95,7 +97,7 @@ export default {
       this.$router.push('/login')
     },
     lanageChange () {
-      this.$i18n.locale = this.lang 
+      this.$i18n.locale = this.lang
       this.$store.dispatch('app/setLanguage', this.lang)
     }
   }
@@ -165,7 +167,7 @@ export default {
           span {
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;   
+            white-space: nowrap;
           }
         }
       }
