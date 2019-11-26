@@ -173,6 +173,14 @@ const routes = [
       meta: {
         requireAuth: true
       }
+    },
+    {
+      path: '/chart',
+      name: 'chart',
+      component: () => import('@/views/home/chart.vue'),
+      meta: {
+        requireAuth: true
+      }
     }]
   },
   {
@@ -190,14 +198,6 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/views/home/chart.vue'),
-    meta: {
-      requireAuth: true
-    }
-  },
-  {
-    path: '/chart',
-    name: 'chart',
     component: () => import('@/views/home/chart.vue'),
     meta: {
       requireAuth: true
