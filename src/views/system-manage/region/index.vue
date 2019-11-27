@@ -140,7 +140,7 @@ export default {
       }
       let resData = await findCompany(params)
       console.log('获取组织机构', resData)
-      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
+      if (resData.status === 200 && resData.data.data !== null) {
         this.treeData = JSON.parse(orgTreeData(resData.data.data))
         console.log(this.treeData)
       }
@@ -159,8 +159,16 @@ export default {
       let res = await findDistrict(param)
       console.log('查询区域', res)
     },
-    async addDistrict () { // 增加区域
+    async addDistrict (param) { // 增加区域
       const self = this;
+      let res = await addDistrict(param)
+      console.log('增加区域', res)
+      if (res.status === 200) {
+        self.$message.success(`添加区域成功`);
+        self.close()
+      } else {
+        self.$message.warning(`添加区域失败`);
+      }
     },
     async updateDistrict () { // 编辑区域
 
@@ -202,7 +210,16 @@ export default {
     },
     onSubmit (form) {
       console.log('返回', form)
-      this.addDistrict(form)
+      let param = {
+        district: {
+          name: form.name,
+          parentId: form.parentId === '' ? '0' : form.parentId,
+          companyId: form.companyId,
+          state: form.state,
+          address: form.address
+        }
+      }
+      this.addDistrict(param)
     }
   }
 }

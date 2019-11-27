@@ -73,3 +73,20 @@ export const orgTreeData = (data) => {
   console.log('-------', result)
   return JSON.stringify(result)
 }
+
+// 公用
+export const treeDataUtil = (data, parent, id) => {
+  let result = data.reduce(function (prev, item) {
+    item[parent] = item[parent] === null ? 0 : item[parent];
+    prev[item[parent]] ? prev[item[parent]].push(item) : prev[item[parent]] = [item];
+    return prev;
+  }, {});
+  for (const prop in result) {
+    result[prop].forEach(function (item, i) {
+      result[item[id]] ? item.children = result[item[id]] : ''
+    });
+  }
+  result = result[0];
+  console.log('-------', result)
+  return JSON.stringify(result)
+}

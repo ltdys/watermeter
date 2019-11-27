@@ -12,9 +12,17 @@
         />
       </el-form-item>
       <el-form-item label="归属区域">
-        <el-select v-model="form.parentId">
-          <el-option v-for="(item, index) in list" :key="index" :label="item.label" :value="item.value" />
-        </el-select>
+        <el-cascader
+          v-model="form.parent"
+          :options="list"
+          clearable
+          filterable
+          :props="setParent"
+          @change="changeParent"
+        />
+        <!-- <el-select v-model="form.parentId">
+          <el-option v-for="(item, index) in list" :key="index" :label="item.name" :value="item.id" />
+        </el-select> -->
       </el-form-item>
       <el-form-item label="区域名称" prop="name">
         <el-input v-model="form.name" clearable />
@@ -36,6 +44,8 @@
 </template>
 
 <script>
+import { findDistrict } from '@/service/api'
+import { treeDataUtil } from '@/utils/publicUtil'
 export default {
   props: {
     options: { // 组织机构列表
@@ -47,16 +57,7 @@ export default {
   },
   data () {
     return {
-      list: [{
-        label: '区域一',
-        value: 0
-      }, {
-        label: '区域二',
-        value: 1
-      }, {
-        label: '区域三',
-        value: 2
-      }],
+      list: [],
       stateList: [
         {
           label: '有效',
@@ -69,6 +70,7 @@ export default {
       form: {
         company: [], // 组织全部
         companyId: '', // 组织机构
+        parent: [], // 区域全部
         parentId: '', // 归属区域
         name: '', // 区域名称
         state: '', // 状态 0 --> 有效  1 --> 无效
@@ -90,6 +92,12 @@ export default {
         value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
+      },
+      setParent: { // 设置级联选择器
+        label: 'name',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
       }
     }
   },
@@ -104,6 +112,21 @@ export default {
     },
     changeOrg () { // 组织机构选择
       this.form.companyId = this.form.company[this.form.company.length - 1]
+      let params = {
+        companyId: this.form.companyId
+      }
+      this.findDistrict(params)
+    },
+    changeParent () { // 区域选择、
+      this.form.parentId = this.form.parent[this.form.parent.length - 1]
+    },
+    async findDistrict (param) { // 查询区域
+      const self = this;
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        self.list = JSON.parse(treeDataUtil(res.data.data, 'parentId', 'id'))
+      }
     },
     onSubmit (formName) {
       const self = this;
