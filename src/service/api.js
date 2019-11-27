@@ -10,6 +10,12 @@ export const updateCompany = params => axios.post('/watermeter/updateCompany', p
 // 组织查询
 export const findCompany = params => axios.post('/watermeter/findCompany', params);
 
+// 一级组织查询
+export const findParentCompany = params => axios.post('/watermeter/findParentCompany', params)
+
+// 二级组织查询
+export const findChildCompany = params => axios.post('/watermeter/findChildCompany', params)
+
 // 组织删除
 export const deleteCompany = params => axios.post('/watermeter/deleteCompany', params);
 
@@ -154,3 +160,7 @@ export const updResource = params => axios.post('watermeter/updResource', params
 
 // 菜单资源查询
 export const getUserResource = params => axios.post('watermeter/getUserResource', params)
+
+// 组织机构小区树结构
+export const getTreeAreas = params => axios.post('/watermeter/getTreeAreas', params)
+

@@ -137,7 +137,7 @@
 
 <script>
 import { getResourceManage } from '@/service/system'
-import { findCompany, addCompany, deleteCompany, updateCompany } from '@/service/api'
+import { findCompany, addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany } from '@/service/api'
 import myPagination from "@/components/pagination/my-pagination";
 import myRegion from '@/components/common/region'
 import { list_mixins } from '@/mixins'
@@ -182,7 +182,7 @@ export default {
       pageObj: {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
-        pageSize: 5, // 每页条数
+        pageSize: 50, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
       resourceVisible: false,  // 添加组织弹窗
@@ -229,49 +229,48 @@ export default {
 
   methods: {
     init () {
-      this.findCompany()
+      this.findParentCompany()
     },
-    async findCompany() {
+    async findParentCompany() {
       let params = {
         userId: this.userId,
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
         company: this.search
       }
-      let resData = await findCompany(params)
+      let resData = await findParentCompany(params)
       this.tableData = []
       this.treeData = []
-      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
+      if (resData.status === 200) {
         let temp = resData.data.data
-        this.pageObj.allTotal = resData.data.page.totalRow || 0
+        this.treeData = temp
+        this.search.parentId = this.treeData[0].id
         this.$store.dispatch("user/setCompanyData", temp)
-        // this.tableData = resData.data.data
-        temp.forEach((item, index) => {
-          if(item.parentId != 0) {
-            this.tableData.push(item)
-          } else {
-            this.treeData.push(item)
-          }
+        this.$nextTick(() => {
+          this.findChildCompany()
         })
+        // this.tableData = resData.data.data
+        // temp.forEach((item, index) => {
+        //   if(item.parentId != 0) {
+        //     this.tableData.push(item)
+        //   } else {
+        //     this.treeData.push(item)
+        //   }
+        // })
       }
     },
-    async findCompany1() { // 条件查询用
+    async findChildCompany() {
       let params = {
         userId: this.userId,
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
         company: this.search
       }
-      let resData = await findCompany(params)
+      let resData = await findChildCompany(params)
       this.tableData = []
-      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
-        let temp = resData.data.data
+      if (resData.status === 200) {
+        this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
-        temp.forEach((item, index) => {
-          if (item.parentId != 0) {
-            this.tableData.push(item)
-          }
-        })
       }
     },
     async getResourceManage () {
@@ -294,10 +293,10 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       this.search.parentId = data.id
-      this.findCompany1()
+      this.findChildCompany()
     },
     searchSubmit () {
-      this.findCompany1()
+      this.findChildCompany()
     },
     handleEdit (row) {
       this.title = "编辑组织"
@@ -456,7 +455,6 @@ export default {
         userName: this.userName,
         companyId: data.id
       }
-      debugger
       let resData = await deleteCompany(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success('删除成功');

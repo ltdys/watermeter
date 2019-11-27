@@ -1,3 +1,4 @@
+<!-- 区域小区楼栋树结构 -->
 <template>
   <div class="region-components">
     <el-tree
@@ -12,17 +13,30 @@
 </template>
 
 <script>
-import { findCompany } from '@/service/api'
+import { findDistrict } from '@/service/api'
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
+  watch: {
+    districtIschage: {
+      handler: function () {
+        this.findDistrict()
+      },
+      deep: true
+    }
+  },
+   computed: {
+    districtIschage () {
+      return this.$store.state.user.districtIschage
+    }
+  },
   data () {
     return {
       filterText: '',
       treeData: [],
       defaultProps: {
         children: 'children',
-        label: 'companyName'
+        label: 'name'
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -33,20 +47,19 @@ export default {
     }
   },
   created () {
-    this.findCompany()
-  },
-  async findCompany () {
-    let params = {
-      userId: this.userId,
-      currentPage: this.pageObj.currentPage,
-      pageSize: this.pageObj.pageSize
-    }
-    let resData = await findCompany(params)
-    if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
-      this.treeData = resData.data.data
-    }
+    this.findDistrict()
   },
   methods: {
+    async findDistrict () {
+      let params = {
+        companyId: ""
+      }
+      let resData = await findDistrict(params)
+      if (resData.status === 200) {
+        this.treeData = resData.data.data
+        console.log("this.treeData", JSON.stringify(this.treeData))
+      }
+    },
     handleNodeClick (data) {
       this.$emit('handleNodeClick', data)
     }

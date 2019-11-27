@@ -180,3 +180,8 @@
   font-weight: normal;
   color:rgba(255,255,255,1);
 }
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: $blue;
+  border-color: $blue;
+}

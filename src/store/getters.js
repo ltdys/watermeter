@@ -60,6 +60,9 @@ const getters = {
       state.user.companyData = status
     }
     return state.user.companyData
+  },
+  getDistrictIschange: state => {
+    return state.user.districtIschage
   }
 }
 export default getters

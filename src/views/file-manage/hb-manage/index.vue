@@ -27,12 +27,12 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <!-- <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
+      <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick"></my-region>
+          <my-region1 @handleNodeClick="handleNodeClick"></my-region1>
         </el-scrollbar>
-      </el-col> -->
-      <el-col :span="24">
+      </el-col>
+      <el-col :span="20">
         <el-table
           :data="tableData"
           border
@@ -160,7 +160,7 @@
 
 <script>
 import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot } from '@/service/api'
-import myRegion from '@/components/common/region'
+import myRegion1 from '@/components/common/region1'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import userEdit from './userEdit'
@@ -170,7 +170,7 @@ export default {
   name: 'hbManage',
 
   components: {
-    myPagination, myRegion, userEdit, tableEdit
+    myPagination, myRegion1, userEdit, tableEdit
   },
 
   mixins: [list_mixins],
@@ -222,9 +222,11 @@ export default {
         pageSize: this.pageObj.pageSize
       }
       let resData = await getMeterUserAndMeterNbIot(params)
-      if(resData.status === 200 && resData.data.code === 1) {
+      if(resData.status === 200) {
         this.tableData = resData.data.data
-        this.pageObj.allTotal = resData.data.page.totalRow || 0
+        if (resData.data.page) {
+          this.pageObj.allTotal = resData.data.page.totalRow || 0
+        }
       }
     },
     async findWaterHouseTypes() {
@@ -266,7 +268,9 @@ export default {
       }
       let res = await getHouseTable(params)
       this.tableData = res.data.data
-      this.pageObj.allTotal = res.data.allTotal
+      if (resData.data.page) {
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
+      }
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
@@ -275,9 +279,6 @@ export default {
     currentChange (data) { // 当前页切换事件
       this.pageObj.currentPage = data;
       this.init()
-    },
-    handleNodeClick(data) {
-      console.log(data);
     },
     searchSubmit () {
 
@@ -289,7 +290,7 @@ export default {
 
     },
     handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
+      this.$message.success("你选择了" + data.name)
     },
     addUser () {
       this.userAddVisible = true

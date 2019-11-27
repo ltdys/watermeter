@@ -29,7 +29,7 @@ service.interceptors.response.use(function (response) {
   // service error : 404,400,500 handler
   switch (error.response.status) {
     case 404:
-      router.push('/404');
+      // router.push('/404');
       break;
     case 401:
       router.push('/login');

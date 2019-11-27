@@ -171,9 +171,11 @@ export default {
         rows: this.pageObj.pageSize,
         page: this.pageObj.currentPage
       }
-      let res = await getMeterReading(params)
-      this.tableData = res.data.data
-      this.pageObj.allTotal = res.data.allTotal
+      let resData = await getMeterReading(params)
+      this.tableData = resData.data.data
+      if (resData.data.page) {
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
+      }
     },
     init () {
       this.getMeterReading()
