@@ -22,7 +22,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick" />
+          <my-region :tree-data="treeData" @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -81,14 +81,15 @@
     </el-row>
 
     <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" @close="close">
-      <my-edit @close="close" />
+      <my-edit :options="treeData" @onSubmit="onSubmit" @close="close" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRegion } from '@/service/system'
-import { findCompany } from '@/service/api'
+import { orgTreeData } from '@/utils/publicUtil'
+import { findCompany, findDistrict, addDistrict, updateDistrict, deleteDistrict } from '@/service/api'
 import myRegion from '@/components/common/region'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -105,6 +106,7 @@ export default {
 
   data () {
     return {
+      treeData: [], // 组织机构树状
       tableData: [],
       search: {
         t1: '',
@@ -127,13 +129,21 @@ export default {
 
   methods: {
     init () {
-      this.getRegion()
+      // this.getRegion()
+      this.findCompany()
     },
-    async findCompany (params) { // 获取组织机构列表
-      // const self = this;
-      console.log(params)
-      let res = await findCompany(params)
-      console.log('获取组织机构列表', res)
+    async findCompany () { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let resData = await findCompany(params)
+      console.log('获取组织机构', resData)
+      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
+        this.treeData = JSON.parse(orgTreeData(resData.data.data))
+        console.log(this.treeData)
+      }
     },
     async getRegion () {
       const params = {
@@ -143,6 +153,20 @@ export default {
       let res = await getRegion(params)
       this.tableData = res.data.data
       this.pageObj.allTotal = res.data.allTotal
+    },
+    async findDistrict (param) { // 查询区域
+      // const self = this;
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+    },
+    async addDistrict () { // 增加区域
+      const self = this;
+    },
+    async updateDistrict () { // 编辑区域
+
+    },
+    async deleteDistrict () { // 删除区域
+
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
@@ -162,15 +186,12 @@ export default {
 
     },
     handleNodeClick (data) {
-      this.tableData = []
-      this.tableData.push(data)
-      // let params = {
-      //   userId: this.userId,
-      //   company: {
-
-      //   }
-      // }
-      // this.findCompany(params)
+      // this.tableData = []
+      // this.tableData.push(data)
+      let params = {
+        companyId: data.id
+      }
+      this.findDistrict(params)
       // this.$message.success(`切换${data.companyName}成功`)
     },
     close () {
@@ -178,6 +199,10 @@ export default {
     },
     regionAdd () {
       this.regionVisible = true
+    },
+    onSubmit (form) {
+      console.log('返回', form)
+      this.addDistrict(form)
     }
   }
 }

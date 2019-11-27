@@ -17,15 +17,20 @@
 </template>
 
 <script>
-import { findCompany } from '@/service/api'
-import { orgTreeData } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
+  props: {
+    treeData: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   data () {
     return {
       filterText: '',
-      treeData: [],
       defaultProps: {
         children: 'children',
         label: 'companyName'
@@ -39,24 +44,12 @@ export default {
     }
   },
   created () {
-    this.findCompany()
+
   },
   methods: {
     handleNodeClick (data) {
       console.log('data', data)
       this.$emit('handleNodeClick', data)
-    },
-    async findCompany () { // 获取组织机构
-      let params = {
-        userId: this.userId,
-        currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
-      }
-      let resData = await findCompany(params)
-      console.log('获取组织机构', resData)
-      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
-        this.treeData = JSON.parse(orgTreeData(resData.data.data))
-      }
     }
   }
 }
@@ -78,6 +71,10 @@ export default {
     }
     .filter-tree{
       height: 100%;
+      .el-tree-node__label{
+        font-size: 14px;
+        color: #606266;
+      }
     }
   }
 </style>

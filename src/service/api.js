@@ -39,6 +39,19 @@ export const getRoleList = params => axios.post('/watermeter/getRoleList', param
 // 角色删除
 export const delRole = params => axios.post('/watermeter/delRole', params);
 
+// 区域管理
+// 区域查询
+export const findDistrict = params => axios.post('/watermeter/findDistrict', params);
+
+// 区域添加
+export const addDistrict = params => axios.post('/watermeter/addDistrict', params);
+
+// 区域编辑
+export const updateDistrict = params => axios.post('/watermeter/updateDistrict', params);
+
+// 区域删除
+export const deleteDistrict = params => axios.post('/watermeter/deleteDistrict', params);
+
 // 设备管理
 // 获取集中器列表
 export const getMeterConcentratorList = params => axios.post('/watermeter/getMeterConcentratorList', params);
