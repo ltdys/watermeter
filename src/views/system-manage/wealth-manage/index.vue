@@ -33,12 +33,7 @@
           highlight-current-row
           :tree-props="{children: 'children'}"
         >
-          <!-- <el-table-column type="index" width="50" label="#" /> -->
-          <el-table-column label="资源ID" width="100">
-            <template slot-scope="scope">
-              {{ scope.row.id | fDataVal }}
-            </template>
-          </el-table-column>
+          <el-table-column type="index" width="50" label="#" />
           <el-table-column label="菜单资源名称" width="300">
             <template slot-scope="scope">
               {{ scope.row.resName | fDataVal }}
