@@ -70,7 +70,6 @@ export const orgTreeData = (data) => {
     });
   }
   result = result[0];
-  console.log('-------', result)
   return JSON.stringify(result)
 }
 
@@ -87,6 +86,5 @@ export const treeDataUtil = (data, parent, id) => {
     });
   }
   result = result[0];
-  console.log('-------', result)
   return JSON.stringify(result)
 }

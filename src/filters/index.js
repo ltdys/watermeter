@@ -95,3 +95,23 @@ export function fStatusVal (val) {
     return '否'
   }
 }
+
+// 区域管理 状态转换
+export function fAreaChange (val) {
+  if (val === null) {
+    return '--'
+  } else if (val === 0) {
+    return '有效'
+  } else if (val === 1) {
+    return '无效'
+  }
+}
+
+// 区域管理  父节点转化
+export function fParentChange (val) {
+  if (!val) {
+    return '--'
+  } else {
+    return val
+  }
+}

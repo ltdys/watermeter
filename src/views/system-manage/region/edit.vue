@@ -7,6 +7,7 @@
           :options="options"
           clearable
           filterable
+          :disabled="form.companyDis"
           :props="setProps"
           @change="changeOrg"
         />
@@ -17,6 +18,7 @@
           :options="list"
           clearable
           filterable
+          :disabled="form.parentDis"
           :props="setParent"
           @change="changeParent"
         />
@@ -53,6 +55,12 @@ export default {
       default () {
         return []
       }
+    },
+    form: { // 表单
+      type: Object,
+      default () {
+        return {}
+      }
     }
   },
   data () {
@@ -61,21 +69,13 @@ export default {
       stateList: [
         {
           label: '有效',
-          value: '0'
+          value: 0
         }, {
           label: '无效',
-          value: '1'
+          value: 1
         }
       ],
-      form: {
-        company: [], // 组织全部
-        companyId: '', // 组织机构
-        parent: [], // 区域全部
-        parentId: '', // 归属区域
-        name: '', // 区域名称
-        state: '', // 状态 0 --> 有效  1 --> 无效
-        address: '' // 地址
-      },
+      // form: { ...this.formObj },
       rules: {
         company: [
           { required: true, message: '请选择组织机构', trigger: 'blur' }
@@ -125,7 +125,15 @@ export default {
       let res = await findDistrict(param)
       console.log('查询区域', res)
       if (res.status === 200 && res.data.data !== null) {
-        self.list = JSON.parse(treeDataUtil(res.data.data, 'parentId', 'id'))
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.list = JSON.parse(treeDataUtil(list, 'parentId', 'id'))
+        }
       }
     },
     onSubmit (formName) {
@@ -137,6 +145,18 @@ export default {
           return false;
         }
       });
+    },
+    clearForm () { // 清除form表单
+      let self = this;
+      self.form = {
+        company: [], // 组织全部
+        companyId: '', // 组织机构
+        parent: [], // 区域全部
+        parentId: '', // 归属区域
+        name: '', // 区域名称
+        state: '', // 状态 0 --> 有效  1 --> 无效
+        address: '' // 地址
+      }
     }
   }
 }

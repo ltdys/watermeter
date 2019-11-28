@@ -123,7 +123,7 @@ export default {
     tableA: '区域名称',
     tableB: '区域ID',
     tableC: '父节点',
-    tableD: '水师',
+    tableD: '水司',
     operationA: '添加子区域',
     operationB: '清除该区域下的表和用户',
     dialogTitle: '添加区域',
