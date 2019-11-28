@@ -106,7 +106,7 @@
 <script>
 import { getRegion } from '@/service/system'
 import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
-import { findCompany, findDistrict, addDistrict, updateDistrict, deleteDistrict } from '@/service/api'
+import { findCompany, findDistrict, addDistrict, updateDistrict, deleteDistrict, deleteMeterUserAndMeterNbIot } from '@/service/api'
 import myRegion from '@/components/common/region'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -326,8 +326,29 @@ export default {
       this.form.parentId = item.id
       this.valuationFun(item)
     },
-    deleteArea (item) {
-      this.$message.warning(`清除该区域下的表和用户功能暂未开发`)
+    async deleteArea (item) { // 清除该区域下的表和用户
+      console.log(item)
+      const self = this;
+      self.$confirm(`您确定清除 ${item.name} 下的表和用户吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        self.deleteMeterUserAndMeterNbIot(item)
+      })
+    },
+    async deleteMeterUserAndMeterNbIot (item) {
+      const self = this;
+      let param = {
+        areasId: item.id
+      }
+      let res = await deleteMeterUserAndMeterNbIot(param)
+      console.log('清除该区域下的表和用户', res)
+      if (res.status === 200 && res.data.code != 0) {
+        self.$message.success(`清除${item.name}区域下的表和用户`);
+      } else {
+        self.$message.warning(res.data.message);
+      }
     },
     valuationFun (item) { // 部分赋值公共方法
       if (this.currentOrg.parentId == '0') {
