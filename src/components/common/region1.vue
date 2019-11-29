@@ -2,41 +2,37 @@
 <template>
   <div class="region-components">
     <el-tree
+      ref="tree"
       class="filter-tree"
       :data="treeData"
       :props="defaultProps"
       :default-expand-all="true"
-      ref="tree"
+      :expand-on-click-node="false"
       @node-click="handleNodeClick"
     />
   </div>
 </template>
 
 <script>
-import { findDistrict } from '@/service/api'
+import { findDistrict, findCompany } from '@/service/api'
+import { orgTreeData } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
-  watch: {
-    districtIschage: {
-      handler: function () {
-        this.findDistrict()
-      },
-      deep: true
-    }
-  },
-   computed: {
-    districtIschage () {
-      return this.$store.state.user.districtIschage
+  props: {
+    treeData: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data () {
     return {
       filterText: '',
-      treeData: [],
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'companyName'
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -46,10 +42,36 @@ export default {
       }
     }
   },
+  computed: {
+    districtIschage () {
+      return this.$store.state.user.districtIschage
+    }
+  },
+  watch: {
+    districtIschage: {
+      handler: function () {
+        this.findCompany()
+      },
+      deep: true
+    }
+  },
   created () {
-    this.findDistrict()
+    this.findCompany()
   },
   methods: {
+    async findCompany () { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let resData = await findCompany(params)
+      console.log('获取组织机构', resData)
+      if (resData.status === 200 && resData.data.data !== null) {
+        let list = resData.data.data
+        this.treeData = JSON.parse(orgTreeData([...list]))
+      }
+    },
     async findDistrict () {
       let params = {
         companyId: ""

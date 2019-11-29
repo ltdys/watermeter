@@ -3,7 +3,7 @@
     <div class="header_main">
       <div class="header_main_header">
         <div class="header_main_header__left">
-          <img src="static/home_logo.png" alt="..">
+          <img src="static/hyy_logo.png" alt="..">
           <hr>
           <span>{{ $t('nav.title') }}</span>
         </div>
@@ -148,7 +148,7 @@ export default {
           margin: 0 13px;
         }
         img {
-          width: 140px;
+          // width: 140px;
           height: 40px;
         }
       }

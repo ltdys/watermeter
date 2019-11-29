@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login_left">
       <img src="static/login.png" alt="..">
-      <img src="static/dl_logo.png" alt=".." class="login_left__dllogo">
+      <img src="static/hyy_logo.png" alt=".." class="login_left__dllogo">
       <span class="login_left__title">{{ $t('nav.title') }}</span>
     </div>
     <div class="login_right">
@@ -12,25 +12,25 @@
             v-for="item in options"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          />
         </el-select>
       </div>
       <div class="login_right__welcome">
         <span>{{ $t('login.title') }}</span>
-        <span>&nbsp;/&nbsp;WELCOME</span>  
+        <span>&nbsp;/&nbsp;WELCOME</span>
       </div>
       <div class="input-wrap">
-        <input type="text" :placeholder="$t('login.code')" v-model="form.code" />
+        <input v-model="form.code" type="text" :placeholder="$t('login.code')">
       </div>
       <div class="input-wrap">
-        <input :placeholder="$t('login.account')" v-model="form.account" />
+        <input v-model="form.account" :placeholder="$t('login.account')">
       </div>
       <div class="input-wrap">
-        <input type="password" :placeholder="$t('login.password')" v-model="form.password" @keyup.enter="loginSubmit"/>
+        <input v-model="form.password" type="password" :placeholder="$t('login.password')" @keyup.enter="loginSubmit">
       </div>
       <div class="login_right__nologin">
-        <input type="checkbox" v-model="checked" />
+        <input v-model="checked" type="checkbox">
         <span>{{ $t('login.freeLogin') }}</span>
       </div>
       <div class="input-wrap">
@@ -69,7 +69,7 @@ export default {
 
   methods: {
     lanageChange () {
-      this.$i18n.locale = this.lang 
+      this.$i18n.locale = this.lang
       this.$store.dispatch('app/setLanguage', this.lang)
     },
     async loginSubmit () {
@@ -87,7 +87,7 @@ export default {
         this.$message.warning(i18n.t('login.tip'))
       }
     },
-    async findCompany(userId) {
+    async findCompany (userId) {
       let params = {
         userId: userId,
         currentPage: 1,
@@ -98,7 +98,7 @@ export default {
         this.companyData = resData.data.data
         this.$store.dispatch("user/setCompanyData", this.companyData)
       }
-      this.$router.push("/")  
+      this.$router.push("/")
     }
   }
 }
