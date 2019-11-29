@@ -1,19 +1,19 @@
 <template>
   <div class="chart">
     <div class="chart_header">
-      <my-header></my-header>
+      <my-header />
     </div>
     <div class="chart_content">
       <div class="chart_content__top">
         <div class="chart_content__top___data">
           <div v-for="(item, index) in deviceList" :key="index">
-            <icon name="example" style="width: 36px;height: 36px"></icon>
-            <span class="chart-value">{{ item.value}}</span>
+            <icon name="example" style="width: 36px;height: 36px" />
+            <span class="chart-value">{{ item.value }}</span>
             <span class="chart-label">{{ item.label }}</span>
           </div>
         </div>
         <div class="chart_content__top___map">
-          <my-map></my-map>
+          <my-map />
         </div>
       </div>
       <div class="chart_content__bottom">

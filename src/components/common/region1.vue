@@ -1,4 +1,3 @@
-<!-- 区域小区楼栋树结构 -->
 <template>
   <div class="region-components">
     <el-tree
@@ -6,6 +5,7 @@
       class="filter-tree"
       :data="treeData"
       :props="defaultProps"
+      :render-content="renderContent"
       :default-expand-all="true"
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { findDistrict, findCompany } from '@/service/api'
-import { orgTreeData } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
@@ -31,7 +29,7 @@ export default {
     return {
       filterText: '',
       defaultProps: {
-        children: 'children',
+        children: 'child',
         label: 'companyName'
       },
       pageObj: {
@@ -42,47 +40,50 @@ export default {
       }
     }
   },
-  computed: {
-    districtIschage () {
-      return this.$store.state.user.districtIschage
-    }
-  },
-  watch: {
-    districtIschage: {
-      handler: function () {
-        this.findCompany()
-      },
-      deep: true
-    }
-  },
+
   created () {
-    this.findCompany()
+
   },
   methods: {
-    async findCompany () { // 获取组织机构
-      let params = {
-        userId: this.userId,
-        currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
-      }
-      let resData = await findCompany(params)
-      console.log('获取组织机构', resData)
-      if (resData.status === 200 && resData.data.data !== null) {
-        let list = resData.data.data
-        this.treeData = JSON.parse(orgTreeData([...list]))
-      }
+    renderContent (h, { node, data, store }) {
+      return (
+        <span style='flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;'>
+          <span>
+            <span>{node.label}</span>
+          </span>
+          <span>
+            <span style='font-size: 12px;color: #000;margin-right: 5px;' type='text' on-click={ () => this.edit(data) }>编辑</span>
+            <span style='font-size: 12px;color: #000;margin-right: 5px;' type='text' on-click={ () => this.delete(node, data) }>删除</span>
+          </span>
+        </span>);
     },
-    async findDistrict () {
-      let params = {
-        companyId: ""
-      }
-      let resData = await findDistrict(params)
-      if (resData.status === 200) {
-        this.treeData = resData.data.data
-        console.log("this.treeData", JSON.stringify(this.treeData))
-      }
+    edit (data) {
+      this.$emit('handleNodeEdit', data)
+      // this.id = data.id
+      // this.type = 1
+      // this.form.id = data.id
+      // this.form.parentId = 0
+      // this.form.companyName = data.companyName
+      // this.form.areaCode = data.areaCode
+      // this.form.areaName = data.areaName
+      // this.resourceVisible = true
+    },
+    delete (node, data) {
+      this.$confirm(`此操作将永久删除${data.companyName}, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$emit('handleNodeDelete', node, data)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
     handleNodeClick (data) {
+      console.log('data', data)
       this.$emit('handleNodeClick', data)
     }
   }
@@ -91,5 +92,13 @@ export default {
 
 <style lang="scss">
   .region-components {
+    height: 100%;
+    .filter-tree{
+      height: 100%;
+      .el-tree-node__label{
+        font-size: 14px;
+        color: #606266;
+      }
+    }
   }
 </style>
