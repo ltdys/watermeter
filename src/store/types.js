@@ -27,4 +27,5 @@ export const GET_COMPANY_DATA = "GET_COMPANY_DATA";
 // 区域小区楼栋
 export const SET_DISTRICT_ISCHANGE = "SET_DISTRICT_ISCHANGE";
 
-
+// 资源管理是否发生变化
+export const SET_IS_WEALTH = "SET_IS_WEALTH";

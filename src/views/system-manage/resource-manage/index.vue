@@ -124,7 +124,7 @@
 
     <el-dialog :title="title" :visible.sync="resourceVisible" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
-        <el-form-item v-show="addType === 2" label="所属组织" prop="parentId">
+        <el-form-item v-if="addType === 2" label="所属组织" prop="parentId">
           <el-select v-model="form.parentId">
             <el-option v-for="(item, index) in treeData" :key="index" :label="item.companyName" :value="item.id" />
           </el-select>
@@ -151,7 +151,7 @@
           <el-input v-model="form.person" clearable />
         </el-form-item>
         <el-form-item label="联系电话">
-          <el-input v-model="form.phone" clearable />
+          <el-input v-model="form.phone" type="number" clearable />
         </el-form-item>
         <el-form-item label="地址">
           <el-input v-model="form.address" clearable />
@@ -400,7 +400,6 @@ export default {
       this.title = "添加组织"
       this.addType = 2
       this.type = 0
-      this.form.parentId = this.search.parentId === '' ? '' : this.search.parentId
       this.form = {
         id: '', // 组织代码
         companyName: '', // 组织名称
@@ -414,6 +413,7 @@ export default {
         createBy: '', // 创建者
         t3: '' // 测试图片
       }
+      this.form.parentId = this.search.parentId === '' ? '' : this.search.parentId
       this.banObj.IsCode = false
       this.resourceVisible = true
     },
@@ -425,6 +425,8 @@ export default {
       this.init()
     },
     onSubmit (formName) { // 新增 或 修改 弹框确认按钮
+      console.log('0-添加 1-编辑', this.type)
+      console.log('1-一级 2-二级', this.addType)
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.type === 0) {
@@ -499,7 +501,6 @@ export default {
         if (this.addType == 2) { // 二级
           this.searchSubmit()
         } else {
-          debugger
           this.init()
         }
       } else {
@@ -555,6 +556,7 @@ export default {
         if (this.addType == 2) {
           this.findChildCompany()
         } else {
+          this.search.parentId = ''
           this.init()
         }
       } else {

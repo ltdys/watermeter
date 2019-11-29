@@ -51,7 +51,8 @@ export default {
   data () {
     return {
       isHideSidebar: false,
-      hasPadding: true
+      hasPadding: true,
+      listBf: []
     };
   },
 
@@ -70,6 +71,9 @@ export default {
     },
     currentId () {
       return this.$store.getters.getCurrentId
+    },
+    visitedViews () {
+      return this.$store.state.tagsView.visitedViews
     }
   },
 
@@ -79,6 +83,9 @@ export default {
         // this.resourceList()
       },
       deep: true
+    },
+    isWealth: function (val) {
+      this.getUserResource()
     }
   },
 
@@ -97,9 +104,10 @@ export default {
         userId: self.userId
       }
       const resData = await getUserResource(param)
-      console.log('获取菜单资源', resData)
+      console.log('首页获取菜单资源', resData)
       if (resData.status === 200) {
         let list = resData.data.data
+        self.listBf = [...list]
         if (list.length !== 0) {
           list.forEach(item => {
             self.$set(item, 'name', item.resName)
@@ -110,7 +118,13 @@ export default {
           })
           let tableList = JSON.parse(wealthTreeData(list))
           console.log('self.currentId', self.currentId)
-          tableList.forEach(item => {
+          let curId = 0
+          let curObj = {}
+          tableList.forEach((item, index) => {
+            if (item.id == self.currentId) {
+              curId = index
+              curObj = item
+            }
             if (self.currentId === '' && item.resName === '首页') {
               self.$set(item, 'isCheck', true)
             } else if (self.currentId == item.id) {
@@ -121,7 +135,15 @@ export default {
           })
           // let tableList = wealthTreeData2(list)
           self.$nextTick(() => {
+            for (let i = 0; i < self.listBf.length; i++) {
+              self.visitedViews.forEach((item) => {
+                if (item.path == self.listBf[i].router && self.listBf[i].parent != 0) {
+                  item.title = self.listBf[i].name
+                }
+              })
+            }
             self.$store.dispatch("slidebar/setNavList", tableList)
+            self.$store.dispatch('slidebar/setMenuList', tableList[curId].children)
           })
         }
       } else {

@@ -324,6 +324,8 @@ export default {
       console.log('添加菜单资源', res)
       if (res.status === 200) {
         self.$message.success(`添加成功`);
+        console.log('self.isWealth', self.isWealth)
+        self.$store.dispatch('user/setIsWealth', !self.isWealth)
         self.close()
         self.getUserResource()
       } else {
@@ -339,6 +341,7 @@ export default {
       console.log('删除菜单资源', res)
       if (res.status === 200) {
         self.$message.success(`删除${item.resName}成功`);
+        self.$store.dispatch('user/setIsWealth', !self.isWealth)
         self.getUserResource()
       } else {
         self.$message.warning(res.data.message)
@@ -352,6 +355,8 @@ export default {
       console.log('修改菜单资源', res)
       if (res.status === 200) {
         self.$message.success(`修改${self.form.resName}成功`);
+        console.log('self.isWealth', self.isWealth)
+        self.$store.dispatch('user/setIsWealth', !self.isWealth)
         self.close()
         self.getUserResource()
       } else {

@@ -4,9 +4,9 @@ import store from '@/store/index.js'
 window.addEventListener('resize', function () {
   const clientHeight = document.documentElement.clientHeight
   const tableHeightPage = clientHeight - 102 - 50 - 70 - 20
-  const tableHeight = clientHeight - 102 - 50 -20
+  const tableHeight = clientHeight - 102 - 50 - 20
   const slidebarHeight = clientHeight - 60 - 20
-  const iframeHeight = clientHeight - 102 -20
+  const iframeHeight = clientHeight - 102 - 20
   store.dispatch('setTableHeight', tableHeight)
   store.dispatch('setTableHeightPage', tableHeightPage)
   store.dispatch('setSlidebarHeight', slidebarHeight)
@@ -19,7 +19,7 @@ export const list_mixins = {
       userName: ''
     }
   },
-  
+
   created () {
     let userInfo = JSON.parse(localStorage.getItem("USER_INFO"))
     if (userInfo) {
@@ -41,8 +41,12 @@ export const list_mixins = {
     iframeHeight () {
       return this.$store.getters.getIframeHeight
     },
-    companyData() {
+    companyData () {
       return JSON.parse(this.$store.getters.getCompanyData)
+    },
+    isWealth () {
+      console.log('isWealth变化')
+      return this.$store.getters.getIsWealth
     }
   },
 

@@ -63,6 +63,9 @@ const getters = {
   },
   getDistrictIschange: state => {
     return state.user.districtIschage
+  },
+  getIsWealth: state => {
+    return state.user.isWealth
   }
 }
 export default getters
