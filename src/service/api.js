@@ -58,6 +58,9 @@ export const updateDistrict = params => axios.post('/watermeter/updateDistrict',
 // 区域删除
 export const deleteDistrict = params => axios.post('/watermeter/deleteDistrict', params);
 
+// 区域删除 用户和表
+export const deleteMeterUserAndMeterNbIot = params => axios.post('/watermeter/deleteMeterUserAndMeterNbIot', params);
+
 // 设备管理
 // 获取集中器列表
 export const getMeterConcentratorList = params => axios.post('/watermeter/getMeterConcentratorList', params);
