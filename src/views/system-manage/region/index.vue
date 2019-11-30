@@ -267,7 +267,7 @@ export default {
       }
     },
     changeOrg () { // 组织机构选择
-      this.search.org = this.search.orgList[this.search.orgList - 1]
+      this.search.org = this.search.orgList[this.search.orgList.length - 1]
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
@@ -284,6 +284,8 @@ export default {
       if (this.search.org === '') {
         this.$message.warning(`请选择组织机构`)
       } else {
+        console.log('param', param)
+        debugger
         this.findDistrict(param)
       }
     },

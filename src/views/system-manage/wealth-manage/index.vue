@@ -3,19 +3,6 @@
     <el-row>
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
-          <!-- <el-form-item label="用户名称">
-            <el-select v-model="search.id" filterable clearable placeholder="请选择用户名称">
-              <el-option
-                v-for="item in selectList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
-          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="add()">{{ $t('common.add') }}</el-button>
           </el-form-item>

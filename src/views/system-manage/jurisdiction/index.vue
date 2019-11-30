@@ -13,7 +13,7 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="18">
+    <el-col :span="12">
       <el-table
         v-myScroll:table
         :data="tableData"
@@ -31,16 +31,16 @@
           label="#"
         />
         <el-table-column
-          prop="name"
+          prop="username"
           :label="$t('systemManageJurisdiction.tableA')"
           width="120"
         />
         <el-table-column
-          prop="account"
+          prop="username"
           :label="$t('systemManageJurisdiction.tableB')"
         />
         <el-table-column
-          prop="role"
+          prop="rolename"
           :label="$t('systemManageJurisdiction.tableC')"
         />
       </el-table>
@@ -53,18 +53,18 @@
         @currentChange="currentChange"
       />
     </el-col>
-    <el-col :span="6" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
+    <el-col :span="6" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9', overflow: 'hidden'}">
       <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
         <div class="jur-tree-header cf">
           <div v-if="isJurisdiction" class="fl jur-tree-header_left">
-            {{ $t('systemManageJurisdiction.by') }} [{{ currentAcc.name }}] {{ $t('systemManageJurisdiction.assignAuthority') }}
+            {{ $t('systemManageJurisdiction.by') }} [{{ currentAcc.username }}] {{ $t('systemManageJurisdiction.assignAuthority') }}
           </div>
           <div v-else class="fl jur-tree-header_left">
             {{ $t('systemManageJurisdiction.roleSelection') }}
           </div>
-          <div class="fr jur-tree-header_right" @click="urightSave">
-            <el-icon class="el-icon-document" />
-          </div>
+          <!-- <div class="fr jur-tree-header_right" @click="urightSave">
+              <el-icon class="el-icon-document" />
+            </div> -->
         </div>
         <el-tree
           ref="jurisdiction"
@@ -78,11 +78,31 @@
         />
       </el-scrollbar>
     </el-col>
+    <el-col :span="6" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}" class="right_col">
+      <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
+        <div class="jur-tree-header cf">
+          <div class="fl jur-tree-header_left">
+            请为用户受理操作权限
+          </div>
+          <div class="fr jur-tree-header_right" @click="urightSave">
+            <el-icon class="el-icon-document" />
+          </div>
+        </div>
+        <div class="slqx">
+          <el-checkbox-group v-model="sqCheckList">
+            <el-checkbox label="浏览" />
+            <el-checkbox label="维护" />
+          </el-checkbox-group>
+        </div>
+      </el-scrollbar>
+    </el-col>
   </el-row>
 </template>
 
 <script>
 import { getRole, getJurisdiction } from '@/service/system'
+import { getUserDetailed, getUserResource } from '@/service/api'
+import { wealthTreeData } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 // import { treeData } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
@@ -94,6 +114,7 @@ export default {
   mixins: [list_mixins],
   data () {
     return {
+      sqCheckList: [],
       search: {
         account: '', // 账号
         name: '' // 姓名
@@ -111,11 +132,11 @@ export default {
       unfoldList: [], // 展开的数组
       defaultProps: {
         children: 'children',
-        label: 'text'
+        label: 'resName'
       },
       currentAcc: {}, // 当前点击的账户
       isJurisdiction: false, // 头部显示
-      tableData: [], // 角色列表
+      tableData: [] // 角色列表
     }
   },
   created () {
@@ -123,8 +144,39 @@ export default {
   },
   methods: {
     init () {
-      this.getRole()
-      this.getJurisdiction()
+      // this.getRole()
+      // this.getJurisdiction()
+      this.getUserDetailed()
+      this.getUserResource()
+    },
+    async getUserDetailed () { // 获取用户列表
+      let params = {
+        userId: this.userId,
+        companyName: this.search.account,
+        roleName: this.search.name
+      }
+      let resData = await getUserDetailed(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.tableData = resData.data.data
+      }
+    },
+    async getUserResource () { // 获取菜单资源
+      const self = this;
+      const param = {
+        // userId: self.search.id
+        userId: self.userId
+      }
+      const resData = await getUserResource(param)
+      console.log('获取菜单资源', resData)
+      if (resData.status === 200) {
+        const list = resData.data.data
+        if (list.length !== 0) {
+          self.treeData = JSON.parse(wealthTreeData(list))
+        }
+        // self.tableList = list
+      } else {
+        self.$message.warning(resData.data.message)
+      }
     },
     async getRole () {
       const params = {
@@ -173,5 +225,28 @@ export default {
     font-weight: 700;
     top: 0;
     left: 0;
+  }
+  .right_col{
+    border-left: 1px solid #EBEEF5;
+    .slqx{
+      padding: 20px;
+      box-sizing: border-box;
+      .el-checkbox{
+        display: block;
+        .el-checkbox__input.is-checked + .el-checkbox__label{
+          color: #0084FF;
+        }
+      }
+    }
+  }
+  .scrollbar-page{
+    .el-scrollbar__view{
+      height: 100%;
+      .el-tree, .slqx{
+        height: calc(100% - 37px);
+        background: #FFFFFF;
+        overflow: auto;
+      }
+    }
   }
 </style>

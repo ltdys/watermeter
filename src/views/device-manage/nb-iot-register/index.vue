@@ -34,117 +34,117 @@
     </el-form>
 
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage - 30"
-        highlight-current-row
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <el-table-column
-          prop="meterNum"
-          label="表编号"
-          width="120"
-        />
-        <el-table-column
-          prop="meterUserNum"
-          label="用户编号"
-          width="120"
-        />
-        <el-table-column
-          prop="meterConcentratorNum"
-          label="集中器编号"
-          width="120"
-        />
-        <el-table-column
-          prop="meterNodeNum"
-          label="采集器编号"
-          width="120"
-        />
-        <el-table-column
-          prop="meterSpec"
-          label="规格型号"
-        />
-        <el-table-column
-          prop="simCardCcid"
-          label="SIM卡号"
-          width="200"
-        />
-        <el-table-column
-          prop="installAddress"
-          label="安装地址"
-          width="180"
-        />
-        <el-table-column
-          prop="signalIntensity"
-          label="信号强度"
-        />
-        <el-table-column
-          prop="batteryCapacity"
-          label="电池容量"
-        />
-        <el-table-column
-          prop="pressureAlert"
-          label="压力警告"
-        />
-        <el-table-column
-          prop="batteryLevel"
-          label="电池电量"
-        />
-        <el-table-column
-          prop="valveState"
-          label="阀门状态"
-        />
-        <el-table-column
-          prop="valueSupport"
-          label="阀控支持"
-        />
-        <el-table-column
-          prop="meterType"
-          label="表类型"
-        />
-        <el-table-column
-          prop="reportCycle"
-          label="上报周期"
-        />
-        <el-table-column
-          prop="readValue"
-          label="本次读数"
-        />
-        <el-table-column
-          prop="version"
-          label="软件版本号"
-          width="120"
-        />
-        <el-table-column
-          prop="areasId"
-          label="小区"
-        />
-        <el-table-column fixed="right" :label="$t('common.operation')" width="120">
-          <template slot-scope="scope">
-            <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
-            <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
-          </template>
-        </el-table-column>
-      </el-table>
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage - 30"
+      highlight-current-row
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
       />
+      <el-table-column
+        prop="meterNum"
+        label="表编号"
+        width="120"
+      />
+      <el-table-column
+        prop="meterUserNum"
+        label="用户编号"
+        width="120"
+      />
+      <el-table-column
+        prop="meterConcentratorNum"
+        label="集中器编号"
+        width="120"
+      />
+      <el-table-column
+        prop="meterNodeNum"
+        label="采集器编号"
+        width="120"
+      />
+      <el-table-column
+        prop="meterSpec"
+        label="规格型号"
+      />
+      <el-table-column
+        prop="simCardCcid"
+        label="SIM卡号"
+        width="200"
+      />
+      <el-table-column
+        prop="installAddress"
+        label="安装地址"
+        width="180"
+      />
+      <el-table-column
+        prop="signalIntensity"
+        label="信号强度"
+      />
+      <el-table-column
+        prop="batteryCapacity"
+        label="电池容量"
+      />
+      <el-table-column
+        prop="pressureAlert"
+        label="压力警告"
+      />
+      <el-table-column
+        prop="batteryLevel"
+        label="电池电量"
+      />
+      <el-table-column
+        prop="valveState"
+        label="阀门状态"
+      />
+      <el-table-column
+        prop="valueSupport"
+        label="阀控支持"
+      />
+      <el-table-column
+        prop="meterType"
+        label="表类型"
+      />
+      <el-table-column
+        prop="reportCycle"
+        label="上报周期"
+      />
+      <el-table-column
+        prop="readValue"
+        label="本次读数"
+      />
+      <el-table-column
+        prop="version"
+        label="软件版本号"
+        width="120"
+      />
+      <el-table-column
+        prop="areasId"
+        label="小区"
+      />
+      <el-table-column fixed="right" :label="$t('common.operation')" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-edit" @click="handleEdit(scope.row)" />
+          <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
 
-       <el-dialog :title="$t('deviceManageRegister.dialogTitle')" :visible.sync="addVisible" @close="close">
-        <my-edit :form="form" :type="type" @close="close" />
-      </el-dialog>
+    <el-dialog :title="$t('deviceManageRegister.dialogTitle')" :visible.sync="addVisible" @close="close">
+      <my-edit :form="form" :type="type" @close="close" />
+    </el-dialog>
   </div>
 </template>
 
@@ -195,7 +195,7 @@ export default {
   created () {
     this.init()
   },
-  
+
   methods: {
     async getMeterNbIotL () {
       const params = {
@@ -205,7 +205,7 @@ export default {
         pageSize: this.pageObj.pageSize
       }
       let resData = await getMeterNbIotL(params)
-      if(resData.status === 200 && resData.data.code === 1) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
@@ -233,10 +233,10 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
-    async deleteMeterNbIot(row) {
+    async deleteMeterNbIot (row) {
       let params = {
         meterNbIotId: row.id
       }

@@ -195,3 +195,20 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;  
   margin: 0;  
 }
+
+// 时间选择器
+.el-date-picker{
+  .el-date-table td.current:not(.disabled) span{
+    background: #0084FF;
+  }
+  .el-date-table td.available:hover, .el-time-panel__btn.confirm{
+    color: #0084FF;
+  }
+  .el-button.is-plain:hover, .el-button.is-plain:focus,
+  .el-button:hover, .el-button:focus{
+    background: #0084FF;
+    border-color: #0084FF;
+    color: #ffffff;
+  }
+  
+}

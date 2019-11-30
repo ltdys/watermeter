@@ -1,21 +1,29 @@
 <template>
   <div>
-    <el-form :model="form" ref="ruleForm" :rules="rules" label-width="100px" size="mini">
+    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px" size="mini">
       <el-form-item label="表编号" prop="meterNum">
         <el-input v-model="form.meterNum" clearable />
       </el-form-item>
       <el-form-item label="表类型" prop="meterType">
-        <el-input v-model="form.meterType" clearable/>
+        <el-input v-model="form.meterType" clearable />
       </el-form-item>
       <el-form-item label="小区" prop="areasId">
-        <el-select v-model="form.areasId">
+        <!-- <el-select v-model="form.areasId">
           <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+            :value="item.value"
+          />
+        </el-select> -->
+        <el-cascader
+          v-model="form.areasList"
+          :options="options"
+          clearable
+          filterable
+          :props="setParent"
+          @change="changeParent"
+        />
       </el-form-item>
       <el-form-item label="用户编号">
         <el-input v-model="form.meterUserNum" clearable />
@@ -74,31 +82,33 @@
 </template>
 
 <script>
-import { addMeterNbIot, updateMeterNbIot } from "@/service/api"
+import { treeDataUtil } from '@/utils/publicUtil'
+import { addMeterNbIot, updateMeterNbIot, findDistrict } from "@/service/api"
 export default {
   props: {
     form: {
       type: Object,
       default: () => {
         return {
-          meterNum: '',  //表编号
-          meterUserNum: '',  // 用户编号
+          meterNum: '', // 表编号
+          meterUserNum: '', // 用户编号
           meterConcentratorNum: '', // 集中器编号
-          meterNodeNum: '',  // 采集器编号
+          meterNodeNum: '', // 采集器编号
           meterSpec: '', // 规格型号
-          simCardCcid: '', //SIM卡号
-          installAddress: '',  // 安装地址
-          signalIntensity: '',  //信号强度
-          batteryCapacity: '',  //电池容量
-          pressureAlert: '',  // 压力警告
-          batteryLevel: '',  // 电池电量
-          valveState: 0,  //阀门状态 (0无阀 1有阀)
-          valueSupport: false,  //阀控支持
+          simCardCcid: '', // SIM卡号
+          installAddress: '', // 安装地址
+          signalIntensity: '', // 信号强度
+          batteryCapacity: '', // 电池容量
+          pressureAlert: '', // 压力警告
+          batteryLevel: '', // 电池电量
+          valveState: 0, // 阀门状态 (0无阀 1有阀)
+          valueSupport: false, // 阀控支持
           meterType: '', // 表类型
           reportCycle: '', // 上报周期
-          readValue: '',  //本次读数
-          version: '',  //软件版本号
-          areasId: 1  // 小区ID
+          readValue: '', // 本次读数
+          version: '', // 软件版本号
+          areasId: 1, // 小区ID
+          areasList: []
         }
       }
     },
@@ -127,16 +137,46 @@ export default {
           { required: true, message: "请选择小区", trigger: 'blur' }
         ]
       },
-      options: [{
-        label: '默认',
-        value: 1
-      }]
+      options: [],
+      setParent: { // 设置级联选择器
+        label: 'name',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      }
     }
-  },  
+  },
+
+  created () {
+    this.findDistrict()
+  },
 
   methods: {
     close () {
       this.$emit('close')
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: ''
+      }
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.list = list
+        }
+      }
     },
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
@@ -152,7 +192,7 @@ export default {
         }
       });
     },
-    async addMeterNbIot() {
+    async addMeterNbIot () {
       let params = {
         meterNbIot: this.form
       }
@@ -162,7 +202,7 @@ export default {
         this.close()
       }
     },
-    async updateMeterNbIot() {
+    async updateMeterNbIot () {
       let params = {
         meterNbIot: this.form
       }

@@ -8,13 +8,13 @@
         <el-input v-model="search.num" :placeholder="$t('deviceManageConcentrator.toolbarB_')" clearable />
       </el-form-item>
       <el-form-item :label="$t('deviceManageConcentrator.toolbarC')">
-         <el-select v-model="search.useStatus" clearable filterable>
+        <el-select v-model="search.useStatus" clearable filterable>
           <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -26,125 +26,134 @@
       </el-form-item>
     </el-form>
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage"
-        highlight-current-row
-        @row-click="accreditClick"
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <el-table-column
-          prop="name"
-          :label="$t('deviceManageConcentrator.tableA')"
-          width="120"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('deviceManageConcentrator.tableB')"
-          width="180"
-        />
-        <el-table-column
-          :label="$t('deviceManageConcentrator.tableC')"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.nowstatus | fNowStatus }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          :label="$t('deviceManageConcentrator.tableD')"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.usestatus | fUseStatus }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="lastSeen"
-          :label="$t('deviceManageConcentrator.tableE')"
-        />
-        <el-table-column
-          :label="$t('deviceManageConcentrator.tableF')"
-        >
-        深圳
-        </el-table-column>
-        <el-table-column
-          prop="rule"
-          :label="$t('deviceManageConcentrator.tableG')"
-        />
-        <el-table-column
-          prop="waterDivision"
-          :label="$t('deviceManageConcentrator.tableH')"
-        />
-        <el-table-column fixed="right" :label="$t('common.operation')" width="120">
-          <template slot-scope="scope">
-            <i class="el-icon-edit" @click.stop="handleEdit(scope.row)"></i>
-            <i class="el-icon-delete" @click.stop="handleDelete(scope.row)"></i>
-          </template>
-        </el-table-column>
-      </el-table>
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage"
+      highlight-current-row
+      @row-click="accreditClick"
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
       />
+      <el-table-column
+        prop="meterConcentratorName"
+        :label="$t('deviceManageConcentrator.tableA')"
+        width="120"
+      />
+      <el-table-column
+        prop="meterConcentratorNum"
+        :label="$t('deviceManageConcentrator.tableB')"
+        width="180"
+      />
+      <el-table-column
+        :label="$t('deviceManageConcentrator.tableC')"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.meterConcentratorNowstatus | fNowStatus }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        :label="$t('deviceManageConcentrator.tableD')"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.meterConcentratorUsestatus | fUseStatus }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="lastSeen"
+        :label="$t('deviceManageConcentrator.tableE')"
+      />
+      <el-table-column
+        :label="$t('deviceManageConcentrator.tableF')"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.districtName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="meterConcentratorRule"
+        :label="$t('deviceManageConcentrator.tableG')"
+      />
+      <el-table-column
+        prop="waterDivision"
+        :label="$t('deviceManageConcentrator.tableH')"
+      />
+      <el-table-column fixed="right" :label="$t('common.operation')" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-edit" @click.stop="handleEdit(scope.row)" />
+          <i class="el-icon-delete" @click.stop="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
 
-      <el-dialog :title="$t('deviceManageConcentrator.dialogTitle')" :visible.sync="addVisible" @close="close">
-        <el-form :model="form" ref="ruleForm" :rules="rules" label-width="100px">
-          <el-form-item :label="$t('deviceManageConcentrator.dialogA')" prop="name">
-            <el-input v-model="form.name" clearable />
-          </el-form-item>
-          <el-form-item :label="$t('deviceManageConcentrator.dialogB')" prop="num">
-            <el-input v-model="form.num" clearable />
-          </el-form-item>
-          <el-form-item :label="$t('deviceManageConcentrator.dialogC')" prop="areasId">
-            <el-select v-model="form.areasId" clearable filterable>
-              <el-option :label="item.label" :value="item.value" v-for="(item, index) in list" :key="index">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('deviceManageConcentrator.dialogD')">
-            <el-select v-model="form.useStatus">
-              <el-option :label="item.label" :value="item.value" v-for="(item, index) in isUseList" :key="index">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="当前状态">
-            <el-select v-model="form.nowStatus">
-              <el-option :label="item.label" :value="item.value" v-for="(item, index) in options" :key="index">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="通迅规约">
-            <el-input v-model="form.rule" clearable />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
-            <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
+    <el-dialog :title="$t('deviceManageConcentrator.dialogTitle')" :visible.sync="addVisible" @close="close">
+      <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
+        <el-form-item :label="$t('deviceManageConcentrator.dialogA')" prop="name">
+          <el-input v-model="form.name" clearable />
+        </el-form-item>
+        <el-form-item :label="$t('deviceManageConcentrator.dialogB')" prop="num">
+          <el-input v-model="form.num" clearable />
+        </el-form-item>
+        <el-form-item :label="$t('deviceManageConcentrator.dialogC')" prop="areasId">
+          <!-- <el-select v-model="form.areasId" clearable filterable>
+            <el-option v-for="(item, index) in list" :key="index" :label="item.name" :value="item.id" />
+          </el-select> -->
+          <!-- :disabled="form.parentDis" -->
+          <el-cascader
+            v-model="form.areasList"
+            :options="list"
+            clearable
+            filterable
+            :props="setParent"
+            @change="changeParent"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('deviceManageConcentrator.dialogD')">
+          <el-select v-model="form.useStatus">
+            <el-option v-for="(item, index) in isUseList" :key="index" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="当前状态">
+          <el-select v-model="form.nowStatus">
+            <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="通迅规约">
+          <el-input v-model="form.rule" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
+          <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { findMeterConcentrator, addMeterConcentrator, deleteMeterConcentrator, updateMeterConcentrator } from '@/service/api'
+import { findMeterConcentrator, addMeterConcentrator, deleteMeterConcentrator, updateMeterConcentrator, findDistrict } from '@/service/api'
+import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
-import myEdit from './edit' 
+// import myEdit from './edit'
 export default {
   name: 'collector',
 
   components: {
-    myPagination, myEdit
+    myPagination
   },
 
   mixins: [list_mixins],
@@ -172,10 +181,7 @@ export default {
         value: 1
       }],
       addVisible: false,
-      list: [{
-        label: '深圳',
-        value: 1
-      }],
+      list: [],
       isUseList: [{
         label: '未使用',
         value: 0
@@ -184,6 +190,7 @@ export default {
         value: 1
       }],
       form: {
+        areasList: [],
         areasId: '',
         num: '',
         name: '',
@@ -201,6 +208,14 @@ export default {
         useStatus: [
           { required: true, message: this.$t('deviceManageConcentrator.dialogC_'), trigger: 'blur' }
         ]
+      },
+      tableDataFj: [],
+      rowObj: {}, // 当前选择对象
+      setParent: { // 设置级联选择器
+        label: 'name',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
       }
     }
   },
@@ -208,18 +223,47 @@ export default {
   created () {
     this.init()
   },
-  
+
   methods: {
     init () {
       this.findMeterConcentrator()
+      this.findDistrict()
     },
-    refresh() {
+    refresh () {
       this.search = {
         num: '',
         name: '',
         useStatus: ''
       }
       this.init()
+    },
+    changeParent () { // 区域选择、
+      this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: ''
+      }
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.tableDataFj = list
+            self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.tableDataFj = list
+          self.list = list
+        }
+      }
     },
     async findMeterConcentrator () {
       const params = {
@@ -241,18 +285,23 @@ export default {
     searchSubmit () {
       this.init()
     },
-    handleEdit (row) {
+    handleEdit (row) { // 编辑
+      this.rowObj = row
       this.addVisible = true
       this.type = 1
-      this.form.name = row.name
-      this.form.num = row.num
-      this.form.nowStatus = row.nowstatus
-      this.form.useStatus = row.usestatus
-      this.form.rule = row.rule
-      this.form.areasId = 1
+      this.form.name = row.meterConcentratorName
+      this.form.num = row.meterConcentratorNum
+      this.form.nowStatus = row.meterConcentratorNowstatus
+      this.form.useStatus = row.meterConcentratorUsestatus
+      this.form.rule = row.meterConcentratorRule
+      this.form.areasId = row.districtId
+      this.form.areasList = this.tableDataFj.filter(item => {
+        return item.id == row.districtId
+      })[0].path
     },
     handleDelete (row) {
-      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+      console.log('row', row)
+      this.$confirm(`此操作将永久删除 ${row.meterConcentratorName}, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -262,15 +311,17 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
-    async deleteMeterConcentrator(row) {
+    async deleteMeterConcentrator (row) {
       let params = {
-        mcId: row.concentratorsid
+        mcId: row.meterConcentratorId
       }
       let resData = await deleteMeterConcentrator(params)
       if (resData.status === 200) {
+        this.$message.success(`${row.meterConcentratorName} 删除成功`)
+      } else {
         this.$message.warning(resData.data.message)
       }
       this.init()
@@ -286,7 +337,7 @@ export default {
     accreditClick (row, column, event) {
       console.log("row", row)
       this.$store.dispatch('tagsView/setCurrentTitle', this.$t('deviceManageConcentrator.currentTitle'))
-      this.$router.push('/device-manage/collector?concentratorsid=' + row.concentratorsid + "&concentratorNum=" + row.num)
+      this.$router.push('/device-manage/collector?concentratorsid=' + row.meterConcentratorId + "&concentratorNum=" + row.meterConcentratorNum)
     },
     close () {
       this.$refs['ruleForm'].resetFields();
@@ -297,7 +348,7 @@ export default {
         nowStatus: '',
         useStatus: '',
         rule: ''
-      },
+      }
       this.init()
     },
     addConcentrator () {
@@ -318,7 +369,7 @@ export default {
         }
       });
     },
-    async addMeterConcentrator() {
+    async addMeterConcentrator () {
       let params = {
         meterConcentrator: {
           areasId: this.form.areasId,
@@ -330,16 +381,17 @@ export default {
         }
       }
       let resData = await addMeterConcentrator(params)
-      if (resData.status === 200 && resData.data.code === 1) {
-        this.$message.success('添加成功');
+      if (resData.status === 200) {
+        this.$message.success(`${resData.data.data.name} 添加成功`);
       } else {
         this.$message.warning(resData.data.message)
       }
       this.addVisible = false
     },
-    async updateMeterConcentrator() {
+    async updateMeterConcentrator () {
       let params = {
         meterConcentrator: {
+          id: this.rowObj.meterConcentratorId,
           areasId: this.form.areasId,
           num: this.form.num,
           name: this.form.name,
@@ -348,9 +400,9 @@ export default {
           rule: this.form.rule
         }
       }
-      let resData = await addMeterConcentrator(params)
-      if (resData.status === 200 && resData.data.code === 1) {
-        this.$message.success('修改成功');
+      let resData = await updateMeterConcentrator(params)
+      if (resData.status === 200) {
+        this.$message.success(`${resData.data.data.name} 修改成功`);
       } else {
         this.$message.warning(resData.data.message)
       }
