@@ -48,8 +48,8 @@ export default {
     renderContent (h, { node, data, store }) {
       return (
         <span style='flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;'>
-          <span>
-            <span>{node.label}</span>
+          <span class='tree_label'>
+            <span title={node.label}>{node.label}</span>
           </span>
           <span>
             <span style='font-size: 12px;color: #000;margin-right: 5px;' type='text' on-click={ () => this.edit(data) }>编辑</span>

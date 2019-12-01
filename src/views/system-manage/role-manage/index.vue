@@ -3,12 +3,11 @@
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item label="组织机构代码">
         <el-select v-model="search.companyId" clearable>
-          <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
-          </el-option>
+          <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item :label="$t('systemManageRole.toolbarB')">
-        <el-input v-model="search.roleName" :placeholder="$t('systemManageRole.toolbarB_')" clearable />
+      <el-form-item label="用户角色">
+        <el-input v-model="search.roleName" placeholder="请输入用户角色" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -18,86 +17,94 @@
       </el-form-item>
     </el-form>
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage"
-        highlight-current-row
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <el-table-column
-          :label="$t('systemManageRole.tableA')"
-          width="120"
-        >
-            {{ this.userName }}
-        </el-table-column>
-        <el-table-column
-          prop="roleName"
-          :label="$t('systemManageRole.tableB')"
-          width="180"
-        />
-        <el-table-column
-          prop="dept"
-          :label="$t('systemManageRole.tableC')"
-        />
-        <el-table-column
-          prop="lastLoginIp"
-          :label="$t('systemManageRole.tableD')"
-        />
-        <el-table-column
-          :label="$t('systemManageRole.tableE')"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.updateTime | fFormatDate}}
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" :label="$t('common.operation')" width="120">
-          <template slot-scope="scope">
-            <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
-            <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <!-- 添加 -->
-      <el-dialog :visible.sync="addVisible" @close="close" :title="title">
-        <el-form :model="form" ref="ruleForm" :rules="rules" label-width="80px">
-          <el-form-item label="组织" prop="companyId">
-            <el-select v-model="form.companyId" clearable>
-              <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="角色名" prop="roleName">
-            <el-input v-model="form.roleName" clearable />
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input v-model="form.note" clearable />
-          </el-form-item>
-          <el-form-item label="删除标识">
-            <el-input v-model="form.deleteFlag" clearable />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
-            <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage"
+      highlight-current-row
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
       />
+      <!-- <el-table-column
+        :label="$t('systemManageRole.tableA')"
+        width="120"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.userName }}
+        </template>
+      </el-table-column> -->
+      <el-table-column
+        prop="roleName"
+        :label="$t('systemManageRole.tableB')"
+        width="180"
+      />
+      <el-table-column
+        prop="createBy"
+        label="创建人"
+        width="180"
+      />
+      <el-table-column
+        prop="createBy"
+        label="更新人"
+        width="180"
+      />
+      <el-table-column
+        :label="$t('systemManageRole.tableE')"
+        width="300"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | fFormatDate }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="note"
+        label="备注"
+      />
+      <el-table-column fixed="right" :label="$t('common.operation')" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-edit" @click="handleEdit(scope.row)" />
+          <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 添加 -->
+    <el-dialog :visible.sync="addVisible" :title="title" @close="close">
+      <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="组织" prop="companyId">
+          <el-select v-model="form.companyId" clearable>
+            <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="角色名" prop="roleName">
+          <el-input v-model="form.roleName" clearable />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.note" clearable />
+        </el-form-item>
+        <el-form-item label="删除标识">
+          <el-input v-model="form.deleteFlag" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
+          <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
   </div>
 </template>
 
@@ -146,42 +153,43 @@ export default {
       },
       id: '',
       permission: [{
-         "resourceId":"5",
-         "oper":"1"
-        },
-        {
-          "resourceId":"6",
-          "oper":"1"
-        },
-        {
-          "resourceId":"7",
-          "oper":"1"
-        },
-        {
-          "resourceId":"8",
-          "oper":"1"
-        },
-        {
-          "resourceId":"9",
-          "oper":"1"
-        }, {
-          "resourceId":"10",
-          "oper":"1"
-        }, {
-          "resourceId":"11",
-          "oper":"1"
-        }, {
-          "resourceId":"12",
-          "oper":"1"
-        }
-        ]
+        "resourceId": "5",
+        "oper": "1"
+      },
+      {
+        "resourceId": "6",
+        "oper": "1"
+      },
+      {
+        "resourceId": "7",
+        "oper": "1"
+      },
+      {
+        "resourceId": "8",
+        "oper": "1"
+      },
+      {
+        "resourceId": "9",
+        "oper": "1"
+      }, {
+        "resourceId": "10",
+        "oper": "1"
+      }, {
+        "resourceId": "11",
+        "oper": "1"
+      }, {
+        "resourceId": "12",
+        "oper": "1"
+      }
+      ]
     }
   },
 
   created () {
     this.init()
+    console.log('companyData', this.companyData)
   },
-  
+
   methods: {
     async getRoleList () {
       const params = {
@@ -199,7 +207,7 @@ export default {
         this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
-    async addRole() {
+    async addRole () {
       let params = {
         role: {
           roleName: this.form.roleName,
@@ -233,7 +241,7 @@ export default {
       this.type = 1
       this.addVisible = true
     },
-    async updRole() {
+    async updRole () {
       let params = {
         role: {
           id: this.id,
@@ -245,13 +253,13 @@ export default {
       }
       let resData = await updRole(params)
       if (resData.status === 200 && resData.data.code === 1) {
-        this.$message.success('修改成功')      
+        this.$message.success('修改成功')
       } else {
         this.$message.warning(resData.data.message)
       }
       this.addVisible = false
     },
-    async delRole(data) {
+    async delRole (data) {
       let params = {
         userName: this.userName,
         roleId: data.id
@@ -275,7 +283,7 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
     pageChange (data) { // 每页条数切换回调事件
@@ -286,23 +294,23 @@ export default {
       this.pageObj.currentPage = data;
       this.init()
     },
-    close() {
+    close () {
       this.$refs['ruleForm'].resetFields();
       this.form = {
         companyId: '',
         roleName: '',
         note: '',
         deleteFlag: ''
-      },
+      }
       // this.addVisible = false
       this.init()
     },
-    handleAdd() {
+    handleAdd () {
       this.title = "添加角色"
       this.type = 0
       this.addVisible = true
     },
-    onSubmit(formName) {
+    onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.type === 0) {

@@ -96,6 +96,17 @@ export function fStatusVal (val) {
   }
 }
 
+// 组织管理 状态转换
+export function fOrgChange (val) {
+  if (val === null) {
+    return '--'
+  } else if (val === 0) {
+    return '正常'
+  } else if (val === 1) {
+    return '锁定'
+  }
+}
+
 // 区域管理 状态转换
 export function fAreaChange (val) {
   if (val === null) {

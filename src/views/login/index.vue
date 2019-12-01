@@ -76,7 +76,8 @@ export default {
       let params = {
         userName: this.form.account,
         password: this.form.password,
-        companyId: "CPD60A8B2CFA3E45AFAFE8B616443C15EB"
+        // companyId: "CPD60A8B2CFA3E45AFAFE8B616443C15EB"
+        companyId: this.form.code
       }
       let resData = await login(params)
       if (resData.status === 200 && resData.data.data !== null) {

@@ -32,6 +32,8 @@ import waterStatistics from './components/water-statistics'
 import alarmStatistics from './components/alarm-statistics'
 import installStatistics from './components/install-statistics'
 import { list_mixins } from '@/mixins'
+import { wealthTreeData } from '@/utils/publicUtil'
+import { getUserResource } from '@/service/api'
 import i18n from '@/lang'
 
 export default {
@@ -58,14 +60,75 @@ export default {
       }, {
         label: i18n.t('chart.deviceOffline'),
         value: 6514
-      }]
+      }],
+      listBf: []
     };
   },
 
+  computed: {
+    currentId () {
+      return this.$store.getters.getCurrentId
+    },
+    visitedViews () {
+      return this.$store.state.tagsView.visitedViews
+    }
+  },
+
   created () {
+    this.getUserResource()
   },
 
   methods: {
+    async getUserResource () { // 获取菜单资源
+      const self = this;
+      const param = {
+        // userId: self.search.id
+        userId: self.userId
+      }
+      const resData = await getUserResource(param)
+      console.log('首页获取菜单资源', resData)
+      if (resData.status === 200) {
+        let list = resData.data.data
+        self.listBf = [...list]
+        if (list.length !== 0) {
+          list.forEach(item => {
+            self.$set(item, 'name', item.resName)
+            self.$set(item, 'value', item.displayName)
+            self.$set(item, 'url', item.router)
+            self.$set(item, 'level', item.id)
+            self.$set(item, 'children', [])
+          })
+          let tableList = JSON.parse(wealthTreeData(list))
+          let curId = 0
+          tableList.forEach((item, index) => {
+            if (item.id == self.currentId) {
+              curId = index
+            }
+            if (self.currentId === '' && item.resName === '首页') {
+              self.$set(item, 'isCheck', true)
+            } else if (self.currentId == item.id) {
+              self.$set(item, 'isCheck', true)
+            } else {
+              self.$set(item, 'isCheck', false)
+            }
+          })
+          // let tableList = wealthTreeData2(list)
+          self.$nextTick(() => {
+            for (let i = 0; i < self.listBf.length; i++) {
+              self.visitedViews.forEach((item) => {
+                if (item.path == self.listBf[i].router && self.listBf[i].parent != 0) {
+                  item.title = self.listBf[i].name
+                }
+              })
+            }
+            self.$store.dispatch("slidebar/setNavList", tableList)
+            self.$store.dispatch('slidebar/setMenuList', tableList[curId].children)
+          })
+        }
+      } else {
+        self.$message.warning(resData.data.message)
+      }
+    }
   }
 };
 </script>

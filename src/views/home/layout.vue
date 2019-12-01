@@ -119,11 +119,9 @@ export default {
           let tableList = JSON.parse(wealthTreeData(list))
           console.log('self.currentId', self.currentId)
           let curId = 0
-          let curObj = {}
           tableList.forEach((item, index) => {
             if (item.id == self.currentId) {
               curId = index
-              curObj = item
             }
             if (self.currentId === '' && item.resName === '首页') {
               self.$set(item, 'isCheck', true)

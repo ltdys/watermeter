@@ -42,6 +42,12 @@ export const updRole = params => axios.post('/watermeter/updRole', params);
 // 角色查询
 export const getRoleList = params => axios.post('/watermeter/getRoleList', params);
 
+// 根据角色查询资源
+export const getRoleResource = params => axios.post('/watermeter/getRoleResource', params);
+
+// 角色授权
+export const roleAuthorization = params => axios.post('/watermeter/roleAuthorization', params);
+
 // 角色删除
 export const delRole = params => axios.post('/watermeter/delRole', params);
 

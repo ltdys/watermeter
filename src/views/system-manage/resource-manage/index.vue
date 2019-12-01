@@ -100,10 +100,13 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="status"
             width="150"
             :label="$t('systemManageResource.tableD')"
-          />
+          >
+            <template slot-scope="scope">
+              {{ scope.row.status | fOrgChange }}
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" :label="$t('common.operation')" width="120">
             <template slot-scope="scope">
               <i class="el-icon-edit" @click="handleEdit(scope.row)" />
@@ -136,12 +139,16 @@
           <el-input v-model="form.id" clearable :disabled="banObj.IsCode" />
         </el-form-item>
         <el-form-item label="Logo图片">
+          <!-- action="https://jsonplaceholder.typicode.com/posts/"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload" -->
           <el-upload
             class="avatar-uploader"
             action="https://jsonplaceholder.typicode.com/posts/"
+            :auto-upload="false"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+
+            :on-change="handleChange"
           >
             <img v-if="form.t3" :src="form.t3" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -180,6 +187,15 @@ import myRegion1 from '@/components/common/region1'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 var apps;
+var resourceId = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error('请输入机构代码'))
+  } else if (value == 0) {
+    callback(new Error('机构代码不能为0'))
+  } else {
+    callback()
+  }
+}
 export default {
 
   name: 'resourceManage',
@@ -249,7 +265,7 @@ export default {
       addType: 1, // 1 一级 2 二级
       rules: {
         id: [
-          { required: true, message: "请输入机构代码", trigger: 'blur' }
+          { required: true, validator: resourceId }
         ],
         parentId: [
           { required: true, message: this.$t('systemManageResource.dialogA_'), trigger: 'change' }
@@ -350,6 +366,7 @@ export default {
     },
     handleNodeClick (data) {
       console.log(data);
+      this.pageObj.currentPage = 1
       this.currentTree = data
       this.search.parentId = data.id
       this.findChildCompany()
@@ -440,7 +457,12 @@ export default {
         }
       });
     },
+    handleChange (file, fileList) {
+      console.log('file', file)
+      this.form.t3 = URL.createObjectURL(file.raw);
+    },
     handleAvatarSuccess (res, file) {
+      console.log('file', file)
       this.form.t3 = URL.createObjectURL(file.raw);
     },
     beforeAvatarUpload (file) {

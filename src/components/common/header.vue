@@ -40,6 +40,7 @@ import tagsViews from "@/components/TagsView/index"
 import { treeData, recursionDelete } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
+import { clearStore } from '@/utils/storageUtil.js'
 
 export default {
   name: 'commonHeader',
@@ -80,7 +81,7 @@ export default {
   },
 
   created () {
-
+    // this.navChange(this.navList[0])
   },
 
   methods: {
@@ -97,7 +98,10 @@ export default {
       this.$router.push(value.url)
     },
     loginOut () {
-      localStorage.clear()
+      // localStorage.clear()
+      clearStore()
+      this.$store.dispatch('slidebar/setCurrentId', this.navList[0].id)
+      this.$store.dispatch('tagsView/setCurrentTitle', this.navList[0].name)
       this.$router.push('/login')
     },
     lanageChange () {
