@@ -285,7 +285,7 @@ export default {
         this.$message.warning(`请选择组织机构`)
       } else {
         console.log('param', param)
-        debugger
+        // debugger
         this.findDistrict(param)
       }
     },
