@@ -4,7 +4,7 @@
       <el-form-item label="大表编号" prop="num">
         <el-input v-model="form.num" clearable />
       </el-form-item>
-      <el-form-item label="小区" prop="areasId">
+      <el-form-item label="所属区域" prop="areasId">
         <!-- <el-select v-model="form.areasId">
           <el-option
             v-for="item in options"
@@ -14,7 +14,7 @@
           </el-option>
         </el-select> -->
         <el-cascader
-          v-model="form.areasList"
+          v-model="areasList"
           :options="options"
           clearable
           filterable
@@ -91,10 +91,9 @@ export default {
           atcStatus: '', // 空管状态 0异常  1正常
           pressureAlarm: '', // 压力报警
           status: '', // 表状态 0 异常 1正常
-          areasId: 1, // 所属小区
+          areasId: '', // 所属小区
           installAddress: '', // 安装地址
-          remarks: '', // 备注
-          areasList: []
+          remarks: '' // 备注
         }
       }
     },
@@ -105,6 +104,7 @@ export default {
   },
   data () {
     return {
+      areasList: [],
       rules: {
         num: [
           { required: true, message: "请填写大表编号", trigger: 'blur' }
@@ -184,6 +184,13 @@ export default {
       if (resData.status === 200) {
         this.$message.info(resData.data.message)
         this.close()
+      }
+    },
+    changeParent() {
+      console.log("this.areasList", this.areasList)
+      if(this.areasList.length > 0) {
+        this.form.areasId = this.areasList[this.areasList.length - 1]
+        console.log("this.form.areasId", this.form.areasId)
       }
     }
   }

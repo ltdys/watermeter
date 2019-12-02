@@ -95,7 +95,7 @@ export default {
         pageSize: 1000
       }
       let resData = await findCompany(params)
-      if (resData.status === 200 && resData.data.code === 0 && resData.data.data !== null) {
+      if (resData.status === 200) {
         this.companyData = resData.data.data
         this.$store.dispatch("user/setCompanyData", this.companyData)
       }

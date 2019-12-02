@@ -27,8 +27,6 @@ export default {
   props: ["menus", "collapse"],
 
   created() {
-    let temp = this.menus
-    console.log("======", JSON.stringify(temp))
   },
 
   data () {

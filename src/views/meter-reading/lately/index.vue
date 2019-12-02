@@ -30,10 +30,10 @@
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarC') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarD') }}</el-button>
+            <el-button type="primary" size="mini" class="custom-button" @click="handleGather">{{ $t('meterReadingLately.toolbarD') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarE') }}</el-button>
+            <el-button type="primary" size="mini" class="custom-button" @click="handleRead">{{ $t('meterReadingLately.toolbarE') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarF') }}</el-button>
@@ -143,7 +143,7 @@
             width="160"
           />
           <el-table-column
-            prop="swingTap"
+            prop="autoTapSwitch"
             label="阀门状态"
           />
         </el-table>
@@ -156,7 +156,25 @@
           @currentChange="currentChange"
         />
       </el-col>
-    </el-row>  
+    </el-row>
+
+    <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
+      <el-form ref="gatherRuleForm" :model="gatherForm">
+        <el-form-item>
+          <el-transfer v-model="value" :data="data"></el-transfer>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="gatherSubmit('ruleForm')">确定</el-button>
+          <el-button @click="gatherVisiable = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>  
+
+    <el-dialog :visible="readVisiable" title="当前读数" @close="readClose">
+      <div class="read-wrap">
+        123321
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -176,9 +194,25 @@ export default {
   mixins: [list_mixins],
 
   data () {
+    const generateData = _ => {
+      const data = [];
+      for (let i = 1; i <= 15; i++) {
+        data.push({
+          key: i,
+          label: `采集器 ${ i }`,
+          disabled: i % 4 === 0
+        });
+      }
+      return data;
+    };
     return {
       tableData: [],
       treeData: [],
+      gatherVisiable: false, // 数据采集弹窗
+      readVisiable: false, //数据读取弹窗
+      gatherForm: {},
+      data: generateData(),
+      value: [1, 4],
       defaultProps: {
         children: 'child',
         label: 'name'
@@ -280,6 +314,21 @@ export default {
     },
     handleDelete () {
 
+    },
+    gatherClose () {
+      this.gatherVisiable = false
+    },
+    readClose() {
+      this.readVisiable = false
+    },
+    gatherSubmit () {
+
+    },
+    handleGather () {
+      this.gatherVisiable = true
+    },
+    handleRead() {
+      this.readVisiable = true
     }
   }
 }
@@ -300,6 +349,20 @@ export default {
     }
     .el-select, .el-input {
       width: 120px !important;
+    }
+    .el-dialog {
+      width: 550px !important;
+    }
+    .read-wrap {
+      width: 100%;
+      height: 400px;
+      text-align: center;
+      background: url("~@/assets/read.png") no-repeat;
+      background-position: center;
+      line-height: 309px;
+      font-size: 40px;
+      font-weight: bold;
+      color: #343844;
     }
   }
 </style>

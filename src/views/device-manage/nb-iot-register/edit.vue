@@ -107,7 +107,7 @@ export default {
           reportCycle: '', // 上报周期
           readValue: '', // 本次读数
           version: '', // 软件版本号
-          areasId: 1, // 小区ID
+          areasId: '', // 小区ID
           areasList: []
         }
       }

@@ -420,6 +420,9 @@ export default {
 
 <style lang="scss">
   .region-manage {
+    .el-scrollbar__wrap {
+      background: #fff;
+    }
     &_add {
       margin: 20px 20px 10px 20px;
     }

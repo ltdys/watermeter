@@ -2,8 +2,8 @@
   <div class="user-manage">
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item label="组织机构">
-        <el-select v-model="search.companyName" clearable>
-          <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.companyName" />
+        <el-select v-model="search.companyName" clearable filterable>
+          <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.companyName" />
         </el-select>
       </el-form-item>
       <el-form-item :label="$t('systemManageUser.toolbarB')">
@@ -64,8 +64,8 @@
     <el-dialog :visible.sync="addVisible" title="添加用户" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="组织" prop="companyId">
-          <el-select v-model="form.companyId" placeholder="请选择组织" clearable>
-            <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
+          <el-select v-model="form.companyId" placeholder="请选择组织" clearable filterable>
+            <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
@@ -159,7 +159,8 @@
 <script>
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
-import { addUser, getUserDetailed, getRoleList, userAddRole } from '@/service/api'
+import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
+import { addUser, getUserDetailed, getRoleList, userAddRole, findCompany } from '@/service/api'
 export default {
   name: 'resourceManage',
 
@@ -171,6 +172,12 @@ export default {
 
   data () {
     return {
+      setProps: { // 设置级联选择器
+        label: 'companyName',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      },
       statusList: [
         {
           label: '正常',
@@ -192,6 +199,7 @@ export default {
           value: 0
         }
       ],
+      companyData1:[],
       tableData: [],
       form: {
         companyId: '',
@@ -247,6 +255,7 @@ export default {
     init () {
       this.getUserDetailed()
       this.getRoleList();
+      this.findCompany();
     },
     async getUserDetailed () {
       let params = {
@@ -272,8 +281,22 @@ export default {
         console.log("roleList======", this.roleList)
       }
     },
+    async findCompany (key) { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let resData = await findCompany(params)
+      if (resData.status === 200 && resData.data.data !== null) {
+        this.companyData1 = resData.data.data
+      }
+    },
     searchSubmit () {
       this.getUserDetailed()
+    },
+    changeOrg () { // 组织机构选择
+      this.search.companyName = this.search.companyName[this.search.orgList.length - 1]
     },
     handleEdit (row) {
       this.checkUserId = row.userid

@@ -96,41 +96,6 @@
             prop="useNum"
             :label="$t('fileManageHb.tableJ')"
           />
-          <el-table-column
-            prop="balance"
-            :label="$t('fileManageHb.tableK')"
-          />
-          <el-table-column
-            prop="rechargeTime"
-            :label="$t('fileManageHb.tableL')"
-            width="200"
-          />
-          <el-table-column
-            prop="tableType"
-            :label="$t('fileManageHb.tableM')"
-          />
-          <el-table-column
-            prop="valveStatus"
-            :label="$t('fileManageHb.tableN')"
-          />
-          <el-table-column
-            prop="surchargeType"
-            :label="$t('fileManageHb.tableO')"
-            width="120"
-          />
-          <el-table-column
-            prop="chargeType"
-            :label="$t('fileManageHb.tableP')"
-          />
-          <el-table-column
-            prop="calculation"
-            :label="$t('fileManageHb.tableQ')"
-            width="120"
-          />
-          <el-table-column
-            prop="magnification"
-            :label="$t('fileManageHb.tableR')"
-          />
           <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
               <!-- <i class="el-icon-edit" @click="handleEdit(scope.row)"></i> -->

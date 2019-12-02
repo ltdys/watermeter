@@ -34,18 +34,26 @@
           label="#"
         />
         <el-table-column
-          prop="num"
-          label="大表编号"
+          prop="installAddress"
+          label="安装地址"
           width="120"
         />
         <el-table-column
           prop="specNum"
-          label="规格型号编码"
-          width="180"
+          label="规格型号"
+        />
+        <el-table-column
+          prop="num"
+          label="表编号"
+        />
+        <el-table-column
+          prop="donot"
+          label="口径"
         />
         <el-table-column
           prop="simCcid"
           label="SIM卡CCID"
+          width="220"
         />
         <el-table-column
           label="是否在线"
@@ -55,12 +63,13 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="resp"
+          prop="rscp"
           label="信号强度"
         />
         <el-table-column
           prop="electricQ"
-          label="电池电量"
+          label="电池电量(mAh)"
+          width="180"
         />
         <el-table-column
           prop="electricV"
