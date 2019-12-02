@@ -3,9 +3,8 @@
     <el-row>
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
-          <el-form-item :label="$t('meterReadingLately.toolbarA')">
-            <el-input v-model="search.meterType" clearable/>
-            <!-- <el-select v-model="search.meterType">
+          <el-form-item label="筛选查询">
+            <el-select v-model="search.type" clearable filterable>
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -13,19 +12,10 @@
                 :value="item.value"
                 clearable>
               </el-option>
-            </el-select> -->
+            </el-select>
           </el-form-item>
-          <el-form-item :label="$t('meterReadingLately.toolbarB')" class="mr-five">
-            <el-input v-model="search.comState" clearable/>
-            <!-- <el-select v-model="search.comState">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                clearable>
-              </el-option>
-            </el-select> -->
+          <el-form-item class="mr-five">
+            <el-input v-model="search.value" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -62,12 +52,12 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <!-- <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
+      <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick"></my-region>
+          <my-region2 @handleNodeClick="handleNodeClick"/> 
         </el-scrollbar>
-      </el-col> -->
-      <el-col :span="24">
+      </el-col>
+      <el-col :span="20">
         <el-table
           :data="tableData"
           border
@@ -172,7 +162,7 @@
 
 <script>
 import { recentMeterReading } from '@/service/api'
-import myRegion from '@/components/common/region'
+import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 export default {
@@ -180,7 +170,7 @@ export default {
   name: 'lately',
 
   components: {
-    myPagination, myRegion
+    myPagination, myRegion2
   },
 
   mixins: [list_mixins],
@@ -188,9 +178,19 @@ export default {
   data () {
     return {
       tableData: [],
+      treeData: [],
+      defaultProps: {
+        children: 'child',
+        label: 'name'
+      },
       search: {
-        meterType: '',
-        comState: ''
+        type: '',
+        value: '',
+        areasId: "",
+        num: "",  // 用户编号
+        meterNbiotNum: "", // 编号 
+        meterType: "",  // 表类型
+        address: "", // 安装地址
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -200,10 +200,16 @@ export default {
       },
       options: [{
         value: 0,
-        label: '异常'
+        label: '用户编号'
       }, {
         value: 1,
-        label: '正常'
+        label: '表编号'
+      }, {
+        value: 2,
+        label: "表类型"
+      }, {
+        value: 3,
+        label: "安装地址"
       }]
     }
   },
@@ -217,15 +223,35 @@ export default {
       this.recentMeterReading()
     },
     async recentMeterReading () {
+      switch(this.search.type) {
+        case 0: 
+          this.search.num = this.search.value
+          break;
+        case 1:
+          this.search.meterNbiotNum = this.search.value
+          break;
+        case 2:
+          this.search.meterType = this.search.value
+          break;
+        case 3:
+          this.search.address = this.search.value
+          break;
+      }
       const params = {
-        areasId: 6,
+        areasId: this.search.areasId,
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
         meterRead: {
-          commState: this.search.comState
+          num: this.search.num,  // 用户编号
+          meterNbiotNum: this.search.meterNbiotNum, // 编号 
+          meterType: this.search.meterType,  // 表类型
+          address: this.search.address, // 安装地址
         },
         meterNbIot: {
-          meterType: this.search.meterType
+          num: this.search.num,  // 用户编号
+          meterNbiotNum: this.search.meterNbiotNum, // 编号 
+          meterType: this.search.meterType,  // 表类型
+          address: this.search.address, // 安装地址
         }
       }
       let resData = await recentMeterReading(params)
@@ -243,7 +269,8 @@ export default {
       this.init()
     },
     handleNodeClick(data) {
-      console.log(data);
+      this.search.areasId = data.id
+      this.recentMeterReading()
     },
     searchSubmit () {
       this.init()
@@ -253,9 +280,6 @@ export default {
     },
     handleDelete () {
 
-    },
-    handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
     }
   }
 }
@@ -264,6 +288,9 @@ export default {
 <style lang="scss">
   .lately {
     overflow-y: scroll;
+    .el-scrollbar__wrap {
+      background: #fff;
+    }
     .toolbar{
       height:auto;
       margin-bottom: 10px;

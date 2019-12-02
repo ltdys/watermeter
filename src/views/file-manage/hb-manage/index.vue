@@ -4,18 +4,18 @@
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
           <el-form-item :label="$t('fileManageHb.toolbarA')">
-            <el-select v-model="search.t1" clearable filterable>
+            <el-select v-model="search.type" clearable filterable>
               <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                clearable
-              />
+                clearable>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-input v-model="search.t2" clearable />
+            <el-input v-model="search.value" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -29,12 +29,12 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region1 :tree-data="treeData" @handleNodeClick="handleNodeClick" />
+          <my-region2 @handleNodeClick="handleNodeClick"/>
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
         <el-table
-          :data="tableData"
+          :data="tableDataUser"
           border
           stripe
           style="width: 100%"
@@ -69,6 +69,7 @@
           <el-table-column
             prop="meternbiotnum"
             :label="$t('fileManageHb.tableE')"
+            width="200"
           />
           <el-table-column
             prop="tableAddress"
@@ -130,12 +131,12 @@
             prop="magnification"
             :label="$t('fileManageHb.tableR')"
           />
-          <el-table-column fixed="right" :label="$t('common.operation')" width="80">
+          <!-- <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
-              <i class="el-icon-edit" @click="handleEdit(scope.row)" />
-              <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+              <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
+              <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
         <my-pagination
           :all-total="pageObj.allTotal"
@@ -148,42 +149,46 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="$t('fileManageHb.dialogUserTitle')" :visible.sync="userAddVisible" @close="userClose">
-      <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" @close="userClose" />
+    <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose">
+      <user-edit @close="userClose" :waterHouseTypeList="waterHouseTypeList" :waterNatureList="waterNatureList" :treeData="treeData" :form="form"/>
     </el-dialog>
 
-    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose">
+    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" @close="tableClose" class="region-manage-dialog">
       <table-edit @close="tableClose" />
-    </el-dialog>
+    </el-dialog>  
   </div>
 </template>
 
 <script>
-import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot, findCompany } from '@/service/api'
-import { orgTreeData } from '@/utils/publicUtil'
-import myRegion1 from '@/components/common/region1'
+import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot } from '@/service/api'
+import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import userEdit from './userEdit'
 import tableEdit from './tableEdit'
+import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
 export default {
 
   name: 'hbManage',
 
   components: {
-    myPagination, myRegion1, userEdit, tableEdit
+    myPagination, myRegion2, userEdit, tableEdit
   },
 
   mixins: [list_mixins],
 
   data () {
     return {
-      treeData: [],
-      tableData: [],
+      tableDataUser: [],
+      userTitle: "添加用户",
       search: {
-        t1: '',
-        t2: '',
-        t3: ''
+        type: "",
+        value: "",
+        areasId: "",
+        num: "",  // 用户编号
+        meterNbiotNum: "", // 编号 
+        IMEI: "",
+        address: "", // 安装地址
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -191,17 +196,29 @@ export default {
         pageSize: 50, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
+      defaultProps: {
+        children: 'child',
+        label: 'name'
+      },
+      form: {},
       options: [{
         value: 0,
         label: '用户编号'
       }, {
         value: 1,
-        label: '其它'
+        label: '表编号'
+      }, {
+        value: 2,
+        label: "IMEI"
+      }, {
+        value: 3,
+        label: "安装地址"
       }],
       userAddVisible: false,
       tableAddVisible: false,
       waterHouseTypeList: [],
-      waterNatureList: []
+      waterNatureList: [],
+      treeData: []
     }
   },
 
@@ -214,55 +231,61 @@ export default {
       this.getMeterUserAndMeterNbIot()
       this.findWaterHouseTypes()
       this.findWaterNatures()
-      this.findCompany()
     },
-    async findCompany () { // 获取组织机构
-      let params = {
-        userId: this.userId,
-        currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
+    async getMeterUserAndMeterNbIot() {
+      switch(this.search.type) {
+        case 0: 
+          this.search.num = this.search.value
+          break;
+        case 1:
+          this.search.meterNbiotNum = this.search.value
+          break;
+        case 2:
+          this.search.IMEI = this.search.value
+          break;
+        case 3:
+          this.search.address = this.search.value
+          break;
       }
-      let resData = await findCompany(params)
-      console.log('获取组织机构', resData)
-      if (resData.status === 200 && resData.data.data !== null) {
-        let list = resData.data.data
-        this.treeData = JSON.parse(orgTreeData([...list]))
-      }
-    },
-    async getMeterUserAndMeterNbIot () {
       let params = {
-        areasId: 6,
-        meterUser: {},
-        meterNbIot: {},
+        areasId: this.search.areasId,
+        meterUser: {
+          num: this.search.num
+        },
+        meterNbIot: {
+          meterNbiotNum: this.search.meterNbiotNum, // 编号 
+          IMEI: this.search.IMEI,
+          address: this.search.address, // 安装地址
+        },
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize
       }
       let resData = await getMeterUserAndMeterNbIot(params)
-      if (resData.status === 200) {
-        this.tableData = resData.data.data
+      if(resData.status === 200) {
+        this.tableDataUser = resData.data.data || []
         if (resData.data.page) {
           this.pageObj.allTotal = resData.data.page.totalRow || 0
         }
       }
     },
-    async findWaterHouseTypes () {
+    async findWaterHouseTypes() {
       let params = {
         waterHouseTypes: {
-          id: '',
+           id: '',
           houseType: '',
           ratedWaterYield: '',
           dayAlertWaterYield: '',
           companyId: ''
         },
         currentPage: 1,
-        pageSize: 10000
+        pageSize: 10000,
       }
       let resData = await findWaterHouseTypes(params)
       if (resData.status === 200) {
         this.waterHouseTypeList = resData.data.data
       }
     },
-    async findWaterNatures () {
+    async findWaterNatures() {
       let params = {
         waterNatures: {
           name: '',
@@ -270,7 +293,7 @@ export default {
           id: ''
         },
         currentPage: 1,
-        pageSize: 10000
+        pageSize: 10000,
       }
       let resData = await findWaterNatures(params)
       if (resData.status === 200) {
@@ -284,8 +307,8 @@ export default {
       }
       let res = await getHouseTable(params)
       this.tableData = res.data.data
-      if (res.data.page) {
-        this.pageObj.allTotal = res.data.page.totalRow || 0
+      if (resData.data.page) {
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
     pageChange (data) { // 每页条数切换回调事件
@@ -297,18 +320,34 @@ export default {
       this.init()
     },
     searchSubmit () {
-
+      this.getMeterUserAndMeterNbIot()
     },
-    handleEdit () {
-
+    handleEdit (data) {
+      //areasId: '',
+          // num: '',
+          // name: '',
+          // idNumber: '',
+          // tel: '',
+          // waterHouseTypeId: '',
+          // waterNatureId: '',
+          // floorNo: '',
+          // unitNo: '',
+          // roomNo: '',
+          // namePy: ''
+      this.form = JSON.parse(JSON.stringify(data))
+      console.log("this.form", this.form)
+      this.userTitle = "编辑用户"
+      this.userAddVisible = true
     },
     handleDelete () {
 
     },
     handleNodeClick (data) {
-      this.$message.success("你选择了" + data.name)
+      this.search.areasId = data.id
+      this.getMeterUserAndMeterNbIot()
     },
     addUser () {
+      this.userTitle = "添加用户"
       this.userAddVisible = true
     },
     addTable () {
@@ -325,4 +364,9 @@ export default {
 </script>
 
 <style lang="scss">
+.region-manage {
+  .el-scrollbar__wrap {
+    background: #fff;
+  }
+}
 </style>

@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="4" :style="{height: (tableHeight + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick"></my-region>
+          <my-region2 @handleNodeClick="handleNodeClick"></my-region2>
         </el-scrollbar>
       </el-col>
       <el-col :span="20" class="manual_wrap" :style="{height: (tableHeight + 52) + 'px', background: '#fff'}">
@@ -31,14 +31,14 @@
 </template>
 
 <script>
-import myRegion from '@/components/common/region'
+import myRegion2 from '@/components/common/region2'
 import { list_mixins } from '@/mixins'
 export default {
 
   name: 'manual',
 
   components: {
-    myRegion
+    myRegion2
   },
 
   mixins: [list_mixins],
@@ -73,6 +73,9 @@ export default {
 
 <style lang="scss">
   .manual {
+    .el-scrollbar__wrap {
+      background: #fff;
+    }
     &_wrap {
       &__title {
         padding-left: 20px;

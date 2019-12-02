@@ -1,11 +1,19 @@
 <template>
   <div>
     <el-form :model="form" ref="ruleForm" :rules="rules" label-width="100px">
-      <el-form-item label="小区" prop="areasId">
-        <el-select v-model="form.areasId" clearable filterable>
+      <el-form-item label="所属区域" prop="areasId">
+        <!-- <el-select v-model="form.areasId" clearable filterable>
           <el-option :label="item.label" :value="item.value" v-for="(item, index) in list" :key="index">
           </el-option>
-        </el-select>
+        </el-select> -->
+        <el-cascader
+          :options="options"
+          v-model="form.areasId"
+          filterable
+          @change="changeOrg"
+          :props="setProps"
+          clearable>
+        </el-cascader>
       </el-form-item>
       <el-form-item label="用户编号" prop="num">
         <el-input v-model="form.num" clearable />
@@ -49,7 +57,8 @@
 </template>
 
 <script>
-import { addMeterUser } from "@/service/api"
+import { addMeterUser, findDistrict } from "@/service/api"
+import { treeDataUtil } from "@/utils/publicUtil"
 export default {
   props: {
     waterHouseTypeList: {
@@ -59,10 +68,33 @@ export default {
     waterNatureList: {
       type: Array,
       default: () => []
+    },
+    treeData: {
+      type: Array,
+      default: () => []
+    },
+    form: {
+      type: Object,
+      default: () => {
+        return {
+          areasId: '',
+          num: '',
+          name: '',
+          idNumber: '',
+          tel: '',
+          waterHouseTypeId: '',
+          waterNatureId: '',
+          floorNo: '',
+          unitNo: '',
+          roomNo: '',
+          namePy: ''
+        }
+      }  
     }
   },
   data () {
     return {
+      options: [],
       list: [{
         label: '默认',
         value: 1
@@ -74,18 +106,6 @@ export default {
         label: '否',
         value: 1
       }],
-      form: {
-        areasId: '',
-        num: '',
-        name: '',
-        idNumber: '',
-        tel: '',
-        waterHouseTypeId: '',
-        waterNatureId: '',
-        floorNo: '',
-        unitNo: '',
-        roomNo: ''
-      },
       rules: {
         areasId: [
           { required: true, message: "请选择小区", trigger: 'change' }
@@ -99,8 +119,18 @@ export default {
         waterNatureId: [
           { required: true, message: "请选择用水性质", trigger: 'change' }
         ]
+      },
+      setProps: { // 设置级联选择器
+        label: 'name',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
       }
     }
+  },
+
+  created() {
+    this.findDistrict()
   },
 
   methods: {
@@ -115,7 +145,8 @@ export default {
         waterNatureId: '',
         floorNo: '',
         unitNo: '',
-        roomNo: ''
+        roomNo: '',
+        namePy: ''
       }
       this.$emit('close')
     },
@@ -128,6 +159,26 @@ export default {
         }
       });
     },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: ''
+      }
+      let res = await findDistrict(param)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        }
+      }
+    },
     async addMeterUser() {
       let params = {
         meterUser: this.form
@@ -137,6 +188,9 @@ export default {
         this.$message.success(resData.data.message)
         this.close()
       }
+    },
+    changeOrg() {
+      this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
     }
   }
 }

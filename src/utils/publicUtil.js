@@ -88,3 +88,19 @@ export const treeDataUtil = (data, parent, id) => {
   result = result[0];
   return JSON.stringify(result)
 }
+
+/* 将数据格式转换成树状格式*/
+export const treeDataTest = (data) => {
+  let result = data.reduce(function (prev, item) {
+    item.companyId = item.companyId === null ? 0 : item.companyId;
+    prev[item.companyId] ? prev[item.companyId].push(item) : prev[item.companyId] = [item];
+    return prev;
+  }, {});
+  for (const prop in result) {
+    result[prop].forEach(function (item, i) {
+      result[item.id] ? item.children = result[item.id] : ''
+    });
+  }
+  result = result[0];
+  return JSON.stringify(result)
+}

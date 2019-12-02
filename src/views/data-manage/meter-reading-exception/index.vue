@@ -29,7 +29,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region @handleNodeClick="handleNodeClick"></my-region>
+          <my-region2 @handleNodeClick="handleNodeClick"></my-region2>
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -98,7 +98,7 @@
 
 <script>
 import { getException } from '@/service/dataManage'
-import myRegion from '@/components/common/region'
+import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 export default {
@@ -106,7 +106,7 @@ export default {
   name: 'alarm',
 
   components: {
-    myPagination, myRegion
+    myPagination, myRegion2
   },
 
   mixins: [list_mixins],
@@ -181,6 +181,9 @@ export default {
 <style lang="scss">
   .alarm {
     overflow-y: scroll;
+    .el-scrollbar__wrap {
+      background: #fff;
+    }
     .toolbar{
       height:auto;
       margin-bottom: 10px;
