@@ -1,5 +1,5 @@
 <template>
-  <div class="region-manage">
+  <div class="hb-manage">
     <el-row>
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
@@ -131,12 +131,12 @@
             prop="magnification"
             :label="$t('fileManageHb.tableR')"
           />
-          <!-- <el-table-column fixed="right" :label="$t('common.operation')" width="80">
+          <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
-              <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
-              <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
+              <!-- <i class="el-icon-edit" @click="handleEdit(scope.row)"></i> -->
+              <span @click="handleDelete(scope.row)" class="hb-manage_delete">删除表</span>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
         <my-pagination
           :all-total="pageObj.allTotal"
@@ -339,8 +339,8 @@ export default {
       this.userTitle = "编辑用户"
       this.userAddVisible = true
     },
-    handleDelete () {
-
+    handleDelete (row) {
+      
     },
     handleNodeClick (data) {
       this.search.areasId = data.id
@@ -364,9 +364,13 @@ export default {
 </script>
 
 <style lang="scss">
-.region-manage {
+.hb-manage {
   .el-scrollbar__wrap {
     background: #fff;
+  }
+  &_delete {
+    text-decoration: underline;
+    color: #0084FF;
   }
 }
 </style>
