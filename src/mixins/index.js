@@ -47,6 +47,9 @@ export const list_mixins = {
     isWealth () {
       console.log('isWealth变化')
       return this.$store.getters.getIsWealth
+    },
+    districtData() {
+      return JSON.parse(this.$store.getters.getDistrictData)
     }
   },
 

@@ -2,7 +2,7 @@
   <div class="nb-iot-register">
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item label="表编号">
-        <el-input v-model="search.meterNum" clearable />
+        <el-input v-model="search.meterNbiotNum" clearable />
       </el-form-item>
       <el-form-item label="集中器编号">
         <el-input v-model="search.meterConcentratorNum" clearable />
@@ -48,7 +48,7 @@
         label="#"
       />
       <el-table-column
-        prop="meterNum"
+        prop="meterNbiotNum"
         label="表编号"
         width="120"
       />
@@ -123,7 +123,7 @@
         width="120"
       />
       <el-table-column
-        prop="areasId"
+        prop="meterAreasId"
         label="小区"
       />
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
@@ -143,13 +143,14 @@
     />
 
     <el-dialog :title="$t('deviceManageRegister.dialogTitle')" :visible.sync="addVisible" @close="close">
-      <my-edit :form="form" :type="type" @close="close" />
+      <my-edit :form="form" :type="type" @close="close" :areaObject="areaObject"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getMeterNbIotL, deleteMeterNbIot } from '@/service/api'
+import { getMeterNbIotL, deleteMeterNbIot, findDistrict } from '@/service/api'
+import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import myEdit from './edit'
@@ -167,12 +168,15 @@ export default {
       type: 0, // 0添加 1编辑
       tableData: [],
       search: {
-        meterNum: '',
+        meterNbiotNum: '',
         meterConcentratorNum: '',
         meterNodeNum: '',
         meterSpec: '',
         simCardCcid: ''
       },
+      list: [],
+      areaObject: {},
+      tableDataFj: [],
       pageObj: {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
@@ -212,6 +216,7 @@ export default {
     },
     init () {
       this.getMeterNbIotL()
+      this.findDistrict()
     },
     searchSubmit () {
       this.init()
@@ -235,6 +240,31 @@ export default {
           message: '已取消删除'
         });
       });
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: ''
+      }
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.tableDataFj = list
+            self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.tableDataFj = list
+          self.list = list
+        }
+      }
     },
     async deleteMeterNbIot (row) {
       let params = {

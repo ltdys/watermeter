@@ -118,7 +118,7 @@
       </el-table>
 
       <el-dialog title="大表添加" :visible.sync="addVisible" @close="close">
-        <my-edit :form="form" :type="type" @close="close" />
+        <my-edit :form="form" :type="type" @close="close" :areaObject="areaObject" :list="list"/>
       </el-dialog>
 
       <my-pagination
@@ -133,7 +133,8 @@
 </template>
 
 <script>
-import { getMeterBigList, deleteMeterBig } from '@/service/api'
+import { getMeterBigList, deleteMeterBig, findDistrict } from '@/service/api'
+import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import myEdit from './edit'
 import { list_mixins } from '@/mixins'
@@ -150,6 +151,9 @@ export default {
     return {
       type: 0, // 0添加 1编辑
       tableData: [],
+      list: [],
+      areaObject: {},
+      tableDataFj: [],
       pageObj: {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
@@ -189,6 +193,7 @@ export default {
     },
     init () {
       this.getMeterBigList()
+      this.findDistrict()
     },
     searchSubmit () {
       this.init()
@@ -202,6 +207,34 @@ export default {
       this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
       this.addVisible = true
+      this.areaObject.areasList = this.tableDataFj.filter(item => {
+        return item.id == row.areasId
+      })[0].path
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: ''
+      }
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.tableDataFj = list
+            self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.tableDataFj = list
+          self.list = list
+        }
+      }
     },
     handleDelete (row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {

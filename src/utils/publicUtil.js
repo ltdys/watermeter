@@ -104,3 +104,8 @@ export const treeDataTest = (data) => {
   result = result[0];
   return JSON.stringify(result)
 }
+
+// 递归删除，只保留两层children
+export const saveTwo = (data) => {
+  return data
+}

@@ -99,7 +99,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="$t('deviceManageConcentrator.dialogTitle')" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item :label="$t('deviceManageConcentrator.dialogA')" prop="name">
           <el-input v-model="form.name" clearable />
@@ -161,6 +161,7 @@ export default {
   data () {
     return {
       type: 0, // 0-添加 1-编辑
+      title: "添加集中器",
       tableData: [],
       search: {
         num: '',
@@ -238,7 +239,9 @@ export default {
       this.init()
     },
     changeParent () { // 区域选择、
-      this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
+      if (this.form.areasList && this.form.areasList.length > 0) {
+        this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
+      }
     },
     async findDistrict () { // 查询区域
       const self = this;
@@ -286,6 +289,7 @@ export default {
       this.init()
     },
     handleEdit (row) { // 编辑
+      this.title = "编辑集中器"
       this.rowObj = row
       this.addVisible = true
       this.type = 1
@@ -352,6 +356,7 @@ export default {
       this.init()
     },
     addConcentrator () {
+      this.title = "添加集中器"
       this.addVisible = true
       this.type = 0
     },

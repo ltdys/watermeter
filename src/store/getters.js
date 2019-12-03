@@ -66,6 +66,13 @@ const getters = {
   },
   getIsWealth: state => {
     return state.user.isWealth
+  },
+  getDistrictData: state => {
+    const status = getLocalStorage("DISTRICT_DATA")
+    if (status) {
+      state.user.districtData = status
+    }
+    return state.user.districtData
   }
 }
 export default getters

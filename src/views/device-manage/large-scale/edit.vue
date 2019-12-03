@@ -14,8 +14,8 @@
           </el-option>
         </el-select> -->
         <el-cascader
-          v-model="areasList"
-          :options="options"
+          v-model="areaObject.areasList"
+          :options="districtData"
           clearable
           filterable
           :props="setParent"
@@ -73,9 +73,18 @@
 </template>
 
 <script>
-import { treeDataUtil } from '@/utils/publicUtil'
 import { addMeterBig, updateMeterBig, findDistrict } from "@/service/api"
+import { list_mixins } from '@/mixins'
+
 export default {
+  mixins: [list_mixins],
+  watch: {
+    form: {
+      handler:function(val, oldval) {
+      },
+      deep: true
+    }
+  },
   props: {
     form: {
       type: Object,
@@ -97,14 +106,26 @@ export default {
         }
       }
     },
+    areaObject: {
+      type: Object,
+      default: () => {
+        return {
+          areasList: []
+        }
+      }
+    },
     type: {
       type: [Number, String],
       default: 0
+    },
+    list: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
     return {
-      areasList: [],
+      // areasList: [],
       rules: {
         num: [
           { required: true, message: "请填写大表编号", trigger: 'blur' }
@@ -113,7 +134,6 @@ export default {
           { required: true, message: "请选择小区", trigger: 'change' }
         ]
       },
-      options: [],
       setParent: { // 设置级联选择器
         label: 'name',
         value: 'id',
@@ -123,34 +143,10 @@ export default {
     }
   },
   created () {
-    this.findDistrict()
   },
   methods: {
     close () {
       this.$emit('close')
-    },
-    async findDistrict () { // 查询区域
-      const self = this;
-      let param = {
-        companyId: ''
-      }
-      let res = await findDistrict(param)
-      console.log('查询区域', res)
-      if (res.status === 200 && res.data.data !== null) {
-        let list = res.data.data || []
-        if (list.length !== 0) {
-          list = list.map(item => {
-            self.$set(item, 'parentId', item.parentid)
-            self.$set(item, 'companyId', item.companyid)
-            return item
-          })
-          self.$nextTick(() => {
-            self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
-          })
-        } else {
-          self.list = list
-        }
-      }
     },
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
@@ -187,9 +183,8 @@ export default {
       }
     },
     changeParent() {
-      console.log("this.areasList", this.areasList)
-      if(this.areasList.length > 0) {
-        this.form.areasId = this.areasList[this.areasList.length - 1]
+      if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
+        this.form.areasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
         console.log("this.form.areasId", this.form.areasId)
       }
     }

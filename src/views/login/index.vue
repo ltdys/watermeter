@@ -42,7 +42,8 @@
 
 <script>
 import i18n from '@/lang'
-import { login, findCompany } from "@/service/api"
+import { login, findCompany, findDistrict } from "@/service/api"
+import { treeDataUtil, saveTwo } from "@/utils/publicUtil"
 export default {
   data () {
     return {
@@ -59,7 +60,9 @@ export default {
         value: 'en'
       }],
       lang: 'zh',
-      checked: false
+      checked: false,
+      companyData: [],
+      districtData: []
     }
   },
 
@@ -82,12 +85,15 @@ export default {
       let resData = await login(params)
       if (resData.status === 200 && resData.data.data !== null) {
         localStorage.setItem("USER_INFO", JSON.stringify(resData.data.data));
-        let userId = resData.data.data.userId
+        let userId = resData.data.data.userId || ""
+        let companyId = resData.data.data.companyId || ""
         this.findCompany(userId);
+        this.findDistrict(companyId);
       } else {
         this.$message.warning(i18n.t('login.tip'))
       }
     },
+    // 查询组织
     async findCompany (userId) {
       let params = {
         userId: userId,
@@ -100,6 +106,35 @@ export default {
         this.$store.dispatch("user/setCompanyData", this.companyData)
       }
       this.$router.push("/")
+    },
+    async findDistrict (companyId) { // 查询区域
+      const self = this;
+      // let params = {
+      //   companyId: companyId
+      // }
+      let params = {
+        companyId: ""
+      }
+      let res = await findDistrict(params)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            this.districtData = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+            this.districtData = saveTwo(this.districtData)
+            this.$store.dispatch("user/setDistrictData", this.districtData)
+          })
+        } else {
+          this.districtData = list
+          this.$store.dispatch("user/setDistrictData", this.districtData)
+        }
+      }
     }
   }
 }

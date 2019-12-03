@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px" size="mini">
-      <el-form-item label="表编号" prop="meterNum">
-        <el-input v-model="form.meterNum" clearable />
+      <el-form-item label="表编号" prop="meterNbiotNum">
+        <el-input v-model="form.meterNbiotNum" clearable />
       </el-form-item>
       <el-form-item label="表类型" prop="meterType">
         <el-input v-model="form.meterType" clearable />
       </el-form-item>
-      <el-form-item label="小区" prop="areasId">
-        <!-- <el-select v-model="form.areasId">
+      <el-form-item label="所属区域" prop="meterAreasId">
+        <!-- <el-select v-model="form.meterAreasId">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -17,8 +17,8 @@
           />
         </el-select> -->
         <el-cascader
-          v-model="form.areasList"
-          :options="options"
+          v-model="areaObject.areasList"
+          :options="districtData"
           clearable
           filterable
           :props="setParent"
@@ -84,13 +84,15 @@
 <script>
 import { treeDataUtil } from '@/utils/publicUtil'
 import { addMeterNbIot, updateMeterNbIot, findDistrict } from "@/service/api"
+import { list_mixins } from '@/mixins'
 export default {
+  mixins: [list_mixins],
   props: {
     form: {
       type: Object,
       default: () => {
         return {
-          meterNum: '', // 表编号
+          meterNbiotNum: '', // 表编号
           meterUserNum: '', // 用户编号
           meterConcentratorNum: '', // 集中器编号
           meterNodeNum: '', // 采集器编号
@@ -107,7 +109,7 @@ export default {
           reportCycle: '', // 上报周期
           readValue: '', // 本次读数
           version: '', // 软件版本号
-          areasId: '', // 小区ID
+          meterAreasId: '', // 小区ID
           areasList: []
         }
       }
@@ -115,6 +117,14 @@ export default {
     type: {
       type: [Number, String],
       default: 0
+    },
+    areaObject: {
+      type: Object,
+      default: () => {
+        return {
+          areasList: []
+        }
+      }
     }
   },
   data () {
@@ -130,10 +140,10 @@ export default {
         meterType: [
           { required: true, message: "请填写表类型", trigger: 'blur' }
         ],
-        meterNum: [
+        meterNbiotNum: [
           { required: true, message: "请填写表编号", trigger: 'blur' }
         ],
-        areasId: [
+        meterAreasId: [
           { required: true, message: "请选择小区", trigger: 'blur' }
         ]
       },
@@ -176,6 +186,12 @@ export default {
         } else {
           self.list = list
         }
+      }
+    },
+    changeParent() {
+      if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
+        this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
+        console.log("this.form.meterAreasId", this.form.meterAreasId)
       }
     },
     onSubmit (formName) {

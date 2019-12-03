@@ -3,6 +3,7 @@ import { setSesStorage, setLocalStorage } from '@/utils/storageUtil.js'
 const state = {
   isLogin: false,
   companyData: [], // 组织
+  districtData: [],  // 区域（保留二层）
   districtIschage: false, // 区域小区楼栋是否发生变化
   isWealth: false // 资源管理是否发生变化
 }
@@ -14,6 +15,10 @@ const mutations = {
   'SET_COMPANY_DATA' (state, boo) {
     setLocalStorage("COMPANY_DATA", boo)
     state.companyData = boo
+  },
+  'SET_DISTRICT_DATA' (state, boo) {
+    setLocalStorage("DISTRICT_DATA", boo)
+    state.districtData = boo
   },
   'SET_DISTRICT_ISCHANGE' (state, boo) {
     state.districtIschage = boo
@@ -28,6 +33,9 @@ const actions = {
   },
   setCompanyData ({ commit }, boo) {
     commit(types.SET_COMPANY_DATA, boo)
+  },
+  setDistrictData ( { commit }, boo) {
+    commit(types.SET_DISTRICT_DATA, boo)
   },
   setDistrictIschange ({ commit }, boo) {
     commit(types.SET_DISTRICT_ISCHANGE, boo)
