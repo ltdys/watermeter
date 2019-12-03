@@ -226,6 +226,9 @@ export default {
       this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
       this.addVisible = true
+      this.areaObject.areasList = this.tableDataFj.filter(item => {
+        return item.id == row.meterAreasId
+      })[0].path
     },
     handleDelete (row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
