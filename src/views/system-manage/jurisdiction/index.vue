@@ -11,7 +11,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="用户角色" prop="name">
-          <el-input v-model="search.name" placeholder="请输入用户角色" clearable />
+          <el-input v-model.trim="search.name" placeholder="请输入用户角色" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="searchClick">{{ $t('common.query') }}</el-button>
@@ -266,6 +266,7 @@ export default {
       this.init()
     },
     searchClick () {
+      this.pageObj.currentPage = 1
       this.getRoleList()
     },
     accreditClick (row, column, event) {

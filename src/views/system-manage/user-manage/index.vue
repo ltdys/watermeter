@@ -2,9 +2,17 @@
   <div class="user-manage">
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item label="组织机构">
-        <el-select v-model="search.companyName" clearable filterable>
+        <!-- <el-select v-model="search.companyName" clearable filterable>
           <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.companyName" />
-        </el-select>
+        </el-select> -->
+        <el-cascader
+          v-model="search.orgList"
+          :options="companyData1"
+          clearable
+          filterable
+          :props="setProps"
+          @change="changeOrg"
+        />
       </el-form-item>
       <el-form-item :label="$t('systemManageUser.toolbarB')">
         <el-input v-model="search.roleName" :placeholder="$t('systemManageUser.toolbarB_')" clearable />
@@ -74,8 +82,8 @@
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" placeholder="请输入密码" clearable />
         </el-form-item>
-        <el-form-item label="角色">
-          <el-select v-model="value2" placeholder="请选择角色">
+        <el-form-item label="角色" prop="roleName">
+          <el-select v-model="form.roleName" placeholder="请选择角色">
             <el-option
               v-for="item in roleList"
               :key="item.id"
@@ -199,12 +207,13 @@ export default {
           value: 0
         }
       ],
-      companyData1:[],
+      companyData1: [],
       tableData: [],
       form: {
         companyId: '',
         userName: '',
         password: '',
+        roleName: '',
         realName: '',
         sex: '',
         age: '',
@@ -223,6 +232,9 @@ export default {
         userName: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
+        roleName: [
+          { required: true, message: '请选择用户', trigger: 'change' }
+        ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ],
@@ -232,7 +244,8 @@ export default {
       },
       search: {
         companyName: '',
-        roleName: ''
+        roleName: '',
+        orgList: []
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -289,7 +302,8 @@ export default {
       }
       let resData = await findCompany(params)
       if (resData.status === 200 && resData.data.data !== null) {
-        this.companyData1 = resData.data.data
+        let list = resData.data.data
+        this.companyData1 = JSON.parse(orgTreeData([...list]))
       }
     },
     searchSubmit () {
@@ -343,7 +357,7 @@ export default {
     async onSubmit1 (userId) {
       let params = {
         userId: userId,
-        roleId: this.value2
+        roleId: this.form.roleName
       }
       let resData = await userAddRole(params)
       if (resData.status === 200 && resData.data.code === 1) {
