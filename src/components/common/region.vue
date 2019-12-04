@@ -11,6 +11,7 @@
       :props="defaultProps"
       :default-expand-all="true"
       :expand-on-click-node="false"
+      :render-content="renderContent"
       @node-click="handleNodeClick"
     />
   </div>
@@ -50,6 +51,14 @@ export default {
     handleNodeClick (data) {
       console.log('data', data)
       this.$emit('handleNodeClick', data)
+    },
+    renderContent (h, { node, data, store }) {
+      return (
+        <span style='flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;width: 80%;'>
+          <span style='white-space: nowrap;overflow: hidden;text-overflow: ellipsis;'>
+            <span title={node.label}>{node.label}</span>
+          </span>
+        </span>);
     }
   }
 }

@@ -32,7 +32,7 @@
       <el-form-item label="区域地址">
         <el-input v-model="form.address" clearable />
       </el-form-item>
-      <el-form-item label="区域状态">
+      <el-form-item label="区域状态" prop="state">
         <el-select v-model="form.state">
           <el-option v-for="(item, index) in stateList" :key="index" :label="item.label" :value="item.value" />
         </el-select>
@@ -78,13 +78,16 @@ export default {
       // form: { ...this.formObj },
       rules: {
         company: [
-          { required: true, message: '请选择组织机构', trigger: 'blur' }
+          { required: true, message: '请选择组织机构', trigger: 'change' }
         ],
         // parentId: [
         //   { required: true, message: '请选择归属区域', trigger: 'change' }
         // ],
         name: [
           { required: true, message: '请输入区域名称', trigger: 'blur' }
+        ],
+        state: [
+          { required: true, message: '请选择区域状态', trigger: 'change' }
         ]
       },
       setProps: { // 设置级联选择器
@@ -103,7 +106,6 @@ export default {
   },
 
   mounted () {
-
   },
 
   methods: {

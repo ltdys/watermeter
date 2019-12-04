@@ -14,8 +14,8 @@
           @change="changeOrg"
         />
       </el-form-item>
-      <el-form-item :label="$t('systemManageUser.toolbarB')">
-        <el-input v-model="search.roleName" :placeholder="$t('systemManageUser.toolbarB_')" clearable />
+      <el-form-item label="角色名称">
+        <el-input v-model="search.roleName" placeholder="请输入角色名称" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -60,21 +60,29 @@
         prop="time"
         :label="$t('systemManageUser.tableE')"
       />
-      <!-- <el-table-column fixed="right" :label="$t('common.operation')" width="120">
-          <template slot-scope="scope">
-            <i class="el-icon-edit" @click="handleEdit(scope.row)">编辑用户角色</i>
-            <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
-          </template>
-        </el-table-column> -->
+      <el-table-column fixed="right" :label="$t('common.operation')" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-edit" @click="handleEdit(scope.row)" />
+          <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 添加 -->
-    <el-dialog :visible.sync="addVisible" title="添加用户" @close="close">
+    <el-dialog :visible.sync="addVisible" :title="type == 0 ? '添加用户' : '编辑用户'" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="组织" prop="companyId">
-          <el-select v-model="form.companyId" placeholder="请选择组织" clearable filterable>
+          <!-- <el-select v-model="form.companyId" placeholder="请选择组织" clearable filterable>
             <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
-          </el-select>
+          </el-select> -->
+          <el-cascader
+            v-model="form.company"
+            :options="companyData1"
+            clearable
+            filterable
+            :props="setProps"
+            @change="changeOrgAdd"
+          />
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="form.userName" placeholder="请输入用户名" clearable />
@@ -134,10 +142,10 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :visible.sync="editVisible" title="编辑用户角色" @close="close1">
+    <!-- <el-dialog :visible.sync="editVisible" title="编辑用户角色" @close="close1">
       <el-form ref="ruleForm" label-width="80px">
         <el-form-item label="角色">
-          <el-select v-model="value1" multiple placeholder="请选择">
+          <el-select v-model="value1" placeholder="请选择">
             <el-option
               v-for="item in roleList"
               :key="item.id"
@@ -151,16 +159,16 @@
           <el-button @click="close1">{{ $t('common.cancel') }}</el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>
+    </el-dialog> -->
 
-    <my-pagination
+    <!-- <my-pagination
       :all-total="pageObj.allTotal"
       :current-page="pageObj.currentPage"
       :page-size="pageObj.pageSize"
       :page-sizes="pageObj.pageSizes"
       @pageChange="pageChange"
       @currentChange="currentChange"
-    />
+    /> -->
   </div>
 </template>
 
@@ -210,6 +218,7 @@ export default {
       companyData1: [],
       tableData: [],
       form: {
+        company: [],
         companyId: '',
         userName: '',
         password: '',
@@ -310,14 +319,34 @@ export default {
       this.getUserDetailed()
     },
     changeOrg () { // 组织机构选择
-      this.search.companyName = this.search.companyName[this.search.orgList.length - 1]
+      this.search.companyName = this.search.orgList[this.search.orgList.length - 1]
     },
-    handleEdit (row) {
-      this.checkUserId = row.userid
-      this.value1[0] = row.roleid
-      this.editVisible = true
+    changeOrgAdd () {
+      this.form.companyId = this.form.company[this.form.company.length - 1]
     },
-    handleDelete () {
+    handleEdit (row) { // 编辑
+      console.log('row', row)
+      this.type = 1
+      this.form.company = [row.companyid]
+      this.form.companyId = row.companyid
+      this.form.userName = row.username
+      this.form.password = ''
+      this.form.roleName = row.roleid
+      this.form.realName = ''
+      this.form.sex = ''
+      this.form.age = ''
+      this.form.mobile = ''
+      this.form.email = ''
+      this.form.address = ''
+      this.form.status = ''
+
+      this.addVisible = true
+
+      // this.checkUserId = row.userid
+      // this.value1[0] = row.roleid
+      // this.editVisible = true
+    },
+    handleDelete () { // 删除
 
     },
     pageChange (data) { // 每页条数切换回调事件

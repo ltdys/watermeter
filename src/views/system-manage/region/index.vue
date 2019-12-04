@@ -229,9 +229,13 @@ export default {
         let params = {
           companyId: self.currentOrg.id
         }
-        self.$message.success(`添加区域成功`);
-        self.close()
-        self.findDistrict(params)
+        if (res.data.code == 1) {
+          self.$message.success(`添加区域成功`);
+          self.close()
+          self.findDistrict(params)
+        } else {
+          self.$message.warning(res.data.message);
+        }
       } else {
         self.$message.warning(`添加区域失败`);
       }
@@ -244,9 +248,13 @@ export default {
         let params = {
           companyId: self.currentOrg.id
         }
-        self.$message.success(`修改区域成功`);
-        self.close()
-        self.findDistrict(params)
+        if (res.data.code == 1) {
+          self.$message.success(`修改区域成功`);
+          self.close()
+          self.findDistrict(params)
+        } else {
+          self.$message.warning(res.data.message);
+        }
       } else {
         self.$message.warning(`修改区域失败`);
       }
@@ -268,6 +276,7 @@ export default {
     },
     changeOrg () { // 组织机构选择
       this.search.org = this.search.orgList[this.search.orgList.length - 1]
+      // this.form.company = this.search.orgList
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
@@ -290,6 +299,8 @@ export default {
       }
     },
     handleEdit (item) { // 编辑
+      // company
+      console.log('编辑item', item)
       this.regionStatus = 1
       this.form.id = item.id
       this.form.name = item.name
@@ -297,6 +308,9 @@ export default {
       this.form.address = item.address
       this.form.companyId = item.companyId
       this.form.parentId = item.parentId
+      // this.form.parent = item.path
+      // this.form.company
+
       this.valuationFun(item)
     },
     handleDelete (item) { // 删除
@@ -324,7 +338,7 @@ export default {
       this.regionStatus = 0
       this.form.companyDis = true
       this.form.parentDis = true
-      this.form.companyId = item.companyId
+      this.form.companyId = item.companyid
       this.form.parentId = item.id
       this.valuationFun(item)
     },
@@ -353,18 +367,19 @@ export default {
       }
     },
     valuationFun (item) { // 部分赋值公共方法
-      if (this.currentOrg.parentId == '0') {
-        this.form.company = [this.form.companyId]
+      const self = this
+      if (self.currentOrg.parentId == '0') {
+        self.form.company = [self.form.companyId]
       } else {
-        this.form.company = [this.currentOrg.parentId, this.form.companyId]
+        self.form.company = [self.currentOrg.parentId, self.form.companyId]
       }
-      this.form.parent = item.path
-      this.regionVisible = true
-      this.$nextTick(() => {
+      self.form.parent = item.path
+      self.regionVisible = true
+      self.$nextTick(() => {
         let param = {
-          companyId: this.form.companyId
+          companyId: item.companyid
         }
-        this.$refs.edit.findDistrict(param)
+        self.$refs.edit.findDistrict(param)
       })
     },
     handleNodeClick (data) {
@@ -372,6 +387,8 @@ export default {
       let params = {
         companyId: data.id
       }
+      this.form.company = data.parentId == 0 ? [data.id] : [data.parentId, data.id]
+      this.form.companyId = this.form.company[this.form.company.length - 1]
       this.findDistrict(params)
       // this.$message.success(`切换${data.companyName}成功`)
     },
