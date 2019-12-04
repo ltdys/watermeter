@@ -1,6 +1,12 @@
 <template>
   <div>
     <el-form :model="form" ref="ruleForm" :rules="rules" label-width="100px">
+      <el-form-item label="水表" prop="nbiotNum">
+        <el-select v-model="form.nbiotNum" clearable filterable>
+          <el-option :label="item.meterNbiotNum" :value="item.meterNbiotNum" v-for="(item, index) in nbIotList" :key="index">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="所属区域" prop="areasId">
         <!-- <el-select v-model="form.areasId" clearable filterable>
           <el-option :label="item.label" :value="item.value" v-for="(item, index) in list" :key="index">
@@ -39,15 +45,6 @@
       <el-form-item label="电话号码">
         <el-input v-model="form.tel" clearable />
       </el-form-item>
-      <el-form-item label="楼号">
-        <el-input v-model="form.floorNo" clearable />
-      </el-form-item>
-      <el-form-item label="单元号">
-        <el-input v-model="form.unitNo" clearable />
-      </el-form-item>
-      <el-form-item label="门牌号">
-        <el-input v-model="form.roomNo" clearable />
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
         <el-button @click="close">{{ $t('common.cancel') }}</el-button>
@@ -57,7 +54,7 @@
 </template>
 
 <script>
-import { addMeterUser, findDistrict } from "@/service/api"
+import { addMeterUser, findDistrict, updateMeterUser } from "@/service/api"
 import { treeDataUtil } from "@/utils/publicUtil"
 export default {
   props: {
@@ -69,14 +66,24 @@ export default {
       type: Array,
       default: () => []
     },
+    nbIotList: {
+      type: Array,
+      default: () => []
+    },
     treeData: {
       type: Array,
       default: () => []
+    },
+    type: {
+      type: [Number, String],
+      default: () => 0
     },
     form: {
       type: Object,
       default: () => {
         return {
+          id: '',  //用户id
+          nbiotNum: '',
           areasId: '',
           num: '',
           name: '',
@@ -107,6 +114,9 @@ export default {
         value: 1
       }],
       rules: {
+        nbiotNum: [
+          { required: true, message: "请选择水表", trigger: 'change' }
+        ],
         areasId: [
           { required: true, message: "请选择小区", trigger: 'change' }
         ],
@@ -135,25 +145,30 @@ export default {
 
   methods: {
     close () {
-      this.form = {
-        areasId: '',
-        num: '',
-        name: '',
-        idNumber: '',
-        tel: '',
-        waterHouseTypeId: '',
-        waterNatureId: '',
-        floorNo: '',
-        unitNo: '',
-        roomNo: '',
-        namePy: ''
-      }
+      // this.form = {
+      //   areasId: '',
+      //   num: '',
+      //   name: '',
+      //   idNumber: '',
+      //   tel: '',
+      //   waterHouseTypeId: '',
+      //   waterNatureId: '',
+      //   floorNo: '',
+      //   unitNo: '',
+      //   roomNo: '',
+      //   namePy: ''
+      // }
       this.$emit('close')
     },
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.addMeterUser()
+          debugger
+          if (this.type == 0) {
+            this.addMeterUser()
+          } else {
+            this.updateMeterUser()
+          }
         } else {
           return false;
         }
@@ -181,6 +196,7 @@ export default {
     },
     async addMeterUser() {
       let params = {
+        nbiotNum: this.form.nbiotNum,
         meterUser: this.form
       }
       let resData = await addMeterUser(params)
@@ -189,8 +205,21 @@ export default {
         this.close()
       }
     },
+    async updateMeterUser() {
+      let params = {
+        nbiotNum: this.form.nbiotNum,
+        meterUser: this.form
+      }
+      let resData = await updateMeterUser(params)
+      if (resData.status === 200) {
+        this.$message.success(resData.data.message)
+        this.close()
+      }
+    },
     changeOrg() {
-      this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
+      if(this.form.areasId && this.form.areasId.length > 0) {
+        this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
+      }
     }
   }
 }

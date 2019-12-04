@@ -68,63 +68,34 @@
         width="120"
       />
       <el-table-column
-        prop="meterSpec"
-        label="规格型号"
-      />
+        label="当前状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.isOnline | fIsOnline}}
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="simCardCcid"
-        label="SIM卡号"
-        width="200"
-      />
+        prop="bindState"
+        label="使用状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.bindState | fUseStatus }}
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="installAddress"
-        label="安装地址"
-        width="180"
-      />
-      <el-table-column
-        prop="signalIntensity"
-        label="信号强度"
-      />
-      <el-table-column
-        prop="batteryCapacity"
-        label="电池容量"
-      />
-      <el-table-column
-        prop="pressureAlert"
-        label="压力警告"
-      />
-      <el-table-column
-        prop="batteryLevel"
-        label="电池电量"
-      />
-      <el-table-column
-        prop="valveState"
-        label="阀门状态"
-      />
-      <el-table-column
-        prop="valueSupport"
-        label="阀控支持"
-      />
-      <el-table-column
-        prop="meterType"
-        label="表类型"
-      />
-      <el-table-column
-        prop="reportCycle"
-        label="上报周期"
-      />
-      <el-table-column
-        prop="readValue"
-        label="本次读数"
-      />
-      <el-table-column
-        prop="version"
-        label="软件版本号"
-        width="120"
-      />
+        label="最后上线"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.updateTime | fFormatDate }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="meterAreasId"
-        label="小区"
+        label="所属区域"
+      />
+      <el-table-column
+        prop="non"
+        label="通迅规约"
       />
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
         <template slot-scope="scope">
@@ -142,7 +113,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="$t('deviceManageRegister.dialogTitle')" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
       <my-edit :form="form" :type="type" @close="close" :areaObject="areaObject"/>
     </el-dialog>
   </div>
@@ -166,6 +137,7 @@ export default {
   data () {
     return {
       type: 0, // 0添加 1编辑
+      title: "NB-IOT添加",
       tableData: [],
       search: {
         meterNbiotNum: '',
@@ -222,6 +194,7 @@ export default {
       this.init()
     },
     handleEdit (row) {
+      this.title = "NO-IOT编辑"
       this.copyForm = row
       this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
@@ -288,6 +261,7 @@ export default {
       this.init()
     },
     addNbIotRegister () {
+      this.title = "NO-IOT添加"
       this.type = 0
       this.addVisible = true
     },

@@ -33,7 +33,7 @@ import alarmStatistics from './components/alarm-statistics'
 import installStatistics from './components/install-statistics'
 import { list_mixins } from '@/mixins'
 import { wealthTreeData } from '@/utils/publicUtil'
-import { getUserResource } from '@/service/api'
+import { getUserResource, countMeterNbIotL } from '@/service/api'
 import i18n from '@/lang'
 
 export default {
@@ -53,7 +53,7 @@ export default {
         value: 3240
       }, {
         label: i18n.t('chart.deviceOnline'),
-        value: 5420
+        value: 5420 //设备在线
       }, {
         label: i18n.t('chart.alarmStatistics'),
         value: 2513
@@ -76,6 +76,10 @@ export default {
 
   created () {
     this.getUserResource()
+    this.countMeterNbIotL()
+    this.countMeterNbIotL1()
+    this.countMeterNbIotL2()
+    this.countMeterNbIotL3()
   },
 
   methods: {
@@ -128,7 +132,45 @@ export default {
       } else {
         self.$message.warning(resData.data.message)
       }
-    }
+    },
+    async countMeterNbIotL() {  //设备在线
+      let params = {
+        userId: this.userId,
+        meterNbIot: {
+          isOnline: "0"
+        }
+      }
+      let resData = await countMeterNbIotL(params)
+      this.deviceList[1].value = resData.data.data.count || 0
+    },
+    async countMeterNbIotL1() {  //设备离线
+      let params = {
+        userId: this.userId,
+        meterNbIot: {
+          isOnline: "1"
+        }
+      }
+      let resData = await countMeterNbIotL(params)
+      this.deviceList[3].value = resData.data.data.count || 0
+    },
+    async countMeterNbIotL2() {  //设备总数
+      let params = {
+        userId: this.userId,
+        meterNbIot: {}
+      }
+      let resData = await countMeterNbIotL(params)
+      this.deviceList[0].value = resData.data.data.count || 0
+    },
+    async countMeterNbIotL3() {  //警告统计
+      let params = {
+        userId: this.userId,
+        meterNbIot: {
+          pressureAlert: "1"
+        }
+      }
+      let resData = await countMeterNbIotL(params)
+      this.deviceList[2].value = resData.data.data.count || 0
+    },
   }
 };
 </script>

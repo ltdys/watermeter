@@ -102,10 +102,6 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="installAddress"
-          label="安装地址"
-        />
-        <el-table-column
           prop="remarkes"
           label="备注"
         />

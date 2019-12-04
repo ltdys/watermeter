@@ -155,6 +155,12 @@ export const recentMeterReading = params => axios.post('/watermeter/recentMeterR
 // 户表管理-添加用户
 export const addMeterUser = params => axios.post('/watermeter/addMeterUser', params);
 
+// 户表管理-编辑用户
+export const updateMeterUser = params => axios.post('/watermeter/updateMeterUser', params);
+
+// 户表管理-删除用户
+export const deleteMeterUser = params => axios.post('/watermeter/deleteMeterUser', params);
+
 // 户表查询
 export const getMeterUserAndMeterNbIot = params => axios.post('/watermeter/getMeterUserAndMeterNbIot', params);
 
@@ -172,4 +178,7 @@ export const getUserResource = params => axios.post('watermeter/getUserResource'
 
 // 组织机构小区树结构
 export const getTreeAreas = params => axios.post('/watermeter/getTreeAreas', params)
+
+//首页  数据查询
+export const countMeterNbIotL = params => axios.post('/watermeter/countMeterNbIotL', params)
 

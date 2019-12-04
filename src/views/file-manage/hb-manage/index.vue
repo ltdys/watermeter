@@ -99,7 +99,8 @@
           <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
               <!-- <i class="el-icon-edit" @click="handleEdit(scope.row)"></i> -->
-              <span @click="handleDelete(scope.row)" class="hb-manage_delete">删除表</span>
+              <span @click="handleEdit(scope.row)" class="hb-manage_delete">编辑</span>
+              <span @click="handleDelete(scope.row)" class="hb-manage_delete">删除</span>
             </template>
           </el-table-column>
         </el-table>
@@ -115,7 +116,7 @@
     </el-row>
 
     <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose">
-      <user-edit @close="userClose" :waterHouseTypeList="waterHouseTypeList" :waterNatureList="waterNatureList" :treeData="treeData" :form="form"/>
+      <user-edit @close="userAddVisible = false" :waterHouseTypeList="waterHouseTypeList" :waterNatureList="waterNatureList" :treeData="treeData" :form="form" :nbIotList="nbIotList" :type="type"/>
     </el-dialog>
 
     <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" @close="tableClose" class="region-manage-dialog">
@@ -125,7 +126,7 @@
 </template>
 
 <script>
-import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot } from '@/service/api'
+import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot, getMeterNbIotL, deleteMeterUser } from '@/service/api'
 import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -146,6 +147,7 @@ export default {
     return {
       tableDataUser: [],
       userTitle: "添加用户",
+      type: 0, // 0添加 1编辑
       search: {
         type: "",
         value: "",
@@ -183,6 +185,7 @@ export default {
       tableAddVisible: false,
       waterHouseTypeList: [],
       waterNatureList: [],
+      nbIotList: [],
       treeData: []
     }
   },
@@ -196,6 +199,21 @@ export default {
       this.getMeterUserAndMeterNbIot()
       this.findWaterHouseTypes()
       this.findWaterNatures()
+      this.getMeterNbIotL()
+    },
+    // 查户表
+    async getMeterNbIotL () {
+      const params = {
+        userId: this.userId,
+        meterNbIot: {},
+        currentPage: 1,
+        pageSize: 10000
+      }
+      let resData = await getMeterNbIotL(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.nbIotList = resData.data.data
+        console.log("this.nbIotList", JSON.stringify(this.nbIotList))
+      }
     },
     async getMeterUserAndMeterNbIot() {
       switch(this.search.type) {
@@ -299,19 +317,65 @@ export default {
           // unitNo: '',
           // roomNo: '',
           // namePy: ''
+      // this.form = JSON.parse(JSON.stringify(data))
+      this.type = 1
+      data.id = data.meteruserid
+      data.nbiotNum = data.meternbiotnum
+      data.areasId = data.districtid
+      data.num = data.meterusernum
+      data.waterHouseTypeId = data.waterHouseTypeId || ''
+      data.waterNatureId = data.waterNatureId || ''
+      data.name = data.meterusername
+      data.idNumber = data.meteruseridnumber
+      data.tel = data.telephone
       this.form = JSON.parse(JSON.stringify(data))
+
+      // this.form.nbiotNum = data.meternbiotnum
+      // this.form.areasId = data.districtid
+      // this.form.num = data.meterusernum
+      // this.form.waterHouseTypeId = data.waterHouseTypeId || ''
+      // this.form.waterNatureId = data.waterNatureId || ''
+      // this.form.name = data.meterusername
+      // this.form.idNumber = data.meteruseridnumber
+      // this.form.tel = data.telephone
+
+
       console.log("this.form", this.form)
       this.userTitle = "编辑用户"
       this.userAddVisible = true
     },
     handleDelete (row) {
-      
+      this.$confirm(`此操作将永久删除 ${row.meterusername}, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteMeterUser(row)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    async deleteMeterUser (row) {
+      let params = {
+        meterUserId: row.meteruserid
+      }
+      let resData = await deleteMeterUser(params)
+      if (resData.status === 200) {
+        this.$message.success(`${row.meterusername} 删除成功`)
+      } else {
+        this.$message.warning(resData.data.message)
+      }
+      this.init()
     },
     handleNodeClick (data) {
       this.search.areasId = data.id
       this.getMeterUserAndMeterNbIot()
     },
     addUser () {
+      this.type = 0
       this.userTitle = "添加用户"
       this.userAddVisible = true
     },
@@ -319,7 +383,9 @@ export default {
       this.tableAddVisible = true
     },
     userClose () {
-      this.userAddVisible = false
+      this.form = {}
+      this.getMeterUserAndMeterNbIot()
+      // this.userAddVisible = false
     },
     tableClose () {
       this.tableAddVisible = false

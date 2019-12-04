@@ -35,7 +35,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="信号强度">
-        <el-input v-model="form.resp" clearable />
+        <el-input v-model="form.rscp" clearable />
       </el-form-item>
       <el-form-item label="电池电量">
         <el-input v-model="form.electricQ" clearable />
@@ -94,7 +94,7 @@ export default {
           specNum: '', // 规格型号编码
           simCcid: '', // SIM卡CCID
           isOnline: '', // 0不在线 1在线
-          resp: '', // 信号强度
+          rscp: '', // 信号强度
           electricQ: '', // 电池电量
           electricV: '', // 电池电压
           atcStatus: '', // 空管状态 0异常  1正常
