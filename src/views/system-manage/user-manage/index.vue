@@ -15,7 +15,7 @@
         />
       </el-form-item>
       <el-form-item label="角色名称">
-        <el-input v-model="search.roleName" placeholder="请输入角色名称" clearable />
+        <el-input v-model.trim="search.roleName" placeholder="请输入角色名称" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -190,7 +190,7 @@ export default {
     return {
       setProps: { // 设置级联选择器
         label: 'companyName',
-        value: 'id',
+        value: 'companyName',
         expandTrigger: 'click',
         checkStrictly: true
       },
@@ -280,6 +280,7 @@ export default {
       this.findCompany();
     },
     async getUserDetailed () {
+      // debugger
       let params = {
         userId: this.userId,
         companyName: this.search.companyName,
