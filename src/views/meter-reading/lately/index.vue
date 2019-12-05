@@ -10,12 +10,12 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                clearable>
-              </el-option>
+                clearable
+              />
             </el-select>
           </el-form-item>
           <el-form-item class="mr-five">
-            <el-input v-model="search.value" clearable></el-input>
+            <el-input v-model="search.value" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -54,7 +54,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick"/> 
+          <my-region2 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -161,14 +161,14 @@
     <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
       <el-form ref="gatherRuleForm" :model="gatherForm">
         <el-form-item>
-          <el-transfer v-model="value" :data="data"></el-transfer>
+          <el-transfer v-model="value" :data="data" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="gatherSubmit('ruleForm')">确定</el-button>
           <el-button @click="gatherVisiable = false">取消</el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>  
+    </el-dialog>
 
     <el-dialog :visible="readVisiable" title="当前读数" @close="readClose">
       <div class="read-wrap">
@@ -199,7 +199,7 @@ export default {
       for (let i = 1; i <= 15; i++) {
         data.push({
           key: i,
-          label: `采集器 ${ i }`,
+          label: `采集器 ${i}`,
           disabled: i % 4 === 0
         });
       }
@@ -209,7 +209,7 @@ export default {
       tableData: [],
       treeData: [],
       gatherVisiable: false, // 数据采集弹窗
-      readVisiable: false, //数据读取弹窗
+      readVisiable: false, // 数据读取弹窗
       gatherForm: {},
       data: generateData(),
       value: [1, 4],
@@ -221,10 +221,10 @@ export default {
         type: '',
         value: '',
         areasId: "",
-        num: "",  // 用户编号
-        meterNbiotNum: "", // 编号 
-        meterType: "",  // 表类型
-        address: "", // 安装地址
+        num: "", // 用户编号
+        meterNbiotNum: "", // 编号
+        meterType: "", // 表类型
+        address: "" // 安装地址
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -257,8 +257,8 @@ export default {
       this.recentMeterReading()
     },
     async recentMeterReading () {
-      switch(this.search.type) {
-        case 0: 
+      switch (this.search.type) {
+        case 0:
           this.search.num = this.search.value
           break;
         case 1:
@@ -276,20 +276,20 @@ export default {
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
         meterRead: {
-          num: this.search.num,  // 用户编号
-          meterNbiotNum: this.search.meterNbiotNum, // 编号 
-          meterType: this.search.meterType,  // 表类型
-          address: this.search.address, // 安装地址
+          num: this.search.num, // 用户编号
+          meterNbiotNum: this.search.meterNbiotNum, // 编号
+          meterType: this.search.meterType, // 表类型
+          address: this.search.address // 安装地址
         },
         meterNbIot: {
-          num: this.search.num,  // 用户编号
-          meterNbiotNum: this.search.meterNbiotNum, // 编号 
-          meterType: this.search.meterType,  // 表类型
-          address: this.search.address, // 安装地址
+          num: this.search.num, // 用户编号
+          meterNbiotNum: this.search.meterNbiotNum, // 编号
+          meterType: this.search.meterType, // 表类型
+          address: this.search.address // 安装地址
         }
       }
       let resData = await recentMeterReading(params)
-      if(resData.status === 200 && resData.data.code === 1) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
@@ -302,7 +302,7 @@ export default {
       this.pageObj.currentPage = data;
       this.init()
     },
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       this.search.areasId = data.id
       this.recentMeterReading()
     },
@@ -318,7 +318,7 @@ export default {
     gatherClose () {
       this.gatherVisiable = false
     },
-    readClose() {
+    readClose () {
       this.readVisiable = false
     },
     gatherSubmit () {
@@ -327,7 +327,7 @@ export default {
     handleGather () {
       this.gatherVisiable = true
     },
-    handleRead() {
+    handleRead () {
       this.readVisiable = true
     }
   }

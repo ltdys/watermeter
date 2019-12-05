@@ -10,12 +10,12 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                clearable>
-              </el-option>
+                clearable
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-input v-model="search.value" clearable></el-input>
+            <el-input v-model="search.value" clearable />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -29,7 +29,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick"/>
+          <my-region2 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -99,8 +99,8 @@
           <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
               <!-- <i class="el-icon-edit" @click="handleEdit(scope.row)"></i> -->
-              <span @click="handleEdit(scope.row)" class="hb-manage_delete">编辑</span>
-              <span @click="handleDelete(scope.row)" class="hb-manage_delete">删除</span>
+              <span class="hb-manage_delete" @click="handleEdit(scope.row)">编辑</span>
+              <span class="hb-manage_delete" @click="handleDelete(scope.row)">删除</span>
             </template>
           </el-table-column>
         </el-table>
@@ -116,12 +116,12 @@
     </el-row>
 
     <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose">
-      <user-edit @close="userAddVisible = false" :waterHouseTypeList="waterHouseTypeList" :waterNatureList="waterNatureList" :treeData="treeData" :form="form" :nbIotList="nbIotList" :type="type"/>
+      <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" :tree-data="treeData" :form="form" :nb-iot-list="nbIotList" @close="userAddVisible = false" :type="type" />
     </el-dialog>
 
-    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" @close="tableClose" class="region-manage-dialog">
+    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose">
       <table-edit @close="tableClose" />
-    </el-dialog>  
+    </el-dialog>
   </div>
 </template>
 
@@ -132,7 +132,7 @@ import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import userEdit from './userEdit'
 import tableEdit from './tableEdit'
-import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
+// import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
 export default {
 
   name: 'hbManage',
@@ -152,10 +152,10 @@ export default {
         type: "",
         value: "",
         areasId: "",
-        num: "",  // 用户编号
-        meterNbiotNum: "", // 编号 
+        num: "", // 用户编号
+        meterNbiotNum: "", // 编号
         IMEI: "",
-        address: "", // 安装地址
+        address: "" // 安装地址
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -215,9 +215,9 @@ export default {
         console.log("this.nbIotList", JSON.stringify(this.nbIotList))
       }
     },
-    async getMeterUserAndMeterNbIot() {
-      switch(this.search.type) {
-        case 0: 
+    async getMeterUserAndMeterNbIot () {
+      switch (this.search.type) {
+        case 0:
           this.search.num = this.search.value
           break;
         case 1:
@@ -236,39 +236,39 @@ export default {
           num: this.search.num
         },
         meterNbIot: {
-          meterNbiotNum: this.search.meterNbiotNum, // 编号 
+          meterNbiotNum: this.search.meterNbiotNum, // 编号
           IMEI: this.search.IMEI,
-          address: this.search.address, // 安装地址
+          address: this.search.address // 安装地址
         },
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize
       }
       let resData = await getMeterUserAndMeterNbIot(params)
-      if(resData.status === 200) {
+      if (resData.status === 200) {
         this.tableDataUser = resData.data.data || []
         if (resData.data.page) {
           this.pageObj.allTotal = resData.data.page.totalRow || 0
         }
       }
     },
-    async findWaterHouseTypes() {
+    async findWaterHouseTypes () {
       let params = {
         waterHouseTypes: {
-           id: '',
+          id: '',
           houseType: '',
           ratedWaterYield: '',
           dayAlertWaterYield: '',
           companyId: ''
         },
         currentPage: 1,
-        pageSize: 10000,
+        pageSize: 10000
       }
       let resData = await findWaterHouseTypes(params)
       if (resData.status === 200) {
         this.waterHouseTypeList = resData.data.data
       }
     },
-    async findWaterNatures() {
+    async findWaterNatures () {
       let params = {
         waterNatures: {
           name: '',
@@ -276,24 +276,24 @@ export default {
           id: ''
         },
         currentPage: 1,
-        pageSize: 10000,
+        pageSize: 10000
       }
       let resData = await findWaterNatures(params)
       if (resData.status === 200) {
         this.waterNatureList = resData.data.data
       }
     },
-    async getHouseTable () {
-      const params = {
-        rows: this.pageObj.pageSize,
-        page: this.pageObj.currentPage
-      }
-      let res = await getHouseTable(params)
-      this.tableData = res.data.data
-      if (resData.data.page) {
-        this.pageObj.allTotal = resData.data.page.totalRow || 0
-      }
-    },
+    // async getHouseTable () {
+    //   const params = {
+    //     rows: this.pageObj.pageSize,
+    //     page: this.pageObj.currentPage
+    //   }
+    //   let res = await getHouseTable(params)
+    //   this.tableData = res.data.data
+    //   if (resData.data.page) {
+    //     this.pageObj.allTotal = resData.data.page.totalRow || 0
+    //   }
+    // },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
       this.init()
@@ -306,17 +306,17 @@ export default {
       this.getMeterUserAndMeterNbIot()
     },
     handleEdit (data) {
-      //areasId: '',
-          // num: '',
-          // name: '',
-          // idNumber: '',
-          // tel: '',
-          // waterHouseTypeId: '',
-          // waterNatureId: '',
-          // floorNo: '',
-          // unitNo: '',
-          // roomNo: '',
-          // namePy: ''
+      // areasId: '',
+      // num: '',
+      // name: '',
+      // idNumber: '',
+      // tel: '',
+      // waterHouseTypeId: '',
+      // waterNatureId: '',
+      // floorNo: '',
+      // unitNo: '',
+      // roomNo: '',
+      // namePy: ''
       // this.form = JSON.parse(JSON.stringify(data))
       this.type = 1
       data.id = data.meteruserid
@@ -338,7 +338,6 @@ export default {
       // this.form.name = data.meterusername
       // this.form.idNumber = data.meteruseridnumber
       // this.form.tel = data.telephone
-
 
       console.log("this.form", this.form)
       this.userTitle = "编辑用户"

@@ -1,10 +1,9 @@
 <template>
   <div>
-    <el-form :model="form" ref="ruleForm" :rules="rules" label-width="100px">
+    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
       <el-form-item label="水表" prop="nbiotNum">
         <el-select v-model="form.nbiotNum" clearable filterable>
-          <el-option :label="item.meterNbiotNum" :value="item.meterNbiotNum" v-for="(item, index) in nbIotList" :key="index">
-          </el-option>
+          <el-option v-for="(item, index) in nbIotList" :key="index" :label="item.meterNbiotNum" :value="item.meterNbiotNum" />
         </el-select>
       </el-form-item>
       <el-form-item label="所属区域" prop="areasId">
@@ -13,27 +12,25 @@
           </el-option>
         </el-select> -->
         <el-cascader
-          :options="options"
           v-model="form.areasId"
+          :options="options"
           filterable
-          @change="changeOrg"
           :props="setProps"
-          clearable>
-        </el-cascader>
+          clearable
+          @change="changeOrg"
+        />
       </el-form-item>
       <el-form-item label="用户编号" prop="num">
         <el-input v-model="form.num" clearable />
       </el-form-item>
       <el-form-item label="用户类型" prop="waterHouseTypeId">
         <el-select v-model="form.waterHouseTypeId" clearable filterable>
-          <el-option :label="item.houseType" :value="item.id" v-for="(item, index) in waterHouseTypeList" :key="index">
-          </el-option>
+          <el-option v-for="(item, index) in waterHouseTypeList" :key="index" :label="item.houseType" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="用水性质" prop="waterNatureId">
         <el-select v-model="form.waterNatureId" clearable filterable>
-          <el-option :label="item.name" :value="item.id" v-for="(item, index) in waterNatureList" :key="index">
-          </el-option>
+          <el-option v-for="(item, index) in waterNatureList" :key="index" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="用户名称">
@@ -82,7 +79,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          id: '',  //用户id
+          id: '', // 用户id
           nbiotNum: '',
           areasId: '',
           num: '',
@@ -96,7 +93,7 @@ export default {
           roomNo: '',
           namePy: ''
         }
-      }  
+      }
     }
   },
   data () {
@@ -139,7 +136,7 @@ export default {
     }
   },
 
-  created() {
+  created () {
     this.findDistrict()
   },
 
@@ -194,7 +191,7 @@ export default {
         }
       }
     },
-    async addMeterUser() {
+    async addMeterUser () {
       let params = {
         nbiotNum: this.form.nbiotNum,
         meterUser: this.form
@@ -205,7 +202,7 @@ export default {
         this.close()
       }
     },
-    async updateMeterUser() {
+    async updateMeterUser () {
       let params = {
         nbiotNum: this.form.nbiotNum,
         meterUser: this.form
@@ -216,8 +213,8 @@ export default {
         this.close()
       }
     },
-    changeOrg() {
-      if(this.form.areasId && this.form.areasId.length > 0) {
+    changeOrg () {
+      if (this.form.areasId && this.form.areasId.length > 0) {
         this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
       }
     }

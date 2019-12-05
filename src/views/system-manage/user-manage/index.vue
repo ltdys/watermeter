@@ -418,10 +418,13 @@ export default {
       }
       let resData = await addUser(params)
       if (resData.status === 200) {
-        let userId = resData.data.data.id || ''
-        console.log("返回的userId", userId)
-        this.onSubmit1(userId)
-        // this.$message.success('添加成功');
+        if (resData.data.code == 1) {
+          let userId = resData.data.data.id || ''
+          console.log("返回的userId", userId)
+          this.onSubmit1(userId)
+        } else {
+          this.$message.warning(resData.data.message);
+        }
       } else {
         this.$message.warning(resData.data.message)
       }

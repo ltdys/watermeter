@@ -47,7 +47,7 @@ export default {
   methods: {
     renderContent (h, { node, data, store }) {
       return (
-        <span style='flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;'>
+        <span style='flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;overflow: hidden;'>
           <span class='tree_label'>
             <span title={node.label}>{node.label}</span>
           </span>

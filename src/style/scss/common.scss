@@ -219,7 +219,7 @@ input[type=number]::-webkit-outer-spin-button {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      max-width: 180px;
+      // max-width: 50%;
     }
   }
 }

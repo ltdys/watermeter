@@ -2,9 +2,18 @@
   <div class="role-manage">
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item label="组织机构代码">
-        <el-select v-model="search.companyId" clearable>
-          <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
-        </el-select>
+        <!-- <el-select v-model="search.companyId" clearable>
+          <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
+        </el-select> -->
+        <el-cascader
+          v-model="search.orgList"
+          :options="companyData1"
+          placeholder="请选择组织机构"
+          clearable
+          filterable
+          :props="setProps"
+          @change="changeOrg"
+        />
       </el-form-item>
       <el-form-item label="用户角色">
         <el-input v-model="search.roleName" placeholder="请输入用户角色" clearable />
@@ -76,10 +85,33 @@
     <!-- 添加 -->
     <el-dialog :visible.sync="addVisible" :title="title" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="组织" prop="companyId">
-          <el-select v-model="form.companyId" clearable>
+        <el-form-item v-if="type == 0" label="组织" prop="companyId">
+          <!-- <el-select v-model="form.companyId" clearable>
             <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
+          </el-select> -->
+          <el-cascader
+            v-model="form.company"
+            :options="companyData1"
+            placeholder="请选择组织机构"
+            clearable
+            filterable
+            :props="setProps"
+            @change="changeOrgAdd"
+          />
+        </el-form-item>
+        <el-form-item v-if="type == 1" label="组织" prop="companyId">
+          <el-select v-model="form.companyId" clearable disabled>
+            <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
           </el-select>
+          <!-- <el-cascader
+            v-model="form.company"
+            :options="companyData1"
+            placeholder="请选择组织机构"
+            clearable
+            filterable
+            :props="setProps"
+            @change="changeOrgAdd"
+          /> -->
         </el-form-item>
         <el-form-item label="角色名" prop="roleName">
           <el-input v-model="form.roleName" clearable />
@@ -109,8 +141,9 @@
 </template>
 
 <script>
-import { getRoleList, addRole, updRole, delRole } from "@/service/api";
+import { findCompany, getRoleList, addRole, updRole, delRole } from "@/service/api";
 import myPagination from "@/components/pagination/my-pagination";
+import { orgTreeData } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 export default {
   name: 'resourceManage',
@@ -124,12 +157,21 @@ export default {
   data () {
     return {
       title: "添加角色",
+      companyData1: [], // 组织机构
+      setProps: { // 设置级联选择器
+        label: 'companyName',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      },
       tableData: [],
       search: {
+        orgList: [],
         roleName: '',
         companyId: ''
       },
       form: {
+        company: [],
         companyId: '',
         roleName: '',
         note: '',
@@ -187,11 +229,13 @@ export default {
 
   created () {
     this.init()
+    this.findCompany()
     console.log('companyData', this.companyData)
   },
 
   methods: {
     async getRoleList () {
+      const self = this
       const params = {
         userId: this.userId,
         pageSize: this.pageObj.pageSize,
@@ -203,7 +247,13 @@ export default {
       }
       let resData = await getRoleList(params)
       if (resData.status === 200) {
-        this.tableData = resData.data.data
+        let list = resData.data.data
+        this.tableData = []
+        list.forEach(item => {
+          self.$set(item, 'path', ['0', item.companyId])
+          this.tableData.push(item)
+        })
+        // this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
@@ -225,14 +275,35 @@ export default {
       }
       this.addVisible = false
     },
+    async findCompany (key) { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let resData = await findCompany(params)
+      if (resData.status === 200 && resData.data.data !== null) {
+        let list = resData.data.data
+        this.companyData1 = JSON.parse(orgTreeData([...list]))
+      }
+    },
     init () {
       this.getRoleList()
+    },
+    changeOrg () { // 组织机构选择
+      this.search.companyId = this.search.orgList[this.search.orgList.length - 1]
+    },
+    changeOrgAdd () {
+      console.log(this.form.company)
+      this.form.companyId = this.form.company[this.form.company.length - 1]
     },
     searchSubmit () {
       this.init()
     },
     handleEdit (row) {
+      console.log('row', row)
       this.title = "编辑角色"
+      this.form.company = row.path
       this.form.companyId = row.companyId
       this.form.roleName = row.roleName
       this.form.note = row.note
@@ -297,6 +368,7 @@ export default {
     close () {
       this.$refs['ruleForm'].resetFields();
       this.form = {
+        company: [],
         companyId: '',
         roleName: '',
         note: '',
