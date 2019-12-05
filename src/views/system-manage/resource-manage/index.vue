@@ -442,14 +442,15 @@ export default {
       this.init()
     },
     onSubmit (formName) { // 新增 或 修改 弹框确认按钮
-      console.log('0-添加 1-编辑', this.type)
-      console.log('1-一级 2-二级', this.addType)
-      this.$refs[formName].validate((valid) => {
+      const self = this;
+      console.log('0-添加 1-编辑', self.type)
+      console.log('1-一级 2-二级', self.addType)
+      self.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.type === 0) {
-            this.addCompany()
+          if (self.type === 0) {
+            self.addCompany()
           } else {
-            this.updateCompany()
+            self.updateCompany()
           }
         } else {
           console.log('error submit!!');

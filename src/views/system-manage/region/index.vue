@@ -86,14 +86,14 @@
             </template>
           </el-table-column>
         </el-table>
-        <my-pagination
+        <!-- <my-pagination
           :all-total="pageObj.allTotal"
           :current-page="pageObj.currentPage"
           :page-size="pageObj.pageSize"
           :page-sizes="pageObj.pageSizes"
           @pageChange="pageChange"
           @currentChange="currentChange"
-        />
+        /> -->
       </el-col>
     </el-row>
 

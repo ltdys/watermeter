@@ -126,3 +126,27 @@ export function fParentChange (val) {
     return val
   }
 }
+
+// 用户管理  状态
+export function fUserStatus (val) {
+  if (val === '') {
+    return '--'
+  } else if (val == 0) {
+    return '正常'
+  } else if (val == 1) {
+    return '锁定'
+  }
+}
+
+// 用户管理  性别
+export function fUserSex (val) {
+  if (val === '') {
+    return '--'
+  } else if (val == 0) {
+    return '保密'
+  } else if (val == 1) {
+    return '男'
+  } else if (val == 2) {
+    return '女'
+  }
+}

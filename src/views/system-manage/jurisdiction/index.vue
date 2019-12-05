@@ -273,6 +273,8 @@ export default {
       this.isJurisdiction = true
       this.currentAcc = row
       this.checkList = []
+      // this.treeData = []
+      // this.checkBoxList = []
       console.log('--------', row)
       this.getRoleResource()
       // this.checkList = row.account === '123456' ? [5] : [3]
@@ -308,6 +310,9 @@ export default {
           })
           // self.treeData = JSON.parse(wealthTreeData(list))
           self.$refs.jurisdiction.setCheckedKeys(keys)
+        } else {
+          self.$refs.jurisdiction.setCheckedKeys([])
+          self.currentJur = []
         }
       } else {
         self.$message.warning(resData.data.message)

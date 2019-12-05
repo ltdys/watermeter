@@ -32,6 +32,12 @@ export const userAddRole = params => axios.post('/watermeter/userAddRole', param
 // 用户查询
 export const getUserDetailed = params => axios.post('/watermeter/getUserDetailed', params);
 
+// 用户编辑
+export const updateUser = params => axios.post('/watermeter/updateUser', params);
+
+// 用户删除
+export const deleteUser = params => axios.post('/watermeter/deleteUser', params);
+
 // 角色管理
 // 角色添加
 export const addRole = params => axios.post('/watermeter/addRole', params);
@@ -179,6 +185,6 @@ export const getUserResource = params => axios.post('watermeter/getUserResource'
 // 组织机构小区树结构
 export const getTreeAreas = params => axios.post('/watermeter/getTreeAreas', params)
 
-//首页  数据查询
+// 首页  数据查询
 export const countMeterNbIotL = params => axios.post('/watermeter/countMeterNbIotL', params)
 

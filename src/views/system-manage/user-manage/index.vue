@@ -14,8 +14,8 @@
           @change="changeOrg"
         />
       </el-form-item>
-      <el-form-item label="角色名称">
-        <el-input v-model.trim="search.roleName" placeholder="请输入角色名称" clearable />
+      <el-form-item label="用户名">
+        <el-input v-model.trim="search.roleName" placeholder="请输入用户名" clearable />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -53,13 +53,39 @@
         :label="$t('systemManageUser.tableC')"
       />
       <el-table-column
+        prop="realname"
+        label="真实姓名"
+      />
+      <el-table-column label="性别">
+        <template slot-scope="scope">
+          {{ scope.row.sex | fUserSex }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="age"
+        label="年龄"
+      />
+      <el-table-column
+        prop="mobile"
+        label="手机号"
+      />
+      <el-table-column
+        prop="email"
+        label="邮箱"
+      />
+      <el-table-column label="状态">
+        <template slot-scope="scope">
+          {{ scope.row.status | fUserStatus }}
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         prop="jurisdictionType"
         :label="$t('systemManageUser.tableD')"
       />
       <el-table-column
         prop="time"
         :label="$t('systemManageUser.tableE')"
-      />
+      /> -->
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
         <template slot-scope="scope">
           <i class="el-icon-edit" @click="handleEdit(scope.row)" />
@@ -87,7 +113,7 @@
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="form.userName" placeholder="请输入用户名" clearable />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item v-if="type == 0" label="密码" prop="password">
           <el-input v-model="form.password" placeholder="请输入密码" clearable />
         </el-form-item>
         <el-form-item label="角色" prop="roleName">
@@ -161,14 +187,14 @@
       </el-form>
     </el-dialog> -->
 
-    <!-- <my-pagination
+    <my-pagination
       :all-total="pageObj.allTotal"
       :current-page="pageObj.currentPage"
       :page-size="pageObj.pageSize"
       :page-sizes="pageObj.pageSizes"
       @pageChange="pageChange"
       @currentChange="currentChange"
-    /> -->
+    />
   </div>
 </template>
 
@@ -176,7 +202,8 @@
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
-import { addUser, getUserDetailed, getRoleList, userAddRole, findCompany } from '@/service/api'
+import { addUser, getUserDetailed, getRoleList, userAddRole, findCompany, updateUser, deleteUser } from '@/service/api'
+import { filter } from 'minimatch';
 export default {
   name: 'resourceManage',
 
@@ -190,7 +217,7 @@ export default {
     return {
       setProps: { // 设置级联选择器
         label: 'companyName',
-        value: 'companyName',
+        value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
       },
@@ -216,7 +243,9 @@ export default {
         }
       ],
       companyData1: [],
+      companyList: [], // 组织备份
       tableData: [],
+      rowId: '', // 选择的用户id
       form: {
         company: [],
         companyId: '',
@@ -279,20 +308,36 @@ export default {
       this.getRoleList();
       this.findCompany();
     },
-    async getUserDetailed () {
+    async getUserDetailed () { // 获取用户列表
+      const self = this;
       // debugger
       let params = {
-        userId: this.userId,
-        companyName: this.search.companyName,
-        roleName: this.search.roleName
+        companyId: this.search.companyName,
+        sysUser: {
+          userName: this.search.roleName
+        }
+        // userId: this.userId,
+        // companyName: this.search.companyName,
+        // roleName: this.search.roleName
       }
       let resData = await getUserDetailed(params)
       if (resData.status === 200 && resData.data.code === 1) {
-        this.tableData = resData.data.data
+        let list = resData.data.data
+        self.tableData = list.map(item => {
+          if (!item.hasOwnProperty('status')) self.$set(item, 'status', '') // 状态
+          if (!item.hasOwnProperty('realname')) self.$set(item, 'realname', '') // 真实姓名
+          if (!item.hasOwnProperty('address')) self.$set(item, 'address', '') // 地址
+          if (!item.hasOwnProperty('mobile')) self.$set(item, 'mobile', '') // 手机号
+          if (!item.hasOwnProperty('email')) self.$set(item, 'email', '') // 邮箱
+          if (!item.hasOwnProperty('age')) self.$set(item, 'age', '') // 年龄
+          if (!item.hasOwnProperty('sex')) self.$set(item, 'sex', '') // 性别
+          return item
+        })
+        self.pageObj.allTotal = resData.data.page.totalRow
         console.log("this.tableData", this.tableData)
       }
     },
-    async getRoleList () {
+    async getRoleList () { // 获取角色
       let params = {
         userId: this.userId,
         currentPage: 1,
@@ -313,8 +358,36 @@ export default {
       let resData = await findCompany(params)
       if (resData.status === 200 && resData.data.data !== null) {
         let list = resData.data.data
+        this.companyList = list
         this.companyData1 = JSON.parse(orgTreeData([...list]))
       }
+    },
+    async updateUser () { // 编辑用户信息
+      const self = this;
+      let param = {
+        sysUser: {
+          id: self.rowId,
+          userName: self.form.userName,
+          real_name: self.form.realName,
+          sex: self.form.sex,
+          age: self.form.age,
+          mobile: self.form.mobile,
+          email: self.form.email,
+          address: self.form.address,
+          status: self.form.status
+        }
+      }
+      let res = await updateUser(param)
+      console.log('res', res)
+      if (res.status == 200 && res.data.code == 1) {
+        self.$message.success('编辑成功');
+        self.close()
+      } else {
+        self.$message.warning(res.data.message);
+      }
+    },
+    async deleteUser () { // 删除用户信息
+      self.$message.warning('删除用户信息接口暂未联调');
     },
     searchSubmit () {
       this.getUserDetailed()
@@ -327,22 +400,25 @@ export default {
     },
     handleEdit (row) { // 编辑
       console.log('row', row)
+      this.rowId = row.userid
+      let company = this.companyList.filter(item => {
+        return row.companyid == item.id
+      })[0]
       this.type = 1
-      this.form.company = [row.companyid]
+      this.form.company = company.parentId == 0 ? [company.id] : [company.parentId, company.id]
       this.form.companyId = row.companyid
       this.form.userName = row.username
-      this.form.password = ''
+      this.form.password = row.password
       this.form.roleName = row.roleid
-      this.form.realName = ''
-      this.form.sex = ''
-      this.form.age = ''
-      this.form.mobile = ''
-      this.form.email = ''
-      this.form.address = ''
-      this.form.status = ''
+      this.form.realName = row.realname
+      this.form.sex = row.sex
+      this.form.age = row.age
+      this.form.mobile = row.mobile
+      this.form.email = row.email
+      this.form.address = row.address
+      this.form.status = row.status
 
       this.addVisible = true
-
       // this.checkUserId = row.userid
       // this.value1[0] = row.roleid
       // this.editVisible = true
@@ -360,10 +436,24 @@ export default {
     },
     close () {
       this.$refs['ruleForm'].resetFields();
-      this.form.companyId = ''
-      this.form.userName = ''
-      this.form.password = ''
-      // this.addVisible = false
+      // this.form.companyId = ''
+      // this.form.userName = ''
+      // this.form.password = ''
+      this.form = {
+        company: [],
+        companyId: '',
+        userName: '',
+        password: '',
+        roleName: '',
+        realName: '',
+        sex: '',
+        age: '',
+        mobile: '',
+        email: '',
+        address: '',
+        status: ''
+      }
+      this.addVisible = false
       this.init()
     },
     close1 () {
@@ -376,7 +466,7 @@ export default {
           if (this.type === 0) {
             this.addUser()
           } else {
-            // this.updateCompany()
+            this.updateUser()
           }
         } else {
           console.log('error submit!!');
