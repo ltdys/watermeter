@@ -160,7 +160,7 @@ export default {
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          debugger
+          // debugger
           if (this.type == 0) {
             this.addMeterUser()
           } else {
