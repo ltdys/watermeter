@@ -194,7 +194,7 @@ export default {
       this.init()
     },
     handleEdit (row) {
-      this.title = "NO-IOT编辑"
+      this.title = "NB-IOT编辑"
       this.copyForm = row
       this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
@@ -261,7 +261,7 @@ export default {
       this.init()
     },
     addNbIotRegister () {
-      this.title = "NO-IOT添加"
+      this.title = "NB-IOT添加"
       this.type = 0
       this.addVisible = true
     },

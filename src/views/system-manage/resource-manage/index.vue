@@ -181,10 +181,11 @@
 </template>
 
 <script>
-import { getResourceManage } from '@/service/system'
-import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany } from '@/service/api'
+// import { getResourceManage } from '@/service/system'
+import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany, findDistrict } from '@/service/api'
 import myRegion1 from '@/components/common/region1'
 import myPagination from "@/components/pagination/my-pagination";
+import { treeDataUtil } from "@/utils/publicUtil";
 import { list_mixins } from '@/mixins'
 var apps;
 var resourceId = (rule, value, callback) => {
@@ -248,6 +249,7 @@ export default {
       banObj: { // 禁止的对象
         IsCode: false
       },
+      districtData1: [],
       form: {
         id: '', // 组织代码
         companyName: '', // 组织名称
@@ -311,6 +313,7 @@ export default {
   methods: {
     init () {
       this.findParentCompany()
+      this.findDistrict()
     },
     async findParentCompany () { // 获取一级组织
       let params = {
@@ -345,6 +348,37 @@ export default {
       if (resData.status === 200) {
         this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
+      }
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let userInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+      let companyId = ''
+      if (userInfo) {
+        companyId = userInfo.companyId
+      }
+      let params = {
+        companyId: companyId
+      }
+      let res = await findDistrict(params)
+      console.log('登录查询区域返回值', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            this.districtData1 = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+            this.districtData1 = saveTwo(this.districtData1)
+            this.$store.dispatch("user/setdistrictData1", this.districtData1)
+          })
+        } else {
+          this.districtData1 = list
+          this.$store.dispatch("user/setdistrictData1", this.districtData1)
+        }
       }
     },
     async getResourceManage () {

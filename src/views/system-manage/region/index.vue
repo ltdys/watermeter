@@ -105,7 +105,7 @@
 
 <script>
 import { getRegion } from '@/service/system'
-import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
+import { orgTreeData, treeDataUtil, saveTwo } from '@/utils/publicUtil'
 import { findCompany, findDistrict, addDistrict, updateDistrict, deleteDistrict, deleteMeterUserAndMeterNbIot } from '@/service/api'
 import myRegion from '@/components/common/region'
 import myPagination from "@/components/pagination/my-pagination";
@@ -157,6 +157,7 @@ export default {
         pageSize: 50, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
+      districtData1: [],
       regionVisible: false,
       regionStatus: 0 // 弹框状态  0  新增  1  修改
     }
@@ -214,10 +215,13 @@ export default {
           self.$nextTick(() => {
             self.tableDataFj = list
             self.tableData = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+            self.districtData1 = saveTwo(self.tableData)
+            this.$store.dispatch("user/setDistrictData", this.districtData1)
           })
         } else {
           self.tableDataFj = list
           self.tableData = list
+          this.$store.dispatch("user/setDistrictData", self.tableData)
         }
       }
     },

@@ -114,7 +114,7 @@
           <!-- :disabled="form.parentDis" -->
           <el-cascader
             v-model="form.areasList"
-            :options="list"
+            :options="districtData"
             clearable
             filterable
             :props="setParent"
@@ -228,7 +228,7 @@ export default {
   methods: {
     init () {
       this.findMeterConcentrator()
-      this.findDistrict()
+      // this.findDistrict()
     },
     refresh () {
       this.search = {
