@@ -5,7 +5,7 @@
         <div class="header_main_header__left">
           <img src="static/hyy_logo.png" alt="..">
           <hr>
-          <span>{{ $t('nav.title') }}</span>
+          <span>{{ userInfo.sysName }}</span>
         </div>
 
         <!-- <el-select v-model="lang" size="mini" @change="lanageChange()">
@@ -81,6 +81,8 @@ export default {
   },
 
   created () {
+    this.userInfo.sysName = this.company_name
+    this.userInfo.name = this.userName
     // this.navChange(this.navList[0])
   },
 

@@ -312,11 +312,10 @@ export default {
       const self = this;
       // debugger
       let params = {
-        companyId: this.search.companyName,
+        companyId: this.search.companyName || this.company_id,
         sysUser: {
           userName: this.search.roleName
-        },
-        userId: this.userId
+        }
         // companyName: this.search.companyName,
         // roleName: this.search.roleName
       }
