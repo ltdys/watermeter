@@ -4,7 +4,7 @@
       <el-form-item label="大表编号" prop="num">
         <el-input v-model="form.num" clearable />
       </el-form-item>
-      <el-form-item label="所属区域" prop="areasId">
+      <el-form-item label="所属区域">
         <!-- <el-select v-model="form.areasId">
           <el-option
             v-for="item in options"
@@ -151,6 +151,10 @@ export default {
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          if (!this.form.areasId) {
+            this.$message.warning("请选择所属区域!")
+            return
+          }
           if (this.type === 0) {
             this.addMeterBig()
           } else {

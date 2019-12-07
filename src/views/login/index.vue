@@ -87,8 +87,9 @@ export default {
         localStorage.setItem("USER_INFO", JSON.stringify(resData.data.data));
         let userId = resData.data.data.userId || ""
         let companyId = resData.data.data.companyId || ""
+        let roleName = resData.data.data.roleName || ""
         this.findCompany(userId);
-        this.findDistrict(companyId);
+        this.findDistrict(companyId, roleName);
       } else {
         this.$message.warning(i18n.t('login.tip'))
       }
@@ -107,14 +108,12 @@ export default {
       }
       this.$router.push("/")
     },
-    async findDistrict (companyId) { // 查询区域
+    async findDistrict (companyId, roleName) { // 查询区域
       const self = this;
+      companyId = roleName === "超级管理员" ? "" : companyId
       let params = {
         companyId: companyId
       }
-      // let params = {
-      //   companyId: ""
-      // }
       let res = await findDistrict(params)
       console.log('登录查询区域返回值', res)
       if (res.status === 200 && res.data.data !== null) {

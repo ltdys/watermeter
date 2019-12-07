@@ -7,7 +7,7 @@
       <el-form-item label="表类型" prop="meterType">
         <el-input v-model="form.meterType" clearable />
       </el-form-item>
-      <el-form-item label="所属区域" prop="meterAreasId">
+      <el-form-item label="所属区域">
         <!-- <el-select v-model="form.meterAreasId">
           <el-option
             v-for="item in options"
@@ -86,7 +86,6 @@ export default {
           readValue: '', // 本次读数
           version: '', // 软件版本号
           meterAreasId: '', // 小区ID
-          areasList: [],
           bindState: 0  // 使用状态
         }
       }
@@ -169,11 +168,17 @@ export default {
       if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
         this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
         console.log("this.form.meterAreasId", this.form.meterAreasId)
+      } else {
+        this.form.meterAreasId = ""
       }
     },
     onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          if (!this.form.meterAreasId) {
+            this.$message.warning("请选择所属区域!")
+            return
+          }
           if (this.type === 0) {
             this.addMeterNbIot()
           } else {

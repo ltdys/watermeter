@@ -208,6 +208,9 @@ export default {
         ],
         useStatus: [
           { required: true, message: this.$t('deviceManageConcentrator.dialogC_'), trigger: 'blur' }
+        ],
+        areasId: [
+          { required: true, message: "请选择所属区域", trigger: 'change' }
         ]
       },
       tableDataFj: [],
@@ -228,7 +231,7 @@ export default {
   methods: {
     init () {
       this.findMeterConcentrator()
-      // this.findDistrict()
+      this.findDistrict()
     },
     refresh () {
       this.search = {
@@ -241,6 +244,8 @@ export default {
     changeParent () { // 区域选择、
       if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
+      } else {
+        this.form.areasId = ""
       }
     },
     async findDistrict () { // 查询区域
