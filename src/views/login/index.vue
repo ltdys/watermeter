@@ -43,7 +43,7 @@
 <script>
 import i18n from '@/lang'
 import { login, findCompany, findDistrict } from "@/service/api"
-import { treeDataUtil, saveTwo } from "@/utils/publicUtil"
+import { treeDataUtil, saveTwo, orgTreeData } from "@/utils/publicUtil"
 export default {
   data () {
     return {
@@ -88,22 +88,27 @@ export default {
         let userId = resData.data.data.userId || ""
         let companyId = resData.data.data.companyId || ""
         let roleName = resData.data.data.roleName || ""
-        this.findCompany(userId);
+        this.findCompany(userId, companyId, roleName);
         this.findDistrict(companyId, roleName);
       } else {
         this.$message.warning(i18n.t('login.tip'))
       }
     },
     // 查询组织
-    async findCompany (userId) {
+    async findCompany (userId, companyId, roleName) {
+      companyId = roleName === "超级管理员" ? "" : companyId
       let params = {
         userId: userId,
         currentPage: 1,
-        pageSize: 1000
+        pageSize: 1000,
+        company: {
+          id: companyId
+        }
       }
       let resData = await findCompany(params)
       if (resData.status === 200) {
-        this.companyData = resData.data.data
+        let list = resData.data.data
+        this.companyData = list
         this.$store.dispatch("user/setCompanyData", this.companyData)
       }
       this.$router.push("/")

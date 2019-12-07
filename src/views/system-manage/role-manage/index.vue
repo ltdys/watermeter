@@ -279,7 +279,10 @@ export default {
       let params = {
         userId: this.userId,
         currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
+        pageSize: this.pageObj.pageSize,
+        company: {
+          id: this.company_id
+        }
       }
       let resData = await findCompany(params)
       if (resData.status === 200 && resData.data.data !== null) {
