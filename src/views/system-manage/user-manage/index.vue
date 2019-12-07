@@ -315,8 +315,8 @@ export default {
         companyId: this.search.companyName,
         sysUser: {
           userName: this.search.roleName
-        }
-        // userId: this.userId,
+        },
+        userId: this.userId
         // companyName: this.search.companyName,
         // roleName: this.search.roleName
       }

@@ -372,12 +372,12 @@ export default {
           })
           self.$nextTick(() => {
             this.districtData1 = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
-            this.districtData1 = saveTwo(this.districtData1)
-            this.$store.dispatch("user/setdistrictData1", this.districtData1)
+            this.districtData1 = saveTwo(this.districtData1) || []
+            self.$store.dispatch("user/setDistrictData", this.districtData1 || [])
           })
         } else {
           this.districtData1 = list
-          this.$store.dispatch("user/setdistrictData1", this.districtData1)
+          self.$store.dispatch("user/setDistrictData", this.districtData1 || [])
         }
       }
     },

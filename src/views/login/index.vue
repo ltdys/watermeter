@@ -24,7 +24,7 @@
         <input v-model="form.code" type="text" :placeholder="$t('login.code')">
       </div>
       <div class="input-wrap">
-        <input v-model="form.account" :placeholder="$t('login.account')">
+        <input v-model="form.account" placeholder="输入账号">
       </div>
       <div class="input-wrap">
         <input v-model="form.password" type="password" :placeholder="$t('login.password')" @keyup.enter="loginSubmit">
@@ -127,11 +127,11 @@ export default {
           self.$nextTick(() => {
             this.districtData = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
             this.districtData = saveTwo(this.districtData)
-            this.$store.dispatch("user/setDistrictData", this.districtData)
+            this.$store.dispatch("user/setDistrictData", this.districtData || [])
           })
         } else {
           this.districtData = list
-          this.$store.dispatch("user/setDistrictData", this.districtData)
+          this.$store.dispatch("user/setDistrictData", this.districtData || [])
         }
       }
     }

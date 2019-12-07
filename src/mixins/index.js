@@ -42,7 +42,11 @@ export const list_mixins = {
       return this.$store.getters.getIframeHeight
     },
     companyData () {
-      return JSON.parse(this.$store.getters.getCompanyData)
+      if(this.$store.getters.getCompanyData == "undefined" || !this.$store.getters.getCompanyData) {
+        return [] 
+      } else {
+        return JSON.parse(this.$store.getters.getCompanyData)
+      }
     },
     isWealth () {
       console.log('isWealth变化')
