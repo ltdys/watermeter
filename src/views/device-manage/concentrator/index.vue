@@ -114,7 +114,7 @@
           <!-- :disabled="form.parentDis" -->
           <el-cascader
             v-model="form.areasList"
-            :options="districtData"
+            :options="list"
             clearable
             filterable
             :props="setParent"
@@ -251,7 +251,7 @@ export default {
     async findDistrict () { // 查询区域
       const self = this;
       let param = {
-        companyId: ''
+        companyId: this.company_id
       }
       let res = await findDistrict(param)
       console.log('查询区域', res)

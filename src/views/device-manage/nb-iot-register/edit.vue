@@ -7,18 +7,10 @@
       <el-form-item label="表类型" prop="meterType">
         <el-input v-model="form.meterType" clearable />
       </el-form-item>
-      <el-form-item label="所属区域">
-        <!-- <el-select v-model="form.meterAreasId">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select> -->
+      <el-form-item label="所属区域" prop="areasList">
         <el-cascader
-          v-model="areaObject.areasList"
-          :options="districtData"
+          v-model="form.areasList"
+          :options="options"
           clearable
           filterable
           :props="setParent"
@@ -68,25 +60,26 @@ export default {
       type: Object,
       default: () => {
         return {
-          meterNbiotNum: '', // 表编号
-          meterUserNum: '', // 用户编号
-          meterConcentratorNum: '', // 集中器编号
-          meterNodeNum: '', // 采集器编号
-          meterSpec: '', // 规格型号
-          simCardCcid: '', // SIM卡号
-          installAddress: '', // 安装地址
-          signalIntensity: '', // 信号强度
-          batteryCapacity: '', // 电池容量
-          pressureAlert: '', // 压力警告
-          batteryLevel: '', // 电池电量
-          valveState: 0, // 阀门状态 (0无阀 1有阀)
-          valueSupport: false, // 阀控支持
-          meterType: '', // 表类型
-          reportCycle: '', // 上报周期
-          readValue: '', // 本次读数
-          version: '', // 软件版本号
-          meterAreasId: '', // 小区ID
-          bindState: 0  // 使用状态
+          // meterNbiotNum: '', // 表编号
+          // meterUserNum: '', // 用户编号
+          // meterConcentratorNum: '', // 集中器编号
+          // meterNodeNum: '', // 采集器编号
+          // meterSpec: '', // 规格型号
+          // simCardCcid: '', // SIM卡号
+          // installAddress: '', // 安装地址
+          // signalIntensity: '', // 信号强度
+          // batteryCapacity: '', // 电池容量
+          // pressureAlert: '', // 压力警告
+          // batteryLevel: '', // 电池电量
+          // valveState: 0, // 阀门状态 (0无阀 1有阀)
+          // valueSupport: false, // 阀控支持
+          // meterType: '', // 表类型
+          // reportCycle: '', // 上报周期
+          // readValue: '', // 本次读数
+          // version: '', // 软件版本号
+          // meterAreasId: '', // 小区ID
+          // bindState: 0,  // 使用状态
+          // areasList: []
         }
       }
     },
@@ -119,8 +112,8 @@ export default {
         meterNbiotNum: [
           { required: true, message: "请填写表编号", trigger: 'blur' }
         ],
-        meterAreasId: [
-          { required: true, message: "请选择小区", trigger: 'blur' }
+        areasList: [
+          { required: true, message: "请选择区域", trigger: 'change' }
         ]
       },
       options: [],
@@ -165,8 +158,15 @@ export default {
       }
     },
     changeParent() {
-      if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
-        this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
+      // if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
+      //   this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
+      //   console.log("this.form.meterAreasId", this.form.meterAreasId)
+      // } else {
+      //   this.form.meterAreasId = ""
+      // }
+
+      if(this.form.areasList && this.form.areasList.length > 0) {
+        this.form.meterAreasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.meterAreasId", this.form.meterAreasId)
       } else {
         this.form.meterAreasId = ""
@@ -191,21 +191,25 @@ export default {
       });
     },
     async addMeterNbIot () {
+      delete this.form.areasList
       let params = {
         meterNbIot: this.form
       }
       let resData = await addMeterNbIot(params)
       if (resData.status === 200) {
+        this.form.areasList = []
         this.$message.info(resData.data.message)
         this.close()
       }
     },
     async updateMeterNbIot () {
+      delete this.form.areasList
       let params = {
         meterNbIot: this.form
       }
       let resData = await updateMeterNbIot(params)
       if (resData.status === 200) {
+        this.form.areasList = []
         this.$message.info(resData.data.message)
         this.close()
       }

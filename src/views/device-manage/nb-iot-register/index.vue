@@ -155,7 +155,28 @@ export default {
         pageSize: 50, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
-      form: {},
+      form: {
+        meterNbiotNum: '', // 表编号
+        meterUserNum: '', // 用户编号
+        meterConcentratorNum: '', // 集中器编号
+        meterNodeNum: '', // 采集器编号
+        meterSpec: '', // 规格型号
+        simCardCcid: '', // SIM卡号
+        installAddress: '', // 安装地址
+        signalIntensity: '', // 信号强度
+        batteryCapacity: '', // 电池容量
+        pressureAlert: '', // 压力警告
+        batteryLevel: '', // 电池电量
+        valveState: 0, // 阀门状态 (0无阀 1有阀)
+        valueSupport: false, // 阀控支持
+        meterType: '', // 表类型
+        reportCycle: '', // 上报周期
+        readValue: '', // 本次读数
+        version: '', // 软件版本号
+        meterAreasId: '', // 小区ID
+        bindState: 0,  // 使用状态
+        areasList: []
+      },
       copyForm: {},
       options: [{
         value: 0,
@@ -195,13 +216,20 @@ export default {
     },
     handleEdit (row) {
       this.title = "NB-IOT编辑"
-      this.copyForm = row
-      this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
       this.addVisible = true
       this.areaObject.areasList = this.tableDataFj.filter(item => {
         return item.id == row.meterAreasId
       })[0].path
+
+      row.areasList = this.tableDataFj.filter(item => {
+        return item.id == row.meterAreasId
+      })[0].path
+
+      this.$nextTick(() => {
+        this.copyForm = row
+        this.form = JSON.parse(JSON.stringify(this.copyForm))
+      })
     },
     handleDelete (row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
@@ -266,7 +294,28 @@ export default {
       this.addVisible = true
     },
     close () {
-      this.form = {}
+      this.form = {
+        meterNbiotNum: '', // 表编号
+        meterUserNum: '', // 用户编号
+        meterConcentratorNum: '', // 集中器编号
+        meterNodeNum: '', // 采集器编号
+        meterSpec: '', // 规格型号
+        simCardCcid: '', // SIM卡号
+        installAddress: '', // 安装地址
+        signalIntensity: '', // 信号强度
+        batteryCapacity: '', // 电池容量
+        pressureAlert: '', // 压力警告
+        batteryLevel: '', // 电池电量
+        valveState: 0, // 阀门状态 (0无阀 1有阀)
+        valueSupport: false, // 阀控支持
+        meterType: '', // 表类型
+        reportCycle: '', // 上报周期
+        readValue: '', // 本次读数
+        version: '', // 软件版本号
+        meterAreasId: '', // 小区ID
+        bindState: 0,  // 使用状态
+        areasList: []
+      }
       this.addVisible = false
       this.init()
     }

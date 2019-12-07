@@ -4,7 +4,7 @@
       <el-form-item label="大表编号" prop="num">
         <el-input v-model="form.num" clearable />
       </el-form-item>
-      <el-form-item label="所属区域">
+      <el-form-item label="所属区域" prop="areasList">
         <!-- <el-select v-model="form.areasId">
           <el-option
             v-for="item in options"
@@ -14,8 +14,8 @@
           </el-option>
         </el-select> -->
         <el-cascader
-          v-model="areaObject.areasList"
-          :options="districtData"
+          v-model="form.areasList"
+          :options="options"
           clearable
           filterable
           :props="setParent"
@@ -74,6 +74,7 @@
 
 <script>
 import { addMeterBig, updateMeterBig, findDistrict } from "@/service/api"
+import { treeDataUtil } from "@/utils/publicUtil"
 import { list_mixins } from '@/mixins'
 
 export default {
@@ -90,19 +91,20 @@ export default {
       type: Object,
       default: () => {
         return {
-          num: '', // 大表编号
-          specNum: '', // 规格型号编码
-          simCcid: '', // SIM卡CCID
-          isOnline: '', // 0不在线 1在线
-          rscp: '', // 信号强度
-          electricQ: '', // 电池电量
-          electricV: '', // 电池电压
-          atcStatus: '', // 空管状态 0异常  1正常
-          pressureAlarm: '', // 压力报警
-          status: '', // 表状态 0 异常 1正常
-          areasId: '', // 所属小区
-          installAddress: '', // 安装地址
-          remarks: '' // 备注
+          // num: '', // 大表编号
+          // specNum: '', // 规格型号编码
+          // simCcid: '', // SIM卡CCID
+          // isOnline: '', // 0不在线 1在线
+          // rscp: '', // 信号强度
+          // electricQ: '', // 电池电量
+          // electricV: '', // 电池电压
+          // atcStatus: '', // 空管状态 0异常  1正常
+          // pressureAlarm: '', // 压力报警
+          // status: '', // 表状态 0 异常 1正常
+          // areasId: '', // 所属小区
+          // installAddress: '', // 安装地址
+          // remarks: '', // 备注
+          // areasList: []
         }
       }
     },
@@ -131,7 +133,10 @@ export default {
           { required: true, message: "请填写大表编号", trigger: 'blur' }
         ],
         areasId: [
-          { required: true, message: "请选择小区", trigger: 'change' }
+          { required: true, message: "请选择区域", trigger: 'change' }
+        ],
+        areasList: [
+          { required: true, message: "请选择区域", trigger: 'change' }
         ]
       },
       setParent: { // 设置级联选择器
@@ -139,10 +144,12 @@ export default {
         value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
-      }
+      },
+      options: []
     }
   },
   created () {
+    this.findDistrict()
   },
   methods: {
     close () {
@@ -167,6 +174,7 @@ export default {
       });
     },
     async addMeterBig () {
+      delete this.form.areasList
       let params = {
         meterBig: this.form
       }
@@ -177,6 +185,7 @@ export default {
       }
     },
     async updateMeterBig () {
+      delete this.form.areasList
       let params = {
         meterBig: this.form
       }
@@ -187,11 +196,39 @@ export default {
       }
     },
     changeParent() {
-      if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
-        this.form.areasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
+      // if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
+      //   this.form.areasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
+      //   console.log("this.form.areasId", this.form.areasId)
+      // }
+
+      if(this.form.areasList && this.form.areasList.length > 0) {
+        this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.areasId", this.form.areasId)
       }
-    }
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let param = {
+        companyId: this.company_id
+      }
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            return item
+          })
+          self.$nextTick(() => {
+            self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.list = list
+        }
+      }
+    },
   }
 }
 </script>

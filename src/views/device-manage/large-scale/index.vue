@@ -163,7 +163,22 @@ export default {
         specNum: '',
         simCcid: ''
       },
-      form: {},
+      form: {
+        num: '', // 大表编号
+        specNum: '', // 规格型号编码
+        simCcid: '', // SIM卡CCID
+        isOnline: '', // 0不在线 1在线
+        rscp: '', // 信号强度
+        electricQ: '', // 电池电量
+        electricV: '', // 电池电压
+        atcStatus: '', // 空管状态 0异常  1正常
+        pressureAlarm: '', // 压力报警
+        status: '', // 表状态 0 异常 1正常
+        areasId: '', // 所属小区
+        installAddress: '', // 安装地址
+        remarks: '', // 备注
+        areasList: []
+      },
       copyForm: {},
       addVisible: false
     }
@@ -199,13 +214,19 @@ export default {
       this.addVisible = true
     },
     handleEdit (row) {
-      this.copyForm = row
-      this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.type = 1
       this.addVisible = true
+
+      row.areasList = this.tableDataFj.filter(item => {
+        return item.id == row.areasId
+      })[0].path
+
       this.areaObject.areasList = this.tableDataFj.filter(item => {
         return item.id == row.areasId
       })[0].path
+
+      this.copyForm = row
+      this.form = JSON.parse(JSON.stringify(this.copyForm))
     },
     async findDistrict () { // 查询区域
       const self = this;
@@ -265,7 +286,22 @@ export default {
       this.init()
     },
     close () {
-      this.form = {}
+      this.form = {
+        num: '', // 大表编号
+        specNum: '', // 规格型号编码
+        simCcid: '', // SIM卡CCID
+        isOnline: '', // 0不在线 1在线
+        rscp: '', // 信号强度
+        electricQ: '', // 电池电量
+        electricV: '', // 电池电压
+        atcStatus: '', // 空管状态 0异常  1正常
+        pressureAlarm: '', // 压力报警
+        status: '', // 表状态 0 异常 1正常
+        areasId: '', // 所属小区
+        installAddress: '', // 安装地址
+        remarks: '', // 备注
+        areasList: []
+      }
       this.addVisible = false
       this.init()
     }
