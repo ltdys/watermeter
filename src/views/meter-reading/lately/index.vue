@@ -156,15 +156,25 @@
     </el-row>
 
     <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
-      <el-form ref="gatherRuleForm" :model="gatherForm">
-        <el-form-item>
-          <el-transfer v-model="value" :data="data" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="gatherSubmit('ruleForm')">确定</el-button>
-          <el-button @click="gatherVisiable = false">取消</el-button>
-        </el-form-item>
-      </el-form>
+      <div class="gather-wrap">
+        <div class="gather-content">
+          <div>
+            <el-collapse accordion>
+              <el-collapse-item v-for="(item, index) in concentratorList" :key="index" :title="item.meterConcentratorName" @click.native="concentratorChange(item)">
+                <div v-for="(item1, index1) in meterList" :key="index1" @click.stop="meterChange(item1)" class="gather-meter">{{ item1.num }}</div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <div>
+          <div v-for="(item, index) in nbiotList" :key="index">
+            {{ item.meterNbiotNum }}
+          </div>
+          </div>
+        </div>
+        <div class="gather-btn">
+          确认采集
+        </div>
+      </div>
     </el-dialog>
 
     <el-dialog :visible="readVisiable" title="当前读数" @close="readClose">
@@ -176,7 +186,7 @@
 </template>
 
 <script>
-import { recentMeterReading } from '@/service/api'
+import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL } from '@/service/api'
 import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -191,24 +201,12 @@ export default {
   mixins: [list_mixins],
 
   data () {
-    const generateData = _ => {
-      const data = [];
-      for (let i = 1; i <= 15; i++) {
-        data.push({
-          key: i,
-          label: `采集器 ${i}`,
-          disabled: i % 4 === 0
-        });
-      }
-      return data;
-    };
     return {
       tableData: [],
       treeData: [],
       gatherVisiable: false, // 数据采集弹窗
       readVisiable: false, // 数据读取弹窗
       gatherForm: {},
-      data: generateData(),
       value: [1, 4],
       defaultProps: {
         children: 'child',
@@ -241,7 +239,10 @@ export default {
       }, {
         value: 3,
         label: "安装地址"
-      }]
+      }],
+      concentratorList: [],  // 集中器列表
+      meterList: [],  // 采集器列表
+      nbiotList: []  //  水表列表
     }
   },
 
@@ -322,10 +323,62 @@ export default {
 
     },
     handleGather () {
+      console.log("当前选中的区域" + this.search.areasId)
+      if (!this.search.areasId) {
+        this.$message.warning("请选择区域");
+        return
+      }
       this.gatherVisiable = true
+      this.findMeterConcentrator()
     },
     handleRead () {
       this.readVisiable = true
+    },
+    // 集中器查询
+    async findMeterConcentrator() {
+      let params = {
+        userId: this.userId,
+        meterConcentrator: {
+          areasId: this.search.areasId
+        }
+      }
+      let resData = await findMeterConcentrator(params)
+      if (resData.status === 200) {
+        this.concentratorList = resData.data.data || []
+        console.log("this.concentratorList", this.concentratorList)
+      }
+    },
+    // 集中器点击
+    concentratorChange(item) {
+      this.getMeterNodes(item.meterConcentratorId || "")
+    },
+    async getMeterNodes(mcId) {
+      let params = {
+        mcId: mcId
+      }
+      let resData = await getMeterNodes(params)
+      if (resData.status === 200) {
+        this.meterList = resData.data.data || []
+        console.log("this.meterList", this.meterList)
+      }
+    },
+    // 采集器点击
+    meterChange(item) {
+      this.getMeterNbIotL(item.num)
+    },
+    // 水表查询
+    async getMeterNbIotL(num) {
+      let params = {
+        userId: this.userId,
+        meterNbIot: {
+          meterNodeNum: num
+        }
+      }
+      let resData = await getMeterNbIotL(params)
+      if(resData.status === 200) {
+        this.nbiotList = resData.data.data
+        console.log("this.nbiotList", this.nbiotList)
+      }
     }
   }
 }
@@ -349,6 +402,45 @@ export default {
     }
     .el-dialog {
       width: 550px !important;
+    }
+    .gather-wrap {
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      .gather-content {
+        display: flex;
+        flex: 1;
+        > div:first-child {
+          flex: 1;
+          margin-right: 15px;
+          // background: #E9E9E9;
+          border-radius: 4px;
+          overflow: scroll;
+          color: #343844;
+        }
+        >div:last-child {
+          flex: 1.2;
+          // background: #F5F5F5;
+          border-radius: 4px;
+          overflow: scroll;
+          color: #343844;
+        }
+      }
+      .gather-btn {
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 4px;
+        font-size: 18px;
+        color: #fff;
+        margin-top: 10px;
+        background: #0084FF;
+      }
+      .gather-meter {
+        padding-left: 30px;
+        cursor: pointer;
+        // line-height: 30px;
+      }
     }
     .read-wrap {
       width: 100%;
