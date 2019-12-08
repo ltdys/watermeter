@@ -388,8 +388,12 @@ export default {
         self.$message.warning(res.data.message);
       }
     },
-    async deleteUser () { // 删除用户信息
-      self.$message.warning('删除用户信息接口暂未联调');
+    async deleteUser (param) { // 删除用户信息
+      let resData = await deleteUser(param)
+      if (resData.status === 200) {
+        this.$message.info(resData.data.message)
+        this.init()
+      }
     },
     searchSubmit () {
       this.getUserDetailed()
@@ -425,8 +429,22 @@ export default {
       // this.value1[0] = row.roleid
       // this.editVisible = true
     },
-    handleDelete () { // 删除
-
+    handleDelete (row) { // 删除
+      this.$confirm(`您确定要删除 ${row.username} 吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let param = {
+          userId: row.userid
+        }
+        this.deleteUser(param)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
