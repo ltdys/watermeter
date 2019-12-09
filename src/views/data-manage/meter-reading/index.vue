@@ -8,8 +8,8 @@
             :key="item.value"
             :label="item.label"
             :value="item.value"
-            clearable>
-          </el-option>
+            clearable
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -19,15 +19,15 @@
         <el-date-picker
           v-model="search.t3"
           type="datetime"
-          :placeholder="$t('dataManageReading.toolbarB_')">
-        </el-date-picker>
+          :placeholder="$t('dataManageReading.toolbarB_')"
+        />
       </el-form-item>
       <el-form-item :label="$t('dataManageReading.toolbarC')">
         <el-date-picker
           v-model="search.t4"
           type="datetime"
-          :placeholder="$t('dataManageReading.toolbarC_')">
-        </el-date-picker>
+          :placeholder="$t('dataManageReading.toolbarC_')"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
@@ -37,89 +37,89 @@
       </el-form-item>
     </el-form>
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage"
-        highlight-current-row
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <el-table-column
-          prop="id"
-          :label="$t('dataManageReading.tableA')"
-          width="300"
-        />
-        <el-table-column
-          prop="village"
-          :label="$t('dataManageReading.tableB')"
-          width="180"
-        />
-        <el-table-column
-          prop="floor"
-          :label="$t('dataManageReading.tableC')"
-        />
-        <el-table-column
-          prop="unit"
-          :label="$t('dataManageReading.tableD')"
-        />
-        <el-table-column
-          prop="plateNum"
-          :label="$t('dataManageReading.tableE')"
-        />
-        <el-table-column
-          prop="meterType"
-          :label="$t('dataManageReading.tableF')"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('dataManageReading.tableG')"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('dataManageReading.tableH')"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('dataManageReading.tableI')"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('dataManageReading.tableJ')"
-        />
-        <el-table-column
-          prop="readingStatus"
-          :label="$t('dataManageReading.tableK')"
-        />
-        <el-table-column
-          prop="time"
-          :label="$t('dataManageReading.tableL')"
-          width="220"
-        />
-        <el-table-column
-          prop="num"
-          :label="$t('dataManageReading.tableM')"
-        />
-        <el-table-column fixed="right" :label="$t('common.operation')" width="120">
-          <template slot-scope="scope">
-            <i class="el-icon-edit" @click="handleEdit(scope.row)"></i>
-            <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
-          </template>
-        </el-table-column>
-      </el-table>
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage"
+      highlight-current-row
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
       />
+      <el-table-column
+        prop="id"
+        :label="$t('dataManageReading.tableA')"
+        width="300"
+      />
+      <el-table-column
+        prop="village"
+        :label="$t('dataManageReading.tableB')"
+        width="180"
+      />
+      <el-table-column
+        prop="floor"
+        :label="$t('dataManageReading.tableC')"
+      />
+      <el-table-column
+        prop="unit"
+        :label="$t('dataManageReading.tableD')"
+      />
+      <el-table-column
+        prop="plateNum"
+        :label="$t('dataManageReading.tableE')"
+      />
+      <el-table-column
+        prop="meterType"
+        :label="$t('dataManageReading.tableF')"
+      />
+      <el-table-column
+        prop="num"
+        :label="$t('dataManageReading.tableG')"
+      />
+      <el-table-column
+        prop="num"
+        :label="$t('dataManageReading.tableH')"
+      />
+      <el-table-column
+        prop="num"
+        :label="$t('dataManageReading.tableI')"
+      />
+      <el-table-column
+        prop="num"
+        :label="$t('dataManageReading.tableJ')"
+      />
+      <el-table-column
+        prop="readingStatus"
+        :label="$t('dataManageReading.tableK')"
+      />
+      <el-table-column
+        prop="time"
+        :label="$t('dataManageReading.tableL')"
+        width="220"
+      />
+      <el-table-column
+        prop="num"
+        :label="$t('dataManageReading.tableM')"
+      />
+      <el-table-column fixed="right" :label="$t('common.operation')" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-edit" @click="handleEdit(scope.row)" />
+          <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
   </div>
 </template>
 
@@ -164,7 +164,7 @@ export default {
   created () {
     // this.init()
   },
-  
+
   methods: {
     async getMeterReading () {
       const params = {

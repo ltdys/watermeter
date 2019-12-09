@@ -1,5 +1,5 @@
 <template>
-  <div id="lossChart" :style="{ width: width, height: height }"></div>
+  <div id="lossChart" :style="{ width: width, height: height }" />
 </template>
 
 <script>
@@ -31,22 +31,22 @@ export default {
       let option = {
         color: '#0084FF',
         xAxis: {
-            type: 'category',
-            data: ['第一季度', '第二季度', '第三季度', '第四季度']
+          type: 'category',
+          data: ['第一季度', '第二季度', '第三季度', '第四季度']
         },
         yAxis: {
-            type: 'value'
+          type: 'value'
         },
         series: [{
-            data: [6120, 7200, 8150, 9080],
-            type: 'bar',
-            barWidth: 26
+          data: [6120, 7200, 8150, 9080],
+          type: 'bar',
+          barWidth: 26
         }],
         backgroundColor: '#fff'
-    };
+      };
 
       myChart.setOption(option);
-      window.addEventListener("resize", function() {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     }

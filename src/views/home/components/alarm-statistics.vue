@@ -27,6 +27,7 @@ export default {
 
   methods: {
     init () {
+      const self = this;
       let myChart = this.$echarts.init(document.getElementById('myChartAlarm'))
       let option = {
         title: {
@@ -66,6 +67,10 @@ export default {
       window.addEventListener("resize", function () {
         myChart.resize();
       });
+      myChart.on('click', function (params) {
+        console.log(params)
+        self.$router.push('/meter-reading/alarm')
+      })
       // myChart.resize()
     }
   }

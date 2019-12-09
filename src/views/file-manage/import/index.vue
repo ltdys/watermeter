@@ -7,33 +7,44 @@
             <el-button type="primary" icon="el-icon-download" class="import_download">{{ $t('fileManageImportant.toolbarA_') }}</el-button>
             <el-button type="primary" icon="el-icon-download" class="import_download">{{ $t('fileManageImportant.toolbarA__') }}</el-button>
           </el-form-item>
-          <el-form-item :label="$t('fileManageImportant.toolbarB')">
-            <el-select v-model="form.t1" class="import_select">
+          <el-form-item label="小区选择">
+            <!-- <el-select v-model="form.t1" class="import_select">
               <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
+                :value="item.value"
+              />
+            </el-select> -->
+            <el-cascader
+              v-model="form.t1"
+              class="import_select"
+              clearable
+              filterable
+              :props="setProps"
+              :options="options"
+              @change="cascaChange"
+            />
           </el-form-item>
           <el-form-item :label="$t('fileManageImportant.toolbarC')">
             <el-upload
               class="upload-demo"
               action="https://jsonplaceholder.typicode.com/posts/"
+              accept=".xls,.xlsx"
               :on-change="handleChange"
-              :file-list="fileList">
+              :file-list="fileList"
+            >
               <el-button size="small" type="primary" icon="el-icon-upload" class="import_upload">{{ $t('fileManageImportant.toolbarC_') }}</el-button>
-              <div slot="tip" class="el-upload__tip">{{ $t('fileManageImportant.toolbarC__') }}</div>
+              <div slot="tip" class="el-upload__tip">仅支持上传EXCEL文件，且不超过500KB</div>
             </el-upload>
           </el-form-item>
           <el-form-item :label="$t('fileManageImportant.toolbarD')">
-            <el-input type="textarea" v-model="form.t2"></el-input>
+            <el-input v-model="form.t2" type="textarea" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="import_submit">{{ $t('fileManageImportant.toolbarE') }}</el-button>
           </el-form-item>
-        </el-form> 
+        </el-form>
       </el-col>
       <el-col :span="12" class="import_explain">
         <div class="import_explain__top">
@@ -61,6 +72,8 @@
 
 <script>
 import { list_mixins } from '@/mixins'
+import { findDistrict } from '@/service/api'
+import { treeDataUtil } from '@/utils/publicUtil'
 
 export default {
   name: 'import',
@@ -80,19 +93,56 @@ export default {
         label: '其它',
         value: 1
       }],
-      fileList: [{
-        name: 'food.jpeg',
-        url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-      }, {
-        name: 'food2.jpeg',
-        url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-      }]
+      optionsFj: [],
+      fileList: [],
+      setProps: { // 设置级联选择器
+        label: 'companyName',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      }
     }
   },
 
+  created () {
+    this.init()
+  },
+
   methods: {
-    handleChange(file, fileList) {
+    init () {
+      this.findDistrict()
+    },
+    handleChange (file, fileList) {
       this.fileList = fileList.slice(-3);
+    },
+    cascaChange (val) {
+      console.log('val', val)
+    },
+    async findDistrict () { // 查询区域
+      const self = this;
+      let params = {
+        companyId: ""
+      }
+      let res = await findDistrict(params)
+      if (res.status === 200 && res.data.data !== null) {
+        let list = res.data.data || []
+        if (list.length !== 0) {
+          list = list.map(item => {
+            self.$set(item, 'parentId', item.parentid)
+            self.$set(item, 'companyId', item.companyid)
+            self.$set(item, 'companyName', item.name)
+            return item
+          })
+
+          self.$nextTick(() => {
+            self.optionsFj = list
+            self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+          })
+        } else {
+          self.optionsFj = list
+          self.options = self.tableData
+        }
+      }
     }
   }
 }

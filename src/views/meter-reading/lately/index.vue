@@ -161,14 +161,14 @@
           <div>
             <el-collapse accordion>
               <el-collapse-item v-for="(item, index) in concentratorList" :key="index" :title="item.meterConcentratorName" @click.native="concentratorChange(item)">
-                <div v-for="(item1, index1) in meterList" :key="index1" @click.stop="meterChange(item1)" class="gather-meter">{{ item1.num }}</div>
+                <div v-for="(item1, index1) in meterList" :key="index1" class="gather-meter" @click.stop="meterChange(item1)">{{ item1.num }}</div>
               </el-collapse-item>
             </el-collapse>
           </div>
           <div>
-          <div v-for="(item, index) in nbiotList" :key="index">
-            {{ item.meterNbiotNum }}
-          </div>
+            <div v-for="(item, index) in nbiotList" :key="index">
+              {{ item.meterNbiotNum }}
+            </div>
           </div>
         </div>
         <div class="gather-btn">
@@ -240,9 +240,9 @@ export default {
         value: 3,
         label: "安装地址"
       }],
-      concentratorList: [],  // 集中器列表
-      meterList: [],  // 采集器列表
-      nbiotList: []  //  水表列表
+      concentratorList: [], // 集中器列表
+      meterList: [], // 采集器列表
+      nbiotList: [] //  水表列表
     }
   },
 
@@ -335,7 +335,7 @@ export default {
       this.readVisiable = true
     },
     // 集中器查询
-    async findMeterConcentrator() {
+    async findMeterConcentrator () {
       let params = {
         userId: this.userId,
         meterConcentrator: {
@@ -349,10 +349,10 @@ export default {
       }
     },
     // 集中器点击
-    concentratorChange(item) {
+    concentratorChange (item) {
       this.getMeterNodes(item.meterConcentratorId || "")
     },
-    async getMeterNodes(mcId) {
+    async getMeterNodes (mcId) {
       let params = {
         mcId: mcId
       }
@@ -363,11 +363,11 @@ export default {
       }
     },
     // 采集器点击
-    meterChange(item) {
+    meterChange (item) {
       this.getMeterNbIotL(item.num)
     },
     // 水表查询
-    async getMeterNbIotL(num) {
+    async getMeterNbIotL (num) {
       let params = {
         userId: this.userId,
         meterNbIot: {
@@ -375,7 +375,7 @@ export default {
         }
       }
       let resData = await getMeterNbIotL(params)
-      if(resData.status === 200) {
+      if (resData.status === 200) {
         this.nbiotList = resData.data.data
         console.log("this.nbiotList", this.nbiotList)
       }

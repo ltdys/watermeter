@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="4" :style="{height: (tableHeight + 32) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick"></my-region2>
+          <my-region2 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20" class="statistical-analysis_wrap" :style="{height: (tableHeight + 32) + 'px', background: '#fff'}">
@@ -12,13 +12,37 @@
             {{ item.label }}
           </div>
         </div>
-        <div class="statistical-analysis_wrap__condition">
-          <span>{{ $t('dataManageAnalysis.toolbarD') }}</span>
-          <el-date-picker
-            v-model="value1"
-            type="date"
-            :placeholder="$t('dataManageAnalysis.toolbarD_')">
-          </el-date-picker>
+        <div class="statistical-analysis_wrap__condition" :class="[areaObj.type != 2 ? '' : areaObj.area == 'sb' ? 'al3' : 'al2']">
+          <div v-if="areaObj.type == 2" class="wrap_box">
+            <span>选择类型</span>
+            <el-select v-model="areaObj.area" clearable placeholder="请选择类型">
+              <el-option
+                v-for="item in areaList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+          <div v-if="areaObj.type == 2 && areaObj.area == 'sb'" class="wrap_box">
+            <span>选择用户</span>
+            <el-select v-model="areaObj.user" clearable placeholder="请选择用户">
+              <el-option
+                v-for="item in userList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+          <div class="wrap_box">
+            <span>{{ $t('dataManageAnalysis.toolbarD') }}</span>
+            <el-date-picker
+              v-model="value1"
+              type="date"
+              :placeholder="$t('dataManageAnalysis.toolbarD_')"
+            />
+          </div>
         </div>
         <div class="statistical-analysis_wrap__charttitle">
           <div>{{ $t('dataManageAnalysis.chartTitleA') }}</div>
@@ -30,7 +54,7 @@
         </div>
 
       </el-col>
-    </el-row>  
+    </el-row>
   </div>
 </template>
 
@@ -65,7 +89,51 @@ export default {
         value: 2,
         isCheck: false
       }],
-      value1: ''
+      value1: '',
+      areaObj: {
+        type: 0, // 0  默认  1  组织  2  区域
+        area: '', // 选择值
+        user: '' // 选择用户
+      },
+      areaList: [
+        {
+          label: '大表',
+          value: 'db'
+        }, {
+          label: '集中器',
+          value: 'jzq'
+        }, {
+          label: '水表',
+          value: 'sb'
+        }
+      ],
+      userList: [
+        {
+          label: '用户1',
+          value: 'yh1'
+        }, {
+          label: '用户2',
+          value: 'yh2'
+        }, {
+          label: '用户3',
+          value: 'yh3'
+        }, {
+          label: '用户4',
+          value: 'yh4'
+        }, {
+          label: '用户5',
+          value: 'yh5'
+        }, {
+          label: '用户6',
+          value: 'yh6'
+        }, {
+          label: '用户7',
+          value: 'yh7'
+        }, {
+          label: '用户8',
+          value: 'yh8'
+        }
+      ]
     }
   },
 
@@ -76,15 +144,21 @@ export default {
     init () {
     },
     handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
+      console.log('data', data)
+      if (data.hasOwnProperty('companyid')) { // 区域
+        this.areaObj.type = '2'
+      } else { // 组织
+        this.areaObj.type = '1'
+      }
+      // this.$message.success(`切换${data.label}成功`)
     },
-    submitUpload() {
+    submitUpload () {
       this.$refs.upload.submit();
     },
-    handleRemove(file, fileList) {
+    handleRemove (file, fileList) {
       console.log(file, fileList);
     },
-    handlePreview(file) {
+    handlePreview (file) {
       console.log(file);
     },
     conditionChange (value) {
@@ -132,6 +206,19 @@ export default {
           font-weight: 400;
           color: #292C33;
           margin-right: 10px;
+        }
+      }
+      .al2{
+        .wrap_box {
+          width: 30%;
+        }
+      }
+      .al3{
+        justify-content: left;
+        padding-left: 50px;
+        box-sizing: border-box;
+        .wrap_box{
+          margin-right: 50px;
         }
       }
       &__charttitle {

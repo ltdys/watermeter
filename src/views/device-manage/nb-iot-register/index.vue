@@ -71,7 +71,7 @@
         label="当前状态"
       >
         <template slot-scope="scope">
-          {{ scope.row.isOnline | fIsOnline}}
+          {{ scope.row.isOnline | fIsOnline }}
         </template>
       </el-table-column>
       <el-table-column
@@ -114,7 +114,7 @@
     />
 
     <el-dialog :title="title" :visible.sync="addVisible" @close="close">
-      <my-edit :form="form" :type="type" @close="close" :areaObject="areaObject"/>
+      <my-edit :form="form" :type="type" :area-object="areaObject" @close="close" />
     </el-dialog>
   </div>
 </template>
@@ -174,8 +174,9 @@ export default {
         readValue: '', // 本次读数
         version: '', // 软件版本号
         meterAreasId: '', // 小区ID
-        bindState: 0,  // 使用状态
-        areasList: []
+        bindState: 0, // 使用状态
+        areasList: [],
+        blv: '1'
       },
       copyForm: {},
       options: [{
@@ -313,7 +314,7 @@ export default {
         readValue: '', // 本次读数
         version: '', // 软件版本号
         meterAreasId: '', // 小区ID
-        bindState: 0,  // 使用状态
+        bindState: 0, // 使用状态
         areasList: []
       }
       this.addVisible = false

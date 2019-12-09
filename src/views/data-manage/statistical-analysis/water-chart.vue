@@ -1,5 +1,5 @@
 <template>
-  <div id="waterChart" :style="{ width: width, height: height }"></div>
+  <div id="waterChart" :style="{ width: width, height: height }" />
 </template>
 
 <script>
@@ -45,7 +45,7 @@ export default {
       };
 
       myChart.setOption(option);
-      window.addEventListener("resize", function() {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     }

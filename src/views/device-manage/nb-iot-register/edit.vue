@@ -23,6 +23,16 @@
           <el-radio :label="0">未使用</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="倍率">
+        <el-select v-model="form.blv">
+          <el-option
+            v-for="item in bLvList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="用户编号">
         <el-input v-model="form.meterUserNum" clearable />
       </el-form-item>
@@ -122,7 +132,28 @@ export default {
         value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
-      }
+      },
+      bLvList: [
+        {
+          label: '0.01',
+          value: '0.01'
+        }, {
+          label: '0.1',
+          value: '0.1'
+        }, {
+          label: '1',
+          value: '1'
+        }, {
+          label: '10',
+          value: '10'
+        }, {
+          label: '100',
+          value: '100'
+        }, {
+          label: '1000',
+          value: '1000'
+        }
+      ]
     }
   },
 
@@ -157,7 +188,7 @@ export default {
         }
       }
     },
-    changeParent() {
+    changeParent () {
       // if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
       //   this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
       //   console.log("this.form.meterAreasId", this.form.meterAreasId)
@@ -165,7 +196,7 @@ export default {
       //   this.form.meterAreasId = ""
       // }
 
-      if(this.form.areasList && this.form.areasList.length > 0) {
+      if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.meterAreasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.meterAreasId", this.form.meterAreasId)
       } else {
