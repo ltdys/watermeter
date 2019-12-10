@@ -185,7 +185,8 @@
           </div>
           <div>
             <div v-for="(item, index) in nbiotList" :key="index">
-              {{ item.meterNbiotNum }}
+              <span class="b-dot" />
+              <div>{{ item.meterNbiotNum }}</div>
             </div>
           </div>
         </div>
@@ -260,7 +261,9 @@ export default {
       }],
       concentratorList: [], // 集中器列表
       meterList: [], // 采集器列表
-      nbiotList: [] //  水表列表
+      nbiotList: [], //  水表列表
+      checkMeterConcentratorNum: "",  // 选中的集中器编号
+      checkNum: ""  // 选中的采集器编号
     }
   },
 
@@ -355,6 +358,7 @@ export default {
       })
       item.isShow = true
       item.maxHeight = item.meterList.length * 28
+      this.checkMeterConcentratorNum = item.checkMeterConcentratorNum
       // item.isShow = !item.isShow
       this.getMeterNodes(item, index)
       console.log('集中器', item)
@@ -405,6 +409,7 @@ export default {
     },
     // 采集器点击
     meterChange (item, list) {
+      this.checkNum = item.num
       list.forEach(val => {
         val.isSelect = false
       })

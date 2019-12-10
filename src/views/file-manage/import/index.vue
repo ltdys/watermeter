@@ -4,10 +4,10 @@
       <el-col :span="12" class="import_form">
         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item :label="$t('fileManageImportant.toolbarA')">
-            <el-button type="primary" icon="el-icon-download" class="import_download">{{ $t('fileManageImportant.toolbarA_') }}</el-button>
-            <el-button type="primary" icon="el-icon-download" class="import_download">{{ $t('fileManageImportant.toolbarA__') }}</el-button>
+            <el-button type="primary" icon="el-icon-download" class="import_download" @click="downloadUserTemplate">{{ $t('fileManageImportant.toolbarA_') }}</el-button>
+            <el-button type="primary" icon="el-icon-download" class="import_download" @click="downloadNbiotTemplate">{{ $t('fileManageImportant.toolbarA__') }}</el-button>
           </el-form-item>
-          <el-form-item label="小区选择">
+          <el-form-item label="区域选择">
             <!-- <el-select v-model="form.t1" class="import_select">
               <el-option
                 v-for="item in options"
@@ -17,7 +17,7 @@
               />
             </el-select> -->
             <el-cascader
-              v-model="form.t1"
+              v-model="areasList"
               class="import_select"
               clearable
               filterable
@@ -28,21 +28,29 @@
           </el-form-item>
           <el-form-item :label="$t('fileManageImportant.toolbarC')">
             <el-upload
+              ref="upload"
+              :limit="1"
               class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              accept=".xls,.xlsx"
-              :on-change="handleChange"
-              :file-list="fileList"
+              action="#"
+              accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              :before-upload="beforeUpload"
+              :on-success="handleSuccess"
+              :on-change="handleAvatarChange"
+              :on-error="handleFailed"
+              :on-exceed="handleExceed"
+              :auto-upload="false"
+              :show-file-list="false"
             >
               <el-button size="small" type="primary" icon="el-icon-upload" class="import_upload">{{ $t('fileManageImportant.toolbarC_') }}</el-button>
-              <div slot="tip" class="el-upload__tip">仅支持上传EXCEL文件，且不超过500KB</div>
+              <div slot="tip" class="el-upload__tip" v-show="excelName">{{ excelName }}<i class="el-icon-error" @click="clearExcel"></i></div>
+              <div slot="tip" class="el-upload__tip">仅支持上传EXCEL文件</div>
             </el-upload>
           </el-form-item>
-          <el-form-item :label="$t('fileManageImportant.toolbarD')">
+          <!-- <el-form-item :label="$t('fileManageImportant.toolbarD')">
             <el-input v-model="form.t2" type="textarea" />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
-            <el-button type="primary" class="import_submit">{{ $t('fileManageImportant.toolbarE') }}</el-button>
+            <el-button type="primary" class="import_submit" @click="uploadFile">{{ $t('fileManageImportant.toolbarE') }}</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -72,7 +80,7 @@
 
 <script>
 import { list_mixins } from '@/mixins'
-import { findDistrict } from '@/service/api'
+import { findDistrict, uploadUserAndMeter } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 
 export default {
@@ -100,7 +108,13 @@ export default {
         value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
-      }
+      },
+      excelModel: {
+        areasId: '',  // 区域ID
+        file: ''
+      },
+      areasList: [],
+      excelName: ''
     }
   },
 
@@ -113,10 +127,11 @@ export default {
       this.findDistrict()
     },
     handleChange (file, fileList) {
-      this.fileList = fileList.slice(-3);
     },
     cascaChange (val) {
-      console.log('val', val)
+      if(this.areasList && this.areasList.length > 0) {
+        this.excelModel.areasId = this.areasList[this.areasList.length - 1]
+      }
     },
     async findDistrict () { // 查询区域
       const self = this;
@@ -143,6 +158,60 @@ export default {
           self.options = self.tableData
         }
       }
+    },
+    downloadUserTemplate() {
+      window.location = this.DOWNLOAD_USER_EXCEL
+    },
+    downloadNbiotTemplate() {
+      window.location = this.DOWNLOAD_NBIOT_EXCEL
+    },
+    beforeUpload (file) {
+    },
+    handleSuccess (response, file, fileList) {
+      this.excelModel.file = file.raw
+    },
+    handleAvatarChange (file) {
+      this.excelName = file.name
+      this.excelModel.file = file.raw
+    },
+    handleExceed (file) {
+      this.$message.warning('上传文件个数超出限制！')
+    },
+    handleFailed (err, file, fileList) {
+      this.$message.error('文件上传失败！', err)
+      this.$refs.upload.clearFiles()
+    },
+    uploadFile () {
+      let temp = this.excelModel
+      if (!this.excelModel.areasId) {
+        this.$message.warning('请选择区域!')
+        return
+      }
+      if (!this.excelModel.file) {
+        this.$message.warning('请选择上传的Excel文件！')
+        return
+      }
+      this.uploadUserAndMeter()
+    },
+    clearExcel() {
+      this.excelModel.file = ""
+      this.excelName = ""
+    },
+    // 户表导入
+    async uploadUserAndMeter() {
+      let resData = await uploadUserAndMeter(this.excelModel)
+      if(resData.status === 200 && resData.data.code == 1) {
+        this.$message({
+          type: 'success',
+          message: resData.data.message + ',' + resData.data.data,
+          duration: 2500
+        })
+      } else {
+        this.$message.warning(resData.data.message + ',' + resData.data.data)
+      }
+      this.clearExcel()
+      this.excelModel.areasId = ""
+      this.areasList = []
     }
   }
 }
@@ -208,6 +277,10 @@ export default {
 
     .el-button--primary:hover, .el-button--primary:focus {
       border-color: transparent !important;
+    }
+    .el-icon-error {
+      margin-left: 5px;
+      cursor: pointer;
     }
   }
 </style>

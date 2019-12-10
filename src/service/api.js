@@ -1,4 +1,5 @@
 import axios from '@/utils/request.js'
+import { formUtil } from '@/utils/publicUtil'
 
 // 组织管理
 // 组织添加
@@ -187,4 +188,7 @@ export const getTreeAreas = params => axios.post('/watermeter/getTreeAreas', par
 
 // 首页  数据查询
 export const countMeterNbIotL = params => axios.post('/watermeter/countMeterNbIotL', params)
+
+// 户表导入, 上传excel
+export const uploadUserAndMeter = params => axios.post('/watermeter/uploadUserAndMeter', formUtil(params))
 
