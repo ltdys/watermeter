@@ -158,12 +158,30 @@
     <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
       <div class="gather-wrap">
         <div class="gather-content">
-          <div>
+          <!-- <div>
             <el-collapse accordion>
               <el-collapse-item v-for="(item, index) in concentratorList" :key="index" :title="item.meterConcentratorName" @click.native="concentratorChange(item)">
                 <div v-for="(item1, index1) in meterList" :key="index1" class="gather-meter" @click.stop="meterChange(item1)">{{ item1.num }}</div>
               </el-collapse-item>
             </el-collapse>
+          </div> -->
+          <div class="col-box">
+            <div v-for="(item, index) in concentratorList" :key="index" class="col-box_cel">
+              <div class="col-box_cel_title fl">
+                <i class="col_icon fl" :class="[item.isShow ? 'el-icon-remove-outline' : 'el-icon-circle-plus-outline']" @click="openJzq(item)" />
+                <div>{{ item.meterConcentratorName }}</div>
+              </div>
+              <!-- <transition-group name="collapse"> -->
+              <div class="col-box_se" :style="{height: item.maxHeight + 'px'}">
+                <div v-for="(item1, index1) in item.meterList" :key="index1" class="col-box_se_main" @click.stop="meterChange(item1, item.meterList)">
+                  <div class="col-box_se_main_box fl" :class="{'is-select': item1.isSelect}">
+                    <span class="b-dot" />
+                    <div>{{ item1.num }}</div>
+                  </div>
+                </div>
+              </div>
+              <!-- </transition-group> -->
+            </div>
           </div>
           <div>
             <div v-for="(item, index) in nbiotList" :key="index">
@@ -331,6 +349,16 @@ export default {
       this.gatherVisiable = true
       this.findMeterConcentrator()
     },
+    openJzq (item, index) {
+      this.concentratorList.forEach(val => {
+        val.maxHeight = 0
+      })
+      item.isShow = true
+      item.maxHeight = item.meterList.length * 28
+      // item.isShow = !item.isShow
+      this.getMeterNodes(item, index)
+      console.log('集中器', item)
+    },
     handleRead () {
       this.readVisiable = true
     },
@@ -345,25 +373,42 @@ export default {
       let resData = await findMeterConcentrator(params)
       if (resData.status === 200) {
         this.concentratorList = resData.data.data || []
+        this.concentratorList.forEach(item => {
+          this.$set(item, 'maxHeight', 0)
+          this.$set(item, 'meterList', [])
+        })
         console.log("this.concentratorList", this.concentratorList)
       }
     },
     // 集中器点击
-    concentratorChange (item) {
+    concentratorChange (item, index) {
       this.getMeterNodes(item.meterConcentratorId || "")
     },
-    async getMeterNodes (mcId) {
+    async getMeterNodes (item, index) {
       let params = {
-        mcId: mcId
+        mcId: item.meterConcentratorId || ""
       }
       let resData = await getMeterNodes(params)
       if (resData.status === 200) {
         this.meterList = resData.data.data || []
+        item.meterList = resData.data.data
+        item.meterList.forEach(val => {
+          this.$set(val, 'isSelect', false)
+        })
+        this.concentratorList.forEach(val => {
+          // val.isShow = false
+          val.maxHeight = 0
+        })
+        item.maxHeight = item.meterList.length * 28
         console.log("this.meterList", this.meterList)
       }
     },
     // 采集器点击
-    meterChange (item) {
+    meterChange (item, list) {
+      list.forEach(val => {
+        val.isSelect = false
+      })
+      item.isSelect = true
       this.getMeterNbIotL(item.num)
     },
     // 水表查询
@@ -378,6 +423,54 @@ export default {
       if (resData.status === 200) {
         this.nbiotList = resData.data.data
         console.log("this.nbiotList", this.nbiotList)
+      }
+    },
+    animateManyStyle (obj, json, fn) {
+      clearInterval(obj.timer);
+      obj.timer = setInterval(function () {
+        var flag = true; // 用来判断是否停止定时器   一定写到遍历的外面
+        for (var attr in json) { // attr  属性     json[attr]  值
+          // 开始遍历 json
+          // 计算步长    用 target 位置 减去当前的位置  除以 10
+          // console.log(attr);
+          var current = 0;
+          if (attr == "opacity") {
+            current = parseInt(this.getStyle(obj, attr) * 100);
+          } else {
+            current = parseInt(this.getStyle(obj, attr)); // 数值
+          }
+          // 目标位置就是  属性值
+          var step = (json[attr] - current) / 10; // 步长  用目标位置 - 现在的位置 / 10
+          step = step > 0 ? Math.ceil(step) : Math.floor(step);
+          // 判断透明度
+          if (attr == "opacity") { // 判断用户有没有输入 opacity属性
+            if ("opacity" in obj.style) { // 判断浏览器是否支持opacity
+              obj.style.opacity = (current + step) / 100;
+            } else {
+              obj.style.filter = "alpha(opacity = " + (current + step) + ")";
+            }
+          } else if (attr == "zIndex") {
+            obj.style.zIndex = json[attr];
+          } else {
+            obj.style[attr] = current + step + "px";
+          }
+          if (current != json[attr]) { // 只要其中一个不满足条件 就不应该停止定时器
+            flag = false;
+          }
+        }
+        if (flag) { // 用于判断定时器的条件
+          clearInterval(obj.timer);
+          if (fn) { //  当定时器停止了， 动画就结束了  如果有回调，就执行回调
+            fn();
+          }
+        }
+      }, 5)
+    },
+    getStyle (obj, attr) {
+      if (obj.currentStyle) { // ie 等
+        return obj.currentStyle[attr]; // 返回传递过来的某个属性
+      } else {
+        return window.getComputedStyle(obj, null)[attr]; // w3c 浏览器
       }
     }
   }
@@ -410,6 +503,61 @@ export default {
       .gather-content {
         display: flex;
         flex: 1;
+        .col-box{
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: 40%;
+          height: 100%;
+          background: #E9E9E9;
+          padding: 20px;
+          box-sizing: border-box;
+          &_cel{
+            &_title{
+              width: 100%;
+              height: 35px;
+              line-height: 35px;
+              justify-content: flex-start;
+              .col_icon{
+                margin-right: 10px;
+                margin-top: 2px;
+                cursor: pointer;
+              }
+            }
+          }
+          &_se{
+            width:100%;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.2s ease-out;
+            &_main{
+              width: 100%;
+              &_box{
+                width: 100%;
+                height: 28px;
+                line-height: 28px;
+                justify-content: flex-start;
+                padding-left: 20px;
+                box-sizing: border-box;
+                cursor: pointer;
+                .b-dot{
+                  width: 5px;
+                  height: 5px;
+                  border-radius: 50%;
+                  background: #343844;
+                  margin-right: 7px;
+                }
+              }
+              .is-select{
+                font-weight: bold;
+                color: #0084FF;
+                .b-dot{
+                  background: #0084FF;
+                }
+              }
+            }
+          }
+        }
         > div:first-child {
           flex: 1;
           margin-right: 15px;
