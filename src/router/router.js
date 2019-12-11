@@ -209,8 +209,8 @@ const routes = [
     component: () => import('@/views/login/index.vue')
   },
   {
-    path: '/region2',
-    component: r => require(['@/components/common/region2.vue'], r)
+    path: '/region3',
+    component: r => require(['@/components/common/region3.vue'], r)
   }
 ]
 
