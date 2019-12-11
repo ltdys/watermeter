@@ -192,3 +192,9 @@ export const countMeterNbIotL = params => axios.post('/watermeter/countMeterNbIo
 // 户表导入, 上传excel
 export const uploadUserAndMeter = params => axios.post('/watermeter/uploadUserAndMeter', formUtil(params))
 
+// 操作指令接口
+export const operInstruct = params => axios.post('/watermeter/operInstruct', params)
+
+// 指令查询接口
+export const findInstructLog = params => axios.post('/watermeter/findInstructLog', params)
+

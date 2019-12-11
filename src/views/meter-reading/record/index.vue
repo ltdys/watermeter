@@ -15,71 +15,72 @@
       </el-form-item>
     </el-form> -->
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage + 50"
-        highlight-current-row
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <el-table-column
-          prop="recordId"
-          :label="$t('meterReadingRecord.tableA')"
-          width="220"
-        />
-        <el-table-column
-          prop="tableId"
-          :label="$t('meterReadingRecord.tableB')"
-          width="220"
-        />
-        <el-table-column
-          prop="address"
-          :label="$t('meterReadingRecord.tableC')"
-        />
-        <el-table-column
-          prop="address"
-          :label="$t('meterReadingRecord.tableD')"
-        />
-        <el-table-column
-          prop="address"
-          :label="$t('meterReadingRecord.tableE')"
-        />
-        <el-table-column
-          prop="controlInfo"
-          :label="$t('meterReadingRecord.tableF')"
-        />
-        <el-table-column
-          prop="controlType"
-          :label="$t('meterReadingRecord.tableG')"
-        />
-        <el-table-column
-          prop="time"
-          :label="$t('meterReadingRecord.tableH')"
-        />
-        <el-table-column
-          prop="time"
-          :label="$t('meterReadingRecord.tableI')"
-        />
-      </el-table>
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage + 50"
+      highlight-current-row
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
       />
+      <el-table-column
+        prop="recordId"
+        :label="$t('meterReadingRecord.tableA')"
+        width="220"
+      />
+      <el-table-column
+        prop="tableId"
+        :label="$t('meterReadingRecord.tableB')"
+        width="220"
+      />
+      <el-table-column
+        prop="address"
+        :label="$t('meterReadingRecord.tableC')"
+      />
+      <el-table-column
+        prop="address"
+        :label="$t('meterReadingRecord.tableD')"
+      />
+      <el-table-column
+        prop="address"
+        :label="$t('meterReadingRecord.tableE')"
+      />
+      <el-table-column
+        prop="controlInfo"
+        :label="$t('meterReadingRecord.tableF')"
+      />
+      <el-table-column
+        prop="controlType"
+        :label="$t('meterReadingRecord.tableG')"
+      />
+      <el-table-column
+        prop="time"
+        :label="$t('meterReadingRecord.tableH')"
+      />
+      <el-table-column
+        prop="time"
+        :label="$t('meterReadingRecord.tableI')"
+      />
+    </el-table>
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
   </div>
 </template>
 
 <script>
 import { getRecord } from '@/service/reading'
+import { findInstructLog } from '@/service/api'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 export default {
@@ -110,8 +111,20 @@ export default {
   created () {
     this.init()
   },
-  
+
   methods: {
+    async findInstructLog () {
+      const params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let res = await findInstructLog(params)
+      console.log('res', res)
+      this.tableData = res.data.data
+      this.pageObj.allTotal = res.data.page.totalRow
+      console.log("======", this.tableData)
+    },
     async getRecord () {
       const params = {
         rows: this.pageObj.pageSize,
@@ -123,7 +136,8 @@ export default {
       console.log("======", this.tableData)
     },
     init () {
-      this.getRecord()
+      // this.getRecord()
+      this.findInstructLog()
     },
     searchSubmit () {
 

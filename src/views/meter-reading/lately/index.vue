@@ -167,8 +167,8 @@
           </div> -->
           <div class="col-box">
             <div v-for="(item, index) in concentratorList" :key="index" class="col-box_cel">
-              <div class="col-box_cel_title fl">
-                <i class="col_icon fl" :class="[item.isShow ? 'el-icon-remove-outline' : 'el-icon-circle-plus-outline']" @click="openJzq(item)" />
+              <div class="col-box_cel_title fl" @click="openJzq(item)">
+                <i class="col_icon fl" :class="[item.isShow ? 'el-icon-remove-outline' : 'el-icon-circle-plus-outline']" />
                 <div>{{ item.meterConcentratorName }}</div>
               </div>
               <!-- <transition-group name="collapse"> -->
@@ -183,14 +183,14 @@
               <!-- </transition-group> -->
             </div>
           </div>
-          <div>
-            <div v-for="(item, index) in nbiotList" :key="index">
+          <div class="col2-box">
+            <div v-for="(item, index) in nbiotList" :key="index" class="col-sb fl" :class="{'is-select': item.isSelect}" @click.stop="nbiotClick(item)">
               <span class="b-dot" />
               <div>{{ item.meterNbiotNum }}</div>
             </div>
           </div>
         </div>
-        <div class="gather-btn">
+        <div class="gather-btn" @click="sureGather">
           确认采集
         </div>
       </div>
@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL } from '@/service/api'
+import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct } from '@/service/api'
 import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -262,8 +262,10 @@ export default {
       concentratorList: [], // 集中器列表
       meterList: [], // 采集器列表
       nbiotList: [], //  水表列表
-      checkMeterConcentratorNum: "",  // 选中的集中器编号
-      checkNum: ""  // 选中的采集器编号
+      checkMeterConcentrator: {}, // 选中的采集器
+      checkMeterConcentratorNum: "", // 选中的集中器编号
+      checkNum: "", // 选中的采集器编号
+      checkSb: {} // 选中的水表
     }
   },
 
@@ -334,7 +336,48 @@ export default {
     handleDelete () {
 
     },
+    nbiotClick (item) { // 切换水表时
+      console.log('水表', item)
+      this.checkSb = item
+      this.nbiotList.forEach(val => {
+        val.isSelect = false
+      })
+      item.isSelect = true
+    },
+    sureGather () { // 确认采集
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      if (self.checkMeterConcentratorNum == '') { // 集中器为空
+        this.$message.warning("请选择集中器");
+      } else {
+        param.concentratorNum = self.checkMeterConcentrator.meterConcentratorNum
+        param.rule = self.checkMeterConcentrator.meterConcentratorRule
+        param.cmd = 'MMM'
+        if (self.checkNum == '') { // 采集器为空
+          param.nodeBlockAddress = Number(param.rule) == 0 ? '{"ffffffffffff"}' : Number(param.rule) == 1 ? '{"ffffffff"}' : Number(param.rule) == 2 ? '{"ffffffffffffff"}' : '{"ffffffff"}'
+          // checkMeterConcentrator
+        } else {
+          param.nodeBlockAddress = `{${self.checkNum}}`
+          if (Object.keys(self.checkSb).length == 0) { // 水表为空
+            param.waterBlockAddress = param.rule == '02' ? '{""}' : `{"ffffffff"}`
+          } else {
+            param.waterBlockAddress = param.rule == '02' ? '{""}' : `{${self.checkSb.meterNbiotNum}}`
+          }
+        }
+      }
+      self.$nextTick(() => {
+        console.log('参数', param)
+        self.operInstruct(param)
+      })
+    },
+    async operInstruct (param) { // 采集操作指令
+      const res = await operInstruct(param)
+      console.log('采集操作指令', res)
+    },
     gatherClose () {
+      this.nbiotList = []
       this.gatherVisiable = false
     },
     readClose () {
@@ -358,7 +401,8 @@ export default {
       })
       item.isShow = true
       item.maxHeight = item.meterList.length * 28
-      this.checkMeterConcentratorNum = item.checkMeterConcentratorNum
+      this.checkMeterConcentrator = item
+      this.checkMeterConcentratorNum = item.meterConcentratorNum
       // item.isShow = !item.isShow
       this.getMeterNodes(item, index)
       console.log('集中器', item)
@@ -395,10 +439,15 @@ export default {
       let resData = await getMeterNodes(params)
       if (resData.status === 200) {
         this.meterList = resData.data.data || []
-        item.meterList = resData.data.data
+        item.meterList = resData.data.data || []
         item.meterList.forEach(val => {
           this.$set(val, 'isSelect', false)
         })
+        if (item.meterList.length != 0) {
+          // item.meterList[0].isSelect = true
+          // this.checkNum = item.meterList[0].num
+          this.meterChange(item.meterList[0], item.meterList)
+        }
         this.concentratorList.forEach(val => {
           // val.isShow = false
           val.maxHeight = 0
@@ -426,7 +475,12 @@ export default {
       }
       let resData = await getMeterNbIotL(params)
       if (resData.status === 200) {
-        this.nbiotList = resData.data.data
+        let list = resData.data.data
+        this.nbiotList = []
+        list.forEach(item => {
+          this.$set(item, 'isSelect', false)
+          this.nbiotList.push(item)
+        })
         console.log("this.nbiotList", this.nbiotList)
       }
     },
@@ -523,10 +577,10 @@ export default {
               height: 35px;
               line-height: 35px;
               justify-content: flex-start;
+              cursor: pointer;
               .col_icon{
                 margin-right: 10px;
                 margin-top: 2px;
-                cursor: pointer;
               }
             }
           }
@@ -545,13 +599,6 @@ export default {
                 padding-left: 20px;
                 box-sizing: border-box;
                 cursor: pointer;
-                .b-dot{
-                  width: 5px;
-                  height: 5px;
-                  border-radius: 50%;
-                  background: #343844;
-                  margin-right: 7px;
-                }
               }
               .is-select{
                 font-weight: bold;
@@ -562,6 +609,34 @@ export default {
               }
             }
           }
+        }
+        .col2-box{
+          padding: 20px 0;
+          box-sizing: border-box;
+          background: #F5F5F5;
+          .col-sb{
+            width: 100%;
+            height: 28px;
+            line-height: 28px;
+            justify-content: flex-start;
+            padding-left: 20px;
+            box-sizing: border-box;
+            cursor: pointer;
+          }
+          .is-select{
+            background: #E9E9E9;
+            color: #0084FF;
+            .b-dot{
+              background: #0084FF;
+            }
+          }
+        }
+        .b-dot{
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #343844;
+          margin-right: 7px;
         }
         > div:first-child {
           flex: 1;
