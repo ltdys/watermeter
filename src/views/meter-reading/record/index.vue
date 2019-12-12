@@ -29,29 +29,32 @@
         label="#"
       />
       <el-table-column
-        prop="recordId"
+        prop="applyId"
         :label="$t('meterReadingRecord.tableA')"
-        width="220"
+        width="300"
       />
       <el-table-column
-        prop="tableId"
+        prop="meterNum"
         :label="$t('meterReadingRecord.tableB')"
-        width="220"
+        width="300"
       />
       <el-table-column
-        prop="address"
+        prop="concentratorBlockAddress"
         :label="$t('meterReadingRecord.tableC')"
+        width="300"
       />
       <el-table-column
-        prop="address"
+        prop="nodeBlockAddress"
         :label="$t('meterReadingRecord.tableD')"
+        width="300"
       />
       <el-table-column
-        prop="address"
+        prop="meterBlockAddress"
         :label="$t('meterReadingRecord.tableE')"
+        width="300"
       />
       <el-table-column
-        prop="controlInfo"
+        prop="controlDesc"
         :label="$t('meterReadingRecord.tableF')"
       />
       <el-table-column
@@ -59,13 +62,21 @@
         :label="$t('meterReadingRecord.tableG')"
       />
       <el-table-column
-        prop="time"
         :label="$t('meterReadingRecord.tableH')"
-      />
+        width="300"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.applyTime | fFormatDate }}
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="time"
         :label="$t('meterReadingRecord.tableI')"
-      />
+        width="300"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.controlTime | fFormatDate }}
+        </template>
+      </el-table-column>
     </el-table>
     <my-pagination
       :all-total="pageObj.allTotal"

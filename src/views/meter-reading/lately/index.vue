@@ -35,12 +35,12 @@
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarF') }}</el-button>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarG') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarH') }}</el-button>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarI') }}</el-button>
           </el-form-item>
@@ -51,7 +51,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region3 @handleNodeClick="handleNodeClick" />
+          <my-region2 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -206,7 +206,7 @@
 
 <script>
 import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct } from '@/service/api'
-import myRegion3 from '@/components/common/region3'
+import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 export default {
@@ -214,7 +214,7 @@ export default {
   name: 'lately',
 
   components: {
-    myPagination, myRegion3
+    myPagination, myRegion2
   },
 
   mixins: [list_mixins],
@@ -324,6 +324,7 @@ export default {
       this.init()
     },
     handleNodeClick (data) {
+      console.log('data', data)
       this.search.areasId = data.id
       this.recentMeterReading()
     },
@@ -357,6 +358,7 @@ export default {
         param.cmd = 'MMM'
         if (self.checkNum == '') { // 采集器为空
           param.nodeBlockAddress = Number(param.rule) == 0 ? '{"ffffffffffff"}' : Number(param.rule) == 1 ? '{"ffffffff"}' : Number(param.rule) == 2 ? '{"ffffffffffffff"}' : '{"ffffffff"}'
+          param.waterBlockAddress = param.rule == '02' ? '{""}' : `{"ffffffff"}`
           // checkMeterConcentrator
         } else {
           param.nodeBlockAddress = `{${self.checkNum}}`
@@ -374,6 +376,12 @@ export default {
     },
     async operInstruct (param) { // 采集操作指令
       const res = await operInstruct(param)
+      if (res.status == 200 && res.data.code == 1) {
+        this.$message.success(res.data.message);
+        this.gatherClose()
+      } else {
+        this.$message.error(res.data.message);
+      }
       console.log('采集操作指令', res)
     },
     gatherClose () {

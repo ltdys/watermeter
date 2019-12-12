@@ -48,8 +48,8 @@ export const list_mixins = {
       return this.$store.getters.getIframeHeight
     },
     companyData () {
-      if(this.$store.getters.getCompanyData == "undefined" || !this.$store.getters.getCompanyData) {
-        return [] 
+      if (this.$store.getters.getCompanyData == "undefined" || !this.$store.getters.getCompanyData) {
+        return []
       } else {
         return JSON.parse(this.$store.getters.getCompanyData)
       }
@@ -58,7 +58,7 @@ export const list_mixins = {
       console.log('isWealth变化')
       return this.$store.getters.getIsWealth
     },
-    districtData() {
+    districtData () {
       return JSON.parse(this.$store.getters.getDistrictData)
     }
   },

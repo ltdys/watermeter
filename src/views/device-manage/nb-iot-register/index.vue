@@ -22,12 +22,12 @@
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarD') }}</el-button>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarE') }}</el-button>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarF') }}</el-button>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarG') }}</el-button>
       </el-form-item>
@@ -83,6 +83,13 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="阀门状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.isSwing | fisSwing }}
+        </template>
+      </el-table-column>
+      <el-table-column
         label="最后上线"
       >
         <template slot-scope="scope">
@@ -101,6 +108,7 @@
         <template slot-scope="scope">
           <i class="el-icon-edit" @click="handleEdit(scope.row)" />
           <i class="el-icon-delete" @click="handleDelete(scope.row)" />
+          <el-button v-if="scope.row.isSwing != -1" :class="colorStatus(scope.row.isSwing)" type="text" size="small" @click="handleValve(scope.row)">{{ scope.row.isSwing | fisSwingShow }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -120,7 +128,7 @@
 </template>
 
 <script>
-import { getMeterNbIotL, deleteMeterNbIot, findDistrict } from '@/service/api'
+import { getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -190,11 +198,51 @@ export default {
     }
   },
 
+  computed: {
+    colorStatus: function (val) {
+      return function (val) {
+        let s = ''
+        if (val == null || val == 0) {
+          s = 'color-r'
+        } else if (val == 1) {
+          s = 'color-g'
+        }
+        return s
+      }
+    }
+  },
+
   created () {
     this.init()
   },
 
   methods: {
+    handleValve (item) { // 阀门操作
+      const self = this;
+      console.log('item', item)
+      let param = {
+        userId: self.userId, // 用户登录id
+        concentratorNum: item.meterConcentratorNum, // 集中器id
+        waterBlockAddress: item.meterNbiotNum, // 表地址
+        rule: item.rule
+      }
+      if (item.isSwing == null || item.isSwing == 0) { // 开阀状态  执行关阀
+        param.cmd = 'GGG'
+      } else if (item.isSwing == 1) { // 关阀状态  执行开阀
+        param.cmd = 'KKK'
+      }
+      self.operInstruct(param)
+    },
+    async operInstruct (param) {
+      let res = await operInstruct(param)
+      if (res.status == 200 && res.data.code == 1) {
+        this.$message.success(res.data.message);
+        this.getMeterNbIotL()
+      } else {
+        this.$message.error(res.data.message);
+      }
+      console.log('res', res)
+    },
     async getMeterNbIotL () {
       const params = {
         userId: this.userId,

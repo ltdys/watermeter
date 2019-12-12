@@ -150,3 +150,27 @@ export function fUserSex (val) {
     return '女'
   }
 }
+
+// 阀门状态
+export function fisSwing (val) {
+  if (val == null) {
+    return '开阀'
+  } else if (val == -1) {
+    return '不支持门阀'
+  } else if (val == 0) {
+    return '开阀'
+  } else if (val == 1) {
+    return '关阀'
+  }
+}
+
+// 操作阀门状态
+export function fisSwingShow (val) {
+  if (val == null) {
+    return '关阀'
+  } else if (val == 0) {
+    return '关阀'
+  } else if (val == 1) {
+    return '开阀'
+  }
+}
