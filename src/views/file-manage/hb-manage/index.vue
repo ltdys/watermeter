@@ -29,7 +29,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick" />
+          <my-region3 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -127,7 +127,7 @@
 
 <script>
 import { findWaterHouseTypes, findWaterNatures, getMeterUserAndMeterNbIot, getMeterNbIotL, deleteMeterUser } from '@/service/api'
-import myRegion2 from '@/components/common/region2'
+import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import userEdit from './userEdit'
@@ -138,7 +138,7 @@ export default {
   name: 'hbManage',
 
   components: {
-    myPagination, myRegion2, userEdit, tableEdit
+    myPagination, myRegion3, userEdit, tableEdit
   },
 
   mixins: [list_mixins],

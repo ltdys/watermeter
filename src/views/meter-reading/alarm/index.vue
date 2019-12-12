@@ -41,7 +41,7 @@
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick"></my-region2>
+          <my-region3 @handleNodeClick="handleNodeClick"></my-region3>
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -136,7 +136,7 @@
 
 <script>
 import { getAlarm } from '@/service/reading'
-import myRegion2 from '@/components/common/region2'
+import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 export default {
@@ -144,7 +144,7 @@ export default {
   name: 'alarm',
 
   components: {
-    myPagination, myRegion2
+    myPagination, myRegion3
   },
 
   mixins: [list_mixins],

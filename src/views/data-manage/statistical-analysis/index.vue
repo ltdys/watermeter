@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="4" :style="{height: (tableHeight + 32) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick" />
+          <my-region3 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20" class="statistical-analysis_wrap" :style="{height: (tableHeight + 32) + 'px', background: '#fff'}">
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import myRegion2 from '@/components/common/region2'
+import myRegion3 from '@/components/common/region3'
 import waterChart from './water-chart'
 import lossChart from './loss-chart'
 import { list_mixins } from '@/mixins'
@@ -68,7 +68,7 @@ export default {
   name: 'statisticalAnalysis',
 
   components: {
-    myRegion2, waterChart, lossChart
+    myRegion3, waterChart, lossChart
   },
 
   mixins: [list_mixins],

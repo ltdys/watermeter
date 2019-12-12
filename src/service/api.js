@@ -198,3 +198,6 @@ export const operInstruct = params => axios.post('/watermeter/operInstruct', par
 // 指令查询接口
 export const findInstructLog = params => axios.post('/watermeter/findInstructLog', params)
 
+// 子区域查询
+export const findChildDistrict = params => axios.post('/watermeter/findChildDistrict', params)
+

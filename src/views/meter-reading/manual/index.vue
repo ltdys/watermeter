@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="4" :style="{height: (tableHeight + 52) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region2 @handleNodeClick="handleNodeClick"></my-region2>
+          <my-region3 @handleNodeClick="handleNodeClick"></my-region3>
         </el-scrollbar>
       </el-col>
       <el-col :span="20" class="manual_wrap" :style="{height: (tableHeight + 52) + 'px', background: '#fff'}">
@@ -31,14 +31,14 @@
 </template>
 
 <script>
-import myRegion2 from '@/components/common/region2'
+import myRegion3 from '@/components/common/region3'
 import { list_mixins } from '@/mixins'
 export default {
 
   name: 'manual',
 
   components: {
-    myRegion2
+    myRegion3
   },
 
   mixins: [list_mixins],
@@ -56,7 +56,6 @@ export default {
     init () {
     },
     handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
     },
     submitUpload() {
       this.$refs.upload.submit();
