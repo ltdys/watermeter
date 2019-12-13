@@ -54,7 +54,7 @@
         :label="$t('deviceManageConcentrator.tableC')"
       >
         <template slot-scope="scope">
-          {{ scope.row.meterConcentratorNowstatus | fNowStatus }}
+          {{ scope.row.meterConcentratorNowstatus | fIsOnline }}
         </template>
       </el-table-column>
       <el-table-column
@@ -65,9 +65,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="lastSeen"
         :label="$t('deviceManageConcentrator.tableE')"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.meterConcentratorOnlineTime | fFormatDate }}
+        </template>
+      </el-table-column>
       <el-table-column
         :label="$t('deviceManageConcentrator.tableF')"
       >
@@ -79,10 +82,10 @@
         prop="meterConcentratorRule"
         :label="$t('deviceManageConcentrator.tableG')"
       />
-      <el-table-column
+      <!-- <el-table-column
         prop="waterDivision"
         :label="$t('deviceManageConcentrator.tableH')"
-      />
+      /> -->
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
         <template slot-scope="scope">
           <i class="el-icon-edit" @click.stop="handleEdit(scope.row)" />

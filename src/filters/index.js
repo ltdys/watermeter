@@ -30,6 +30,10 @@ export function fComState (str) {
   return str === 0 ? '异常' : '正常'
 }
 
+export function fUserStatus (str) {
+  return str === 1 ? '锁定' : '正常'
+}
+
 // 转换时间
 export function fFormatDate (time, cFormat) {
   if (!time) return ""
@@ -124,17 +128,6 @@ export function fParentChange (val) {
     return '--'
   } else {
     return val
-  }
-}
-
-// 用户管理  状态
-export function fUserStatus (val) {
-  if (val === '') {
-    return '--'
-  } else if (val == 0) {
-    return '正常'
-  } else if (val == 1) {
-    return '锁定'
   }
 }
 

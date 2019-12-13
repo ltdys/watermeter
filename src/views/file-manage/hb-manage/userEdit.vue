@@ -33,7 +33,7 @@
           <el-option v-for="(item, index) in waterNatureList" :key="index" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="用户名称">
+      <el-form-item label="用户名称" prop="name">
         <el-input v-model="form.name" clearable />
       </el-form-item>
       <el-form-item label="身份证号码">
@@ -77,24 +77,28 @@ export default {
     },
     form: {
       type: Object,
-      default: () => {
-        return {
-          id: '', // 用户id
-          nbiotNum: '',
-          areasId: '',
-          num: '',
-          name: '',
-          idNumber: '',
-          tel: '',
-          waterHouseTypeId: '',
-          waterNatureId: '',
-          floorNo: '',
-          unitNo: '',
-          roomNo: '',
-          namePy: ''
-        }
-      }
+      default: () => {}
     }
+    // form: {
+    //   type: Object,
+    //   default: () => {
+    //     return {
+    //       id: '', // 用户id
+    //       nbiotNum: '',
+    //       areasId: '',
+    //       num: '',
+    //       name: '',
+    //       idNumber: '',
+    //       tel: '',
+    //       waterHouseTypeId: '',
+    //       waterNatureId: '',
+    //       floorNo: '',
+    //       unitNo: '',
+    //       roomNo: '',
+    //       namePy: ''
+    //     }
+    //   }
+    // }
   },
   data () {
     return {
@@ -119,6 +123,9 @@ export default {
         ],
         num: [
           { required: true, message: "请输入用户编号", trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: "请输入用户名称", trigger: 'blur' }
         ],
         waterHouseTypeId: [
           { required: true, message: "请选择用户类型", trigger: 'change' }

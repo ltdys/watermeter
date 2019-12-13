@@ -167,7 +167,21 @@ export default {
         children: 'child',
         label: 'name'
       },
-      form: {},
+      form: {
+        id: '', // 用户id
+        nbiotNum: '',
+        areasId: '',
+        num: '',
+        name: '',
+        idNumber: '',
+        tel: '',
+        waterHouseTypeId: '',
+        waterNatureId: '',
+        floorNo: '',
+        unitNo: '',
+        roomNo: '',
+        namePy: ''
+      },
       options: [{
         value: 0,
         label: '用户编号'
@@ -382,7 +396,21 @@ export default {
       this.tableAddVisible = true
     },
     userClose () {
-      this.form = {}
+      this.form = {
+        id: '', // 用户id
+        nbiotNum: '',
+        areasId: '',
+        num: '',
+        name: '',
+        idNumber: '',
+        tel: '',
+        waterHouseTypeId: '',
+        waterNatureId: '',
+        floorNo: '',
+        unitNo: '',
+        roomNo: '',
+        namePy: ''
+      }
       this.getMeterUserAndMeterNbIot()
       // this.userAddVisible = false
     },

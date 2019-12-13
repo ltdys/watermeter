@@ -315,7 +315,9 @@ export default {
         companyId: this.search.companyName || this.company_id,
         sysUser: {
           userName: this.search.roleName
-        }
+        },
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
         // companyName: this.search.companyName,
         // roleName: this.search.roleName
       }
@@ -352,7 +354,7 @@ export default {
       let params = {
         userId: this.userId,
         currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize,
+        pageSize: 10000,
         company: {
           id: this.company_id
         }
@@ -411,7 +413,9 @@ export default {
         return row.companyid == item.id
       })[0]
       this.type = 1
-      this.form.company = company.parentId == 0 ? [company.id] : [company.parentId, company.id]
+      if (company) {
+        this.form.company = company.parentId == 0 ? [company.id] : [company.parentId, company.id]
+      }
       this.form.companyId = row.companyid
       this.form.userName = row.username
       this.form.password = row.password
