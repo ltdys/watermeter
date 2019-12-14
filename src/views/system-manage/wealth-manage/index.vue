@@ -137,7 +137,7 @@
 // import myPagination from "@/components/pagination/my-pagination";
 import { wealthTreeData } from '@/utils/publicUtil'
 import { eleIconList } from '@/utils/eleIcon'
-import { addResource, delResource, updResource, getUserResource, getRoleList } from '@/service/api'
+import { addResource, delResource, updResource, getUserResource, getRoleList, getAllResource } from '@/service/api'
 import { list_mixins } from '@/mixins'
 export default {
   components: {
@@ -202,7 +202,11 @@ export default {
   methods: {
     init () { // 初始化
       // this.getRoleList()
-      this.getUserResource()
+      if (this.role_name == '超级管理员') {
+        this.getAllResource()
+      } else {
+        this.getUserResource()
+      }
     },
     async getRoleList () { // 获取角色信息列表
       const self = this;
@@ -241,8 +245,31 @@ export default {
         self.$message.warning(resData.data.message)
       }
     },
+    async getAllResource () { // 获取菜单资源
+      const self = this;
+      const param = {
+        currentPage: 1,
+        pageSize: 100
+      }
+      const resData = await getAllResource(param)
+      console.log('获取菜单资源', resData)
+      if (resData.status === 200) {
+        const list = resData.data.data
+        if (list.length !== 0) {
+          self.tableList = JSON.parse(wealthTreeData(list))
+        }
+        // self.tableList = list
+      } else {
+        self.$message.warning(resData.data.message)
+      }
+    },
     searchSubmit () { // 查询按钮
-      this.getUserResource()
+      // this.getUserResource()
+      if (this.role_name == '超级管理员') {
+        this.getAllResource()
+      } else {
+        this.getUserResource()
+      }
     },
     add () { // 新增按钮
       this.dialog.status = 0
@@ -314,7 +341,12 @@ export default {
         console.log('self.isWealth', self.isWealth)
         self.$store.dispatch('user/setIsWealth', !self.isWealth)
         self.close()
-        self.getUserResource()
+        // self.getUserResource()
+        if (self.role_name == '超级管理员') {
+          self.getAllResource()
+        } else {
+          self.getUserResource()
+        }
       } else {
         self.$message.warning(res.data.message)
       }
@@ -329,7 +361,12 @@ export default {
       if (res.status === 200) {
         self.$message.success(`删除${item.resName}成功`);
         self.$store.dispatch('user/setIsWealth', !self.isWealth)
-        self.getUserResource()
+        // self.getUserResource()
+        if (self.role_name == '超级管理员') {
+          self.getAllResource()
+        } else {
+          self.getUserResource()
+        }
       } else {
         self.$message.warning(res.data.message)
       }
@@ -345,7 +382,12 @@ export default {
         console.log('self.isWealth', self.isWealth)
         self.$store.dispatch('user/setIsWealth', !self.isWealth)
         self.close()
-        self.getUserResource()
+        // self.getUserResource()
+        if (self.role_name == '超级管理员') {
+          self.getAllResource()
+        } else {
+          self.getUserResource()
+        }
       } else {
         self.$message.warning(res.data.message)
       }

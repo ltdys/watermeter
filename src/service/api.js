@@ -183,6 +183,9 @@ export const updResource = params => axios.post('watermeter/updResource', params
 // 菜单资源查询
 export const getUserResource = params => axios.post('watermeter/getUserResource', params)
 
+// 菜单资源全部查询
+export const getAllResource = params => axios.post('watermeter/getAllResource', params)
+
 // 组织机构小区树结构
 export const getTreeAreas = params => axios.post('/watermeter/getTreeAreas', params)
 

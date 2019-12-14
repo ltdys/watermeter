@@ -36,7 +36,7 @@ import myMenu from "@/components/common/menu"
 import myHeader from '@/components/common/header'
 import tagsViews from "@/components/TagsView/index"
 import { treeData, recursionDelete, wealthTreeData } from '@/utils/publicUtil'
-import { getUserResource } from '@/service/api'
+import { getUserResource, getAllResource } from '@/service/api'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
 import { getSesStorage } from '@/utils/storageUtil.js'
@@ -85,7 +85,12 @@ export default {
       deep: true
     },
     isWealth: function (val) {
-      this.getUserResource()
+      // this.getUserResource()
+      if (this.role_name == '超级管理员') {
+        this.getAllResource()
+      } else {
+        this.getUserResource()
+      }
     }
   },
 
@@ -95,7 +100,12 @@ export default {
 
   methods: {
     init () {
-      this.getUserResource()
+      // this.getUserResource()
+      if (this.role_name == '超级管理员') {
+        this.getAllResource()
+      } else {
+        this.getUserResource()
+      }
     },
     async getUserResource () { // 获取菜单资源
       const self = this;
@@ -104,6 +114,57 @@ export default {
         userId: self.userId
       }
       const resData = await getUserResource(param)
+      console.log('首页获取菜单资源', resData)
+      if (resData.status === 200) {
+        let list = resData.data.data
+        self.listBf = [...list]
+        if (list.length !== 0) {
+          list.forEach(item => {
+            self.$set(item, 'name', item.resName)
+            self.$set(item, 'value', item.displayName)
+            self.$set(item, 'url', item.router)
+            self.$set(item, 'level', item.id)
+            self.$set(item, 'children', [])
+          })
+          let tableList = JSON.parse(wealthTreeData(list))
+          console.log('self.currentId', self.currentId)
+          let curId = 0
+          tableList.forEach((item, index) => {
+            if (item.id == self.currentId) {
+              curId = index
+            }
+            if (self.currentId === '' && item.resName === '首页') {
+              self.$set(item, 'isCheck', true)
+            } else if (self.currentId == item.id) {
+              self.$set(item, 'isCheck', true)
+            } else {
+              self.$set(item, 'isCheck', false)
+            }
+          })
+          // let tableList = wealthTreeData2(list)
+          self.$nextTick(() => {
+            for (let i = 0; i < self.listBf.length; i++) {
+              self.visitedViews.forEach((item) => {
+                if (item.path == self.listBf[i].router && self.listBf[i].parent != 0) {
+                  item.title = self.listBf[i].name
+                }
+              })
+            }
+            self.$store.dispatch("slidebar/setNavList", tableList)
+            self.$store.dispatch('slidebar/setMenuList', tableList[curId].children)
+          })
+        }
+      } else {
+        self.$message.warning(resData.data.message)
+      }
+    },
+    async getAllResource () { // 获取菜单资源
+      const self = this;
+      const param = {
+        currentPage: 1,
+        pageSize: 100
+      }
+      const resData = await getAllResource(param)
       console.log('首页获取菜单资源', resData)
       if (resData.status === 200) {
         let list = resData.data.data

@@ -111,7 +111,7 @@
 
 <script>
 import { getRole, getJurisdiction } from '@/service/system'
-import { getRoleList, getUserResource, getRoleResource, roleAuthorization } from '@/service/api'
+import { getRoleList, getUserResource, getRoleResource, roleAuthorization, getAllResource } from '@/service/api'
 import { wealthTreeData } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 // import { treeData } from '@/utils/publicUtil'
@@ -203,7 +203,12 @@ export default {
       // this.getRole()
       // this.getJurisdiction()
       this.getRoleList()
-      this.getUserResource()
+      // this.getUserResource()
+      if (this.role_name == '超级管理员') {
+        this.getAllResource()
+      } else {
+        this.getUserResource()
+      }
     },
     async getRoleList () { // 获取角色列表
       const params = {
@@ -229,6 +234,28 @@ export default {
         userId: self.userId
       }
       const resData = await getUserResource(param)
+      console.log('获取菜单资源', resData)
+      if (resData.status === 200) {
+        const list = resData.data.data
+        if (list.length !== 0) {
+          list.forEach(item => {
+            self.$set(item, 'jurVal', '')
+          })
+          self.treeDataBf = [...list]
+          self.treeData = JSON.parse(wealthTreeData(list))
+        }
+        // self.tableList = list
+      } else {
+        self.$message.warning(resData.data.message)
+      }
+    },
+    async getAllResource () { // 获取菜单资源
+      const self = this;
+      const param = {
+        currentPage: 1,
+        pageSize: 100
+      }
+      const resData = await getAllResource(param)
       console.log('获取菜单资源', resData)
       if (resData.status === 200) {
         const list = resData.data.data

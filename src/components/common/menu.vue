@@ -11,7 +11,7 @@
     :default-openeds="defaultOpeneds"
   >
     <el-menu-item v-for="item in menus" :key="item.id" :index="item.url" :route="{path: item.url}" @click="menuClick(item)">
-      <i :class="item.icon" />
+      <i :class="item.mIcon" />
       <span slot="title" :title="item.name">{{ item.name }}</span>
     </el-menu-item>
     <!-- <submenu v-for="menu in menus" :key="menu.id" :menu="menu" /> -->
@@ -19,15 +19,12 @@
 </template>
 
 <script>
-import submenu from "./submenu";
+// import submenu from "./submenu";
 export default {
   components: {
-    submenu
+    // submenu
   },
   props: ["menus", "collapse"],
-
-  created() {
-  },
 
   data () {
     return {
@@ -42,6 +39,9 @@ export default {
     routes () {
       return this.$store.state.permission.routes
     }
+  },
+
+  created () {
   },
 
   methods: {
