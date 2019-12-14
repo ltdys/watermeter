@@ -102,8 +102,11 @@ export default {
     loginOut () {
       // localStorage.clear()
       clearStore()
-      this.$store.dispatch('slidebar/setCurrentId', this.navList[0].id)
-      this.$store.dispatch('tagsView/setCurrentTitle', this.navList[0].name)
+      let id = this.navList != null && this.navList.length != 0 ? this.navList[0].id : ''
+      let name = this.navList != null && this.navList.length != 0 ? this.navList[0].name : ''
+      this.$store.dispatch('slidebar/setCurrentId', id)
+      this.$store.dispatch('tagsView/setCurrentTitle', name)
+      this.$store.dispatch('tagsView/delAll', [])
       this.$router.push('/login')
     },
     lanageChange () {

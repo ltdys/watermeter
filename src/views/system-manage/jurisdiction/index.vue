@@ -223,8 +223,12 @@ export default {
       let resData = await getRoleList(params)
       console.log('获取角色列表', resData)
       if (resData.status === 200) {
-        this.tableData = resData.data.data
-        this.pageObj.allTotal = resData.data.page.totalRow || 0
+        let list = resData.data.data || []
+        if (list.length !== 0) {
+          this.tableData = resData.data.data
+          this.pageObj.allTotal = resData.data.page.totalRow || 0
+          this.accreditClick(this.tableData[0])
+        }
       }
     },
     async getUserResource () { // 获取菜单资源
@@ -333,7 +337,9 @@ export default {
           console.log('self.treeDataBf', self.treeDataBf)
           console.log('self.currentJur', self.currentJur)
           let keys = list.map(item => {
-            return item.id
+            if (item.parent != 0) {
+              return item.id
+            }
           })
           // self.treeData = JSON.parse(wealthTreeData(list))
           self.$refs.jurisdiction.setCheckedKeys(keys)
@@ -362,11 +368,11 @@ export default {
       console.log('资源1', this.currentJur)
       console.log('资源2', this.currentAcc)
       let param = {
+        roleId: this.currentAcc.id,
         roleAuthorization: []
       }
       param.roleAuthorization = this.currentJur.map(item => {
         return {
-          roleId: this.currentAcc.id,
           resourceId: item.id,
           permission: item.jurVal
         }
@@ -385,8 +391,11 @@ export default {
       }
     },
     treeCheckChange (data, checked, indeterminate) { // 节点改变选择是触发
-      this.currentJur = this.$refs.jurisdiction.getCheckedNodes()
+      let half = this.$refs.jurisdiction.getHalfCheckedNodes() // 半选中的父节点
+      let all = this.$refs.jurisdiction.getCheckedNodes() // 选中的子节点
+      this.currentJur = [...half, ...all]
       console.log(this.currentJur)
+      console.log(this.$refs.jurisdiction.getHalfCheckedNodes())
     },
     handleCheckedCitiesChange (value) { // 多选框
       console.log('多选框', value)

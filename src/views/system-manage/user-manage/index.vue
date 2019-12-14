@@ -114,7 +114,10 @@
           <el-input v-model="form.userName" placeholder="请输入用户名" clearable />
         </el-form-item>
         <el-form-item v-if="type == 0" label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" clearable />
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" clearable />
+        </el-form-item>
+        <el-form-item v-if="type == 1" label="密码">
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" clearable />
         </el-form-item>
         <el-form-item label="角色" prop="roleName">
           <el-select v-model="form.roleName" placeholder="请选择角色">
@@ -246,6 +249,7 @@ export default {
       companyList: [], // 组织备份
       tableData: [],
       rowId: '', // 选择的用户id
+      currentRow: {},
       form: {
         company: [],
         companyId: '',
@@ -332,6 +336,7 @@ export default {
           if (!item.hasOwnProperty('email')) self.$set(item, 'email', '') // 邮箱
           if (!item.hasOwnProperty('age')) self.$set(item, 'age', '') // 年龄
           if (!item.hasOwnProperty('sex')) self.$set(item, 'sex', '') // 性别
+          if (!item.hasOwnProperty('pwd')) self.$set(item, 'pwd', '******') // 性别
           return item
         })
         self.pageObj.allTotal = resData.data.page.totalRow
@@ -373,6 +378,7 @@ export default {
           id: self.rowId,
           userName: self.form.userName,
           real_name: self.form.realName,
+          password: self.form.password == '******' ? '' : self.form.password,
           sex: self.form.sex,
           age: self.form.age,
           mobile: self.form.mobile,
@@ -409,6 +415,7 @@ export default {
     handleEdit (row) { // 编辑
       console.log('row', row)
       this.rowId = row.userid
+      this.currentRow = row
       let company = this.companyList.filter(item => {
         return row.companyid == item.id
       })[0]
@@ -418,7 +425,7 @@ export default {
       }
       this.form.companyId = row.companyid
       this.form.userName = row.username
-      this.form.password = row.password
+      this.form.password = row.pwd
       this.form.roleName = row.roleid
       this.form.realName = row.realname
       this.form.sex = row.sex

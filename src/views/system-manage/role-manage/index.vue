@@ -116,12 +116,17 @@
         <el-form-item label="角色名" prop="roleName">
           <el-input v-model="form.roleName" clearable />
         </el-form-item>
+        <el-form-item label="角色类型">
+          <el-select v-model="form.roleType">
+            <el-option v-for="(item, index) in roleType" :key="index" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.note" clearable />
         </el-form-item>
-        <el-form-item label="删除标识">
+        <!-- <el-form-item label="删除标识">
           <el-input v-model="form.deleteFlag" clearable />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
           <el-button @click="addVisible = false">{{ $t('common.cancel') }}</el-button>
@@ -157,6 +162,15 @@ export default {
   data () {
     return {
       title: "添加角色",
+      roleType: [
+        {
+          label: '管理员',
+          value: 0
+        }, {
+          label: '其他',
+          value: 1
+        }
+      ],
       companyData1: [], // 组织机构
       setProps: { // 设置级联选择器
         label: 'companyName',
@@ -175,7 +189,8 @@ export default {
         companyId: '',
         roleName: '',
         note: '',
-        deleteFlag: ''
+        deleteFlag: '',
+        roleType: 1
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -263,10 +278,11 @@ export default {
           roleName: this.form.roleName,
           companyId: this.form.companyId,
           note: this.form.note,
-          deleteFlag: this.form.deleteFlag
-        },
-        permission: this.permission
+          roleType: this.form.roleType
+        }
       }
+      // deleteFlag: this.form.deleteFlag
+      // permission: this.permission
       let resData = await addRole(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success('添加成功');
@@ -309,6 +325,7 @@ export default {
       this.form.company = row.path
       this.form.companyId = row.companyId
       this.form.roleName = row.roleName
+      this.form.roleType = row.roleType
       this.form.note = row.note
       this.form.deleteFlag = row.deleteFlag
       this.id = row.id

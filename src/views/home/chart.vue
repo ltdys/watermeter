@@ -133,6 +133,9 @@ export default {
             self.$store.dispatch("slidebar/setNavList", tableList)
             self.$store.dispatch('slidebar/setMenuList', tableList[curId].children)
           })
+        } else {
+          self.$store.dispatch("slidebar/setNavList", [])
+          self.$store.dispatch('slidebar/setMenuList', [])
         }
       } else {
         self.$message.warning(resData.data.message)
@@ -183,6 +186,9 @@ export default {
             self.$store.dispatch("slidebar/setNavList", tableList)
             self.$store.dispatch('slidebar/setMenuList', tableList[curId].children)
           })
+        } else {
+          self.$store.dispatch("slidebar/setNavList", [])
+          self.$store.dispatch('slidebar/setMenuList', [])
         }
       } else {
         self.$message.warning(resData.data.message)

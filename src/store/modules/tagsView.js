@@ -76,10 +76,17 @@ const mutations = {
   SET_CURRENT_TITLE: (state, view) => {
     setSesStorage("CURRENT_TITLE", view)
     state.currentTitle = view
+  },
+  DEL_ALL: (state, view) => {
+    state.visitedViews = []
+    state.cachedViews = []
   }
 }
 
 const actions = {
+  delAll ({ commit }, view) {
+    commit('DEL_ALL', view)
+  },
   addView ({ dispatch }, view) {
     dispatch('addVisitedView', view)
     dispatch('addCachedView', view)
