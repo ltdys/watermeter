@@ -396,8 +396,10 @@ export default {
           email: self.form.email,
           address: self.form.address,
           status: self.form.status
-        }
+        },
+        roleId: self.form.roleName
       }
+      console.log(param)
       let res = await updateUser(param)
       console.log('res', res)
       if (res.status == 200 && res.data.code == 1) {
@@ -463,7 +465,15 @@ export default {
       this.form.email = row.email
       this.form.address = row.address
       this.form.status = row.status
-
+      const params = {
+        userId: this.userId,
+        pageSize: this.pageObj.pageSize,
+        currentPage: this.pageObj.currentPage,
+        role: {
+          companyId: row.companyid
+        }
+      }
+      this.getRoleList(params)
       this.addVisible = true
       // this.checkUserId = row.userid
       // this.value1[0] = row.roleid

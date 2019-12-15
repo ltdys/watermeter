@@ -37,10 +37,26 @@
         <el-input v-model="form.meterUserNum" clearable />
       </el-form-item>
       <el-form-item label="集中器编号">
-        <el-input v-model="form.meterConcentratorNum" clearable />
+        <!-- <el-input v-model="form.meterConcentratorNum" clearable /> -->
+        <el-select v-model="form.meterConcentratorNum" clearable filterable @change="changeJzq">
+          <el-option
+            v-for="item in jzqList"
+            :key="item.meterConcentratorNum"
+            :label="item.meterConcentratorName"
+            :value="item.meterConcentratorNum"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="采集器编号">
-        <el-input v-model="form.meterNodeNum" clearable />
+        <!-- <el-input v-model="form.meterNodeNum" clearable /> -->
+        <el-select v-model="form.meterNodeNum" clearable filterable @change="changeJzq">
+          <el-option
+            v-for="item in cjqList"
+            :key="item.num"
+            :label="item.num"
+            :value="item.num"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="规格型号">
         <el-input v-model="form.meterSpec" clearable />
@@ -61,7 +77,7 @@
 
 <script>
 import { treeDataUtil } from '@/utils/publicUtil'
-import { addMeterNbIot, updateMeterNbIot, findDistrict } from "@/service/api"
+import { addMeterNbIot, updateMeterNbIot, findDistrict, getMeterNodes } from "@/service/api"
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
@@ -103,6 +119,12 @@ export default {
         return {
           areasList: []
         }
+      }
+    },
+    jzqList: {
+      type: Array,
+      default: () => {
+        return []
       }
     }
   },
@@ -153,7 +175,8 @@ export default {
           label: '1000',
           value: '1000'
         }
-      ]
+      ],
+      cjqList: []
     }
   },
 
@@ -164,6 +187,25 @@ export default {
   methods: {
     close () {
       this.$emit('close')
+    },
+    changeJzq (val) { // 切换集中器
+      console.log(val)
+      let id = this.jzqList.filter(item => {
+        return val == item.meterConcentratorNum
+      })[0].meterConcentratorId
+      const params = {
+        mcId: id,
+        currentPage: 1,
+        pageSize: 10000
+      }
+      this.getMeterNodes(params)
+    },
+    async getMeterNodes (params) { // 获取采集器
+      let resData = await getMeterNodes(params)
+      if (resData.status === 200) {
+        this.cjqList = resData.data.data
+        console.log('采集器', this.cjqList)
+      }
     },
     async findDistrict () { // 查询区域
       const self = this;
@@ -179,6 +221,9 @@ export default {
             self.$set(item, 'parentId', item.parentid)
             self.$set(item, 'companyId', item.companyid)
             return item
+          })
+          list = list.filter(item => {
+            return item.state == 0
           })
           self.$nextTick(() => {
             self.options = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
@@ -229,7 +274,7 @@ export default {
       let resData = await addMeterNbIot(params)
       if (resData.status === 200) {
         this.form.areasList = []
-        this.$message.info(resData.data.message)
+        this.$message.success(resData.data.message)
         this.close()
       }
     },
@@ -241,7 +286,7 @@ export default {
       let resData = await updateMeterNbIot(params)
       if (resData.status === 200) {
         this.form.areasList = []
-        this.$message.info(resData.data.message)
+        this.$message.success(resData.data.message)
         this.close()
       }
     }

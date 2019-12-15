@@ -4,6 +4,9 @@
       <el-form-item>
         <el-button type="primary" class="custom-button" size="mini" @click="addCollector">添加</el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button type="primary" class="custom-button" size="mini" @click="writeNum">写节点编号</el-button>
+      </el-form-item>
     </el-form>
     <el-table
       :data="tableData"
@@ -37,9 +40,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="readType"
         label="读取类型"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.readType | fReadType }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="当前状态"
       >
@@ -88,11 +94,11 @@
             <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="使用状态">
+        <!-- <el-form-item label="使用状态">
           <el-select v-model="form.useStatus">
             <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="读取类型">
           <el-select v-model="form.readType">
             <el-option v-for="(item, index) in readTypes" :key="index" :label="item.label" :value="item.value" />
@@ -118,7 +124,7 @@
 </template>
 
 <script>
-import { getMeterNodes, addMeterNode, deleteMeterNode, updateMeterNode } from '@/service/api'
+import { getMeterNodes, addMeterNode, deleteMeterNode, updateMeterNode, operInstruct } from '@/service/api'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 // import myEdit from './edit'
@@ -147,7 +153,7 @@ export default {
       form: {
         num: '',
         nowStatus: '',
-        useStatus: '',
+        useStatus: 0,
         readType: '',
         readTime: '',
         concentratorNum: '',
@@ -303,7 +309,46 @@ export default {
       this.form.useStatus = ''
       this.form.readType = ''
       this.form.nowStatus = ''
+      this.form.remarks = ''
       this.init()
+    },
+    writeNum () { // 写编号
+      const self = this;
+      let param = {
+        userId: this.userId,
+        concentratorNum: this.$route.query.concentratorNum,
+        cmd: 'WWW',
+        rule: this.$route.query.rule,
+        nodeBlockAddress: self.filterCollector(),
+        waterBlockAddress: ''
+      }
+      console.log(param)
+      self.operInstruct(param)
+    },
+    filterCollector () { // 筛选采集器
+      const self = this;
+      let arr = self.tableData.filter(item => {
+        return item.useStatus == 0
+      })
+      let str = '{'
+      arr.forEach((item, index) => {
+        if (index != 0) str += ','
+        str += item.num
+      })
+      str += '}'
+      console.log(str)
+      return str
+    },
+    async operInstruct (param) {
+      let res = await operInstruct(param)
+      if (res.status == 200 && res.data.code == 1) {
+        this.$message.success(res.data.message);
+        this.$router.go(-1)
+        // this.close2()
+        // this.init()
+      } else {
+        this.$message.error(res.data.message);
+      }
     }
   }
 }

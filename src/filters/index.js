@@ -167,3 +167,12 @@ export function fisSwingShow (val) {
     return '开阀'
   }
 }
+
+// 采集器读取类型
+export function fReadType (val) {
+  if (val == null || val == 1) {
+    return '默认'
+  } else {
+    return ''
+  }
+}

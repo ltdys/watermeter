@@ -419,7 +419,7 @@ export default {
     accreditClick (row, column, event) {
       console.log("row", row)
       this.$store.dispatch('tagsView/setCurrentTitle', this.$t('deviceManageConcentrator.currentTitle'))
-      this.$router.push('/device-manage/collector?concentratorsid=' + row.meterConcentratorId + "&concentratorNum=" + row.meterConcentratorNum)
+      this.$router.push(`/device-manage/collector?concentratorsid=${row.meterConcentratorId}&concentratorNum=${row.meterConcentratorNum}&rule=${row.meterConcentratorRule}`)
     },
     close () {
       this.$refs['ruleForm'].resetFields();

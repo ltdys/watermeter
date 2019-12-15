@@ -5,8 +5,18 @@
         <el-input v-model="search.meterNbiotNum" clearable />
       </el-form-item>
       <el-form-item label="集中器编号">
-        <el-input v-model="search.meterConcentratorNum" clearable />
+        <el-select v-model="search.meterConcentratorNum" clearable filterable @change="changeJzqbh">
+          <el-option
+            v-for="item in jzqList"
+            :key="item.meterConcentratorNum"
+            :label="item.meterConcentratorName"
+            :value="item.meterConcentratorNum"
+          />
+        </el-select>
       </el-form-item>
+      <!-- <el-form-item label="集中器编号">
+        <el-input v-model="search.meterConcentratorNum" clearable />
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
       </el-form-item>
@@ -30,6 +40,9 @@
       </el-form-item> -->
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarG') }}</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" size="mini" class="custom-button" @click="writeWaterMeter">写水表地址</el-button>
       </el-form-item>
     </el-form>
 
@@ -97,7 +110,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="meterAreasId"
+        prop="meterAreasName"
         label="所属区域"
       />
       <el-table-column
@@ -122,13 +135,45 @@
     />
 
     <el-dialog :title="title" :visible.sync="addVisible" @close="close">
-      <my-edit :form="form" :type="type" :area-object="areaObject" @close="close" />
+      <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" />
     </el-dialog>
+
+    <!-- <el-dialog :visible="gatherVisiable" title="写水表地址" @close="gatherClose">
+      <div class="gather-wrap">
+        <div class="gather-content">
+          <div class="col-box">
+            <div v-for="(item, index) in concentratorList" :key="index" class="col-box_cel">
+              <div class="col-box_cel_title fl" @click="openJzq(item)">
+                <i class="col_icon fl" :class="[item.isShow ? 'el-icon-remove-outline' : 'el-icon-circle-plus-outline']" />
+                <div>{{ item.meterConcentratorName }}</div>
+              </div>
+              <div class="col-box_se" :style="{height: item.maxHeight + 'px'}">
+                <div v-for="(item1, index1) in item.meterList" :key="index1" class="col-box_se_main" @click.stop="meterChange(item1, item.meterList)">
+                  <div class="col-box_se_main_box fl" :class="{'is-select': item1.isSelect}">
+                    <span class="b-dot" />
+                    <div>{{ item1.num }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col2-box">
+            <div v-for="(item, index) in nbiotList" :key="index" class="col-sb fl" :class="{'is-select': item.isSelect}" @click.stop="nbiotClick(item)">
+              <span class="b-dot" />
+              <div>{{ item.meterNbiotNum }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="gather-btn" @click="sureGather">
+          确认采集
+        </div>
+      </div>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
-import { getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct } from '@/service/api'
+import { findMeterConcentrator, getMeterNodes, getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -161,7 +206,7 @@ export default {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
         pageSize: 50, // 每页条数
-        pageSizes: [10, 20, 50, 100]
+        pageSizes: [10, 20, 50, 100, 1000]
       },
       form: {
         meterNbiotNum: '', // 表编号
@@ -194,7 +239,8 @@ export default {
         value: 1,
         label: '部分'
       }],
-      addVisible: false
+      addVisible: false,
+      jzqList: []
     }
   },
 
@@ -233,6 +279,33 @@ export default {
       }
       self.operInstruct(param)
     },
+    changeJzqbh () { // 切换集中器
+      this.searchSubmit()
+    },
+    async findMeterConcentrator () { // 获取集中器
+      const params = {
+        userId: this.userId,
+        currentPage: 1,
+        pageSize: 10000
+      }
+      let resData = await findMeterConcentrator(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.jzqList = resData.data.data
+        console.log('集中器', this.jzqList)
+      }
+    },
+    async getMeterNodes () { // 获取采集器
+      const params = {
+        mcId: this.$route.query.concentratorsid,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let resData = await getMeterNodes(params)
+      if (resData.status === 200) {
+        this.tableData = resData.data.data
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
+      }
+    },
     async operInstruct (param) {
       let res = await operInstruct(param)
       if (res.status == 200 && res.data.code == 1) {
@@ -244,6 +317,7 @@ export default {
       console.log('res', res)
     },
     async getMeterNbIotL () {
+      const self = this
       const params = {
         userId: this.userId,
         meterNbIot: this.search,
@@ -253,12 +327,18 @@ export default {
       let resData = await getMeterNbIotL(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.tableData = resData.data.data
+        this.tableData.forEach(item => {
+          self.$set(item, 'meterAreasName', '')
+          item.meterAreasName = self.tableDataFj.filter(val => {
+            return val.id == item.meterAreasId
+          })[0].name
+        })
         this.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
     init () {
-      this.getMeterNbIotL()
       this.findDistrict()
+      this.findMeterConcentrator()
     },
     searchSubmit () {
       this.init()
@@ -312,10 +392,12 @@ export default {
           self.$nextTick(() => {
             self.tableDataFj = list
             self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+            self.getMeterNbIotL()
           })
         } else {
           self.tableDataFj = list
           self.list = list
+          self.getMeterNbIotL()
         }
       }
     },
@@ -367,6 +449,15 @@ export default {
       }
       this.addVisible = false
       this.init()
+    },
+    writeWaterMeter () { // 写水表地址
+      const self = this;
+      console.log(self.tableData)
+      if (self.search.meterConcentratorNum == '') {
+        self.$message.warning('请选择集中器编号')
+      } else {
+        self.$message.warning('写水表暂未开发，敬请期待')
+      }
     }
   }
 }
