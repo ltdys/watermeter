@@ -66,10 +66,19 @@
           <el-input v-model="form.houseType" clearable />
         </el-form-item>
         <el-form-item label="组织" prop="parentId">
-          <el-select v-model="form.companyId">
+          <!-- <el-select v-model="form.companyId">
             <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
             </el-option>
-          </el-select>
+          </el-select> -->
+          <el-cascader
+            v-model="orgList"
+            :options="companyData1"
+            placeholder="请选择组织机构"
+            clearable
+            filterable
+            :props="setProps"
+            @change="changeOrg"
+          />
         </el-form-item>
         <el-form-item label="日供水量">
           <el-input v-model="form.dayAlertWaterYield" clearable />
@@ -89,7 +98,8 @@
 <script>
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
-import { addWaterHouseTypes, findWaterHouseTypes, updateWaterHouseTypes, deleteWaterHouseTypes } from "@/service/api"
+import { orgTreeData } from '@/utils/publicUtil'
+import { addWaterHouseTypes, findWaterHouseTypes, updateWaterHouseTypes, deleteWaterHouseTypes, findCompany } from "@/service/api"
 export default {
   name: "userQuality",
 
@@ -115,6 +125,14 @@ export default {
         dayAlertWaterYield: '',
         companyId: ''
       },
+      companyData1: [], // 组织机构
+      setProps: { // 设置级联选择器
+        label: 'companyName',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      },
+      orgList: [],
       form: {
         houseType: '',
         ratedWaterYield: '',
@@ -147,6 +165,7 @@ export default {
     },
     init() {
       this.findWaterHouseTypes()
+      this.findCompany()
     },
     handleEdit(row) {
       this.title = "编辑"
@@ -171,6 +190,21 @@ export default {
           message: '已取消删除'
         });          
       });
+    },
+    async findCompany (key) { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: 10000,
+        company: {
+          id: this.company_id
+        }
+      }
+      let resData = await findCompany(params)
+      if (resData.status === 200 && resData.data.data !== null) {
+        let list = resData.data.data
+        this.companyData1 = JSON.parse(orgTreeData([...list]))
+      }
     },
     async deleteWaterHouseTypes(row) {
       let params = {
@@ -229,6 +263,11 @@ export default {
         this.addWaterHouseTypes()
       } else {
         this.updateWaterHouseTypes()
+      }
+    },
+    changeOrg () { // 组织机构选择
+      if(this.orgList && this.orgList.length > 0) {
+        this.form.companyId = this.orgList[this.orgList.length - 1]
       }
     },
     close() {

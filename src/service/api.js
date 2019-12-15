@@ -204,3 +204,6 @@ export const findInstructLog = params => axios.post('/watermeter/findInstructLog
 // 子区域查询
 export const findChildDistrict = params => axios.post('/watermeter/findChildDistrict', params)
 
+// 系统日志查询
+export const findSysLogInfo = params => axios.post('/watermeter/findSysLogInfo', params)
+

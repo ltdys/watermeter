@@ -182,7 +182,7 @@
 
 <script>
 // import { getResourceManage } from '@/service/system'
-import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany, findDistrict } from '@/service/api'
+import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany, findDistrict, findCompany } from '@/service/api'
 import myRegion1 from '@/components/common/region1'
 import myPagination from "@/components/pagination/my-pagination";
 import { treeDataUtil } from "@/utils/publicUtil";
@@ -263,6 +263,7 @@ export default {
         createBy: '', // 创建者
         t3: '' // 测试图片
       },
+      companyData1: [],
       type: 0, // 0-添加 1-编辑
       addType: 1, // 1 一级 2 二级
       rules: {
@@ -293,14 +294,14 @@ export default {
       return this.$store.state.user.districtIschage
     }
   },
-  watch: {
-    districtIschage: {
-      handler: function () {
-        this.findCompany()
-      },
-      deep: true
-    }
-  },
+  // watch: {
+  //   districtIschage: {
+  //     handler: function () {
+  //       this.findCompany()
+  //     },
+  //     deep: true
+  //   }
+  // },
 
   beforeCreate () {
     apps = this
@@ -314,6 +315,23 @@ export default {
     init () {
       this.findParentCompany()
       this.findDistrict()
+    },
+    // 查询组织
+    async findCompany () {
+      let params = {
+        userId: this.userId,
+        currentPage: 1,
+        pageSize: 1000,
+        company: {
+          id: this.company_id
+        }
+      }
+      let resData = await findCompany(params)
+      if (resData.status === 200) {
+        let list = resData.data.data
+        this.companyData1 = list
+        this.$store.dispatch("user/setCompanyData", this.companyData1)
+      }
     },
     async findParentCompany () { // 获取一级组织
       let params = {
@@ -329,9 +347,10 @@ export default {
         let temp = resData.data.data
         this.treeData = temp
         this.search.parentId = this.search.parentId === '' ? this.treeData[0].id : this.search.parentId
-        this.$store.dispatch("user/setCompanyData", temp)
+        // this.$store.dispatch("user/setCompanyData", temp)
         this.$nextTick(() => {
           this.findChildCompany()
+          this.findCompany()
         })
       }
     },
@@ -348,6 +367,7 @@ export default {
       if (resData.status === 200) {
         this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
+        this.findCompany()
       }
     },
     async findDistrict () { // 查询区域

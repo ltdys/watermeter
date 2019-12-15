@@ -3,13 +3,13 @@
     <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
       <el-form-item :label="$t('systemManageLog.toolbarA')">
         <el-date-picker
-          v-model="search.t1"
+          v-model="search.startTime"
           type="datetime"
           :placeholder="$t('systemManageLog.toolbarA_')">
         </el-date-picker>
         <span>-</span>
         <el-date-picker
-          v-model="search.t2"
+          v-model="search.endTime"
           type="datetime"
           :placeholder="$t('systemManageLog.toolbarB_')">
         </el-date-picker>
@@ -32,22 +32,25 @@
           width="50"
           label="#"
         />
-        <el-table-column
+        <!-- <el-table-column
           prop="menu"
           :label="$t('systemManageLog.tableA')"
           width="180"
-        />
+        /> -->
         <el-table-column
-          prop="operator"
+          prop="operName"
           :label="$t('systemManageLog.tableB')"
           width="180"
         />
         <el-table-column
-          prop="waterDevision"
-          :label="$t('systemManageLog.tableC')"
-        />
+          label="组织"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.companyId | fCompanyId}}
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="operatorIP"
+          prop="operIp"
           :label="$t('systemManageLog.tableD')"
         />
         <el-table-column
@@ -55,11 +58,14 @@
           :label="$t('systemManageLog.tableE')"
         />
         <el-table-column
-          prop="time"
           :label="$t('systemManageLog.tableF')"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.operTime | fFormatDate }}
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="remark"
+          prop="remarks"
           :label="$t('systemManageLog.tableG')"
         />
       </el-table>
@@ -75,9 +81,10 @@
 </template>
 
 <script>
-import { getLog } from '@/service/system'
+import { findSysLogInfo } from '@/service/api'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
+import { fFormatDate } from '@/filters/index'
 export default {
   name: 'resourceManage',
 
@@ -91,8 +98,8 @@ export default {
     return {
       tableData: [],
       search: {
-        t1: '',
-        t2: ''
+        startTime: '',
+        endTime: ''
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -108,20 +115,26 @@ export default {
   },
   
   methods: {
-    async getLog () {
+    async findSysLogInfo () {
       const params = {
-        rows: this.pageObj.pageSize,
-        page: this.pageObj.currentPage
+        pageSize: this.pageObj.pageSize,
+        currentPage: this.pageObj.currentPage,
+        startTime: this.search.startTime,
+        endTime: this.search.endTime
       }
-      let res = await getLog(params)
-      this.tableData = res.data.data
-      this.pageObj.allTotal = res.data.allTotal
+      let res = await findSysLogInfo(params)
+      if(res.status === 200) {
+        this.tableData = res.data.data
+        this.pageObj.allTotal = res.data.page.totalRow || 0
+      }
     },
     init () {
-      this.getLog()
+      this.findSysLogInfo()
     },
     searchSubmit () {
-
+      this.search.startTime = fFormatDate(this.search.startTime) || ""
+      this.search.endTime = fFormatDate(this.search.endTime) || ""
+      this.init()
     },
     handleEdit () {
 

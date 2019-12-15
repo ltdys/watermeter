@@ -58,10 +58,19 @@
           <el-input v-model="form.name" clearable />
         </el-form-item>
         <el-form-item label="组织" prop="parentId">
-          <el-select v-model="form.companyId">
+          <!-- <el-select v-model="form.companyId">
             <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
             </el-option>
-          </el-select>
+          </el-select> -->
+          <el-cascader
+            v-model="orgList"
+            :options="companyData1"
+            placeholder="请选择组织机构"
+            clearable
+            filterable
+            :props="setProps"
+            @change="changeOrg"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
@@ -74,8 +83,9 @@
 
 <script>
 import myPagination from "@/components/pagination/my-pagination";
-import { list_mixins } from '@/mixins'
-import { addWaterNatures, findWaterNatures, updateWaterNatures, deleteWaterNatures } from "@/service/api"
+import { list_mixins } from '@/mixins';
+import { orgTreeData } from '@/utils/publicUtil'
+import { addWaterNatures, findWaterNatures, updateWaterNatures, deleteWaterNatures, findCompany } from "@/service/api"
 export default {
   name: "userQuality",
 
@@ -94,6 +104,13 @@ export default {
       type: 0, // 0-添加 1-编辑
       title: "添加",
       tableData: [],
+      companyData1: [], // 组织机构
+      setProps: { // 设置级联选择器
+        label: 'companyName',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      },
       search: {
         name: '',
         companyId: '',
@@ -103,6 +120,7 @@ export default {
         name: "",
         companyId: ""
       },
+      orgList: [],
       rules: {
         name: [
           { required: true, message: "请输入名称", trigger: 'blur' }
@@ -129,6 +147,7 @@ export default {
     },
     init() {
       this.findWaterNatures()
+      this.findCompany()
     },
     handleEdit(row) {
       this.title = "编辑"
@@ -174,6 +193,21 @@ export default {
         }
       }
     },
+    async findCompany (key) { // 获取组织机构
+      let params = {
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: 10000,
+        company: {
+          id: this.company_id
+        }
+      }
+      let resData = await findCompany(params)
+      if (resData.status === 200 && resData.data.data !== null) {
+        let list = resData.data.data
+        this.companyData1 = JSON.parse(orgTreeData([...list]))
+      }
+    },
     async addWaterNatures() {
       let params = {
         waterNatures: {
@@ -210,6 +244,11 @@ export default {
         this.addWaterNatures()
       } else {
         this.updateWaterNatures()
+      }
+    },
+    changeOrg () { // 组织机构选择
+      if(this.orgList && this.orgList.length > 0) {
+        this.form.companyId = this.orgList[this.orgList.length - 1]
       }
     },
     close() {

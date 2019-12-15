@@ -59,6 +59,9 @@ export const wealthTreeData = (data) => {
 
 /* 组织管理模块 --  将数据格式转换成树状格式*/
 export const orgTreeData = (data) => {
+  if(data.length === 1) {
+    return JSON.stringify(data) 
+  }
   let result = data.reduce(function (prev, item) {
     item.parentId = item.parentId === null ? 0 : item.parentId;
     prev[item.parentId] ? prev[item.parentId].push(item) : prev[item.parentId] = [item];

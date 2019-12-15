@@ -273,7 +273,7 @@ export default {
         let temp = resData.data.data
         this.treeData = temp
         this.search.parentId = this.treeData[0].id
-        this.$store.dispatch("user/setCompanyData", temp)
+        // this.$store.dispatch("user/setCompanyData", temp)
         this.$nextTick(() => {
           this.findChildCompany()
         })
