@@ -16,7 +16,7 @@
             <el-cascader
               v-model="search.orgList"
               :options="treeData"
-              clearable
+              :clearable="role_name == '超级管理员'"
               filterable
               :props="setProps"
               @change="changeOrg"
@@ -108,7 +108,7 @@ import { getRegion } from '@/service/system'
 import { orgTreeData, treeDataUtil, saveTwo } from '@/utils/publicUtil'
 import { findCompany, findDistrict, addDistrict, updateDistrict, deleteDistrict, deleteMeterUserAndMeterNbIot } from '@/service/api'
 import myRegion from '@/components/common/region'
-import myPagination from "@/components/pagination/my-pagination";
+// import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import myEdit from './edit.vue'
 export default {
@@ -116,7 +116,8 @@ export default {
   name: 'regionManage',
 
   components: {
-    myPagination, myRegion, myEdit
+    // myPagination,
+    myRegion, myEdit
   },
 
   mixins: [list_mixins],
@@ -190,6 +191,8 @@ export default {
           let param = {
             companyId: this.treeData[0].id
           }
+          this.search.orgList = [this.treeData[0].id]
+          this.search.org = this.search.orgList[this.search.orgList.length - 1]
           this.findDistrict(param)
         }
       }

@@ -5,78 +5,78 @@
         <el-date-picker
           v-model="search.startTime"
           type="datetime"
-          :placeholder="$t('systemManageLog.toolbarA_')">
-        </el-date-picker>
+          :placeholder="$t('systemManageLog.toolbarA_')"
+        />
         <span>-</span>
         <el-date-picker
           v-model="search.endTime"
           type="datetime"
-          :placeholder="$t('systemManageLog.toolbarB_')">
-        </el-date-picker>
+          :placeholder="$t('systemManageLog.toolbarB_')"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
       </el-form-item>
     </el-form>
     <el-table
-        :data="tableData"
-        border
-        stripe
-        style="width: 100%"
-        size="mini"
-        :height="tableHeightPage"
-        highlight-current-row
-      >
-        <el-table-column
-          type="index"
-          width="50"
-          label="#"
-        />
-        <!-- <el-table-column
+      :data="tableData"
+      border
+      stripe
+      style="width: 100%"
+      size="mini"
+      :height="tableHeightPage"
+      highlight-current-row
+    >
+      <el-table-column
+        type="index"
+        width="50"
+        label="#"
+      />
+      <!-- <el-table-column
           prop="menu"
           :label="$t('systemManageLog.tableA')"
           width="180"
         /> -->
-        <el-table-column
-          prop="operName"
-          :label="$t('systemManageLog.tableB')"
-          width="180"
-        />
-        <el-table-column
-          label="组织"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.companyId | fCompanyId}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="operIp"
-          :label="$t('systemManageLog.tableD')"
-        />
-        <el-table-column
-          prop="browser"
-          :label="$t('systemManageLog.tableE')"
-        />
-        <el-table-column
-          :label="$t('systemManageLog.tableF')"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.operTime | fFormatDate }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="remarks"
-          :label="$t('systemManageLog.tableG')"
-        />
-      </el-table>
-      <my-pagination
-        :all-total="pageObj.allTotal"
-        :current-page="pageObj.currentPage"
-        :page-size="pageObj.pageSize"
-        :page-sizes="pageObj.pageSizes"
-        @pageChange="pageChange"
-        @currentChange="currentChange"
+      <el-table-column
+        prop="operName"
+        :label="$t('systemManageLog.tableB')"
+        width="180"
       />
+      <el-table-column
+        label="组织"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.companyId | fCompanyId }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="operIp"
+        :label="$t('systemManageLog.tableD')"
+      />
+      <el-table-column
+        prop="browser"
+        :label="$t('systemManageLog.tableE')"
+      />
+      <el-table-column
+        :label="$t('systemManageLog.tableF')"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.operTime | fFormatDate }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="remarks"
+        :label="$t('systemManageLog.tableG')"
+      />
+    </el-table>
+    <my-pagination
+      :all-total="pageObj.allTotal"
+      :current-page="pageObj.currentPage"
+      :page-size="pageObj.pageSize"
+      :page-sizes="pageObj.pageSizes"
+      @pageChange="pageChange"
+      @currentChange="currentChange"
+    />
   </div>
 </template>
 
@@ -113,17 +113,18 @@ export default {
   created () {
     this.init()
   },
-  
+
   methods: {
     async findSysLogInfo () {
       const params = {
+        companyId: this.company_id,
         pageSize: this.pageObj.pageSize,
         currentPage: this.pageObj.currentPage,
         startTime: this.search.startTime,
         endTime: this.search.endTime
       }
       let res = await findSysLogInfo(params)
-      if(res.status === 200) {
+      if (res.status === 200) {
         this.tableData = res.data.data
         this.pageObj.allTotal = res.data.page.totalRow || 0
       }

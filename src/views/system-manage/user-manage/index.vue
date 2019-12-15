@@ -120,7 +120,7 @@
           <el-input v-model="form.password" type="password" placeholder="请输入密码" clearable />
         </el-form-item>
         <el-form-item label="角色" prop="roleName">
-          <el-select v-model="form.roleName" placeholder="请选择角色">
+          <el-select v-model="form.roleName" placeholder="请选择角色" :disabled="isRoleDisabled">
             <el-option
               v-for="item in roleList"
               :key="item.id"
@@ -298,7 +298,9 @@ export default {
       roleList: [],
       value1: [],
       value2: '',
-      checkUserId: ''
+      checkUserId: '',
+      loginType: -1, // 当前登录的角色type  -1  超级管理员  0  管理员  2  其他人员
+      isRoleDisabled: false
     }
   },
 
@@ -308,8 +310,13 @@ export default {
 
   methods: {
     init () {
+      let params = {
+        userId: this.userId,
+        currentPage: 1,
+        pageSize: 1000
+      }
       this.getUserDetailed()
-      this.getRoleList();
+      this.getRoleList(params);
       this.findCompany();
     },
     async getUserDetailed () { // 获取用户列表
@@ -343,15 +350,19 @@ export default {
         console.log("this.tableData", this.tableData)
       }
     },
-    async getRoleList () { // 获取角色
-      let params = {
-        userId: this.userId,
-        currentPage: 1,
-        pageSize: 1000
-      }
+    async getRoleList (params) { // 获取角色
+      const self = this
       let resData = await getRoleList(params)
       if (resData.status === 200) {
         this.roleList = resData.data.data
+        if (self.role_name == '超级管理员') {
+          self.loginType = -1
+        } else {
+          self.loginType = this.roleList.filter(item => {
+            return item.roleName == self.role_name
+          })[0].roleType
+        }
+        console.log("loginType", this.loginType)
         console.log("roleList======", this.roleList)
       }
     },
@@ -377,7 +388,7 @@ export default {
         sysUser: {
           id: self.rowId,
           userName: self.form.userName,
-          real_name: self.form.realName,
+          realName: self.form.realName,
           password: self.form.password == '******' ? '' : self.form.password,
           sex: self.form.sex,
           age: self.form.age,
@@ -411,6 +422,16 @@ export default {
     },
     changeOrgAdd () {
       this.form.companyId = this.form.company[this.form.company.length - 1]
+      this.form.roleName = ''
+      const params = {
+        userId: this.userId,
+        pageSize: this.pageObj.pageSize,
+        currentPage: this.pageObj.currentPage,
+        role: {
+          companyId: this.form.companyId
+        }
+      }
+      this.getRoleList(params)
     },
     handleEdit (row) { // 编辑
       console.log('row', row)
@@ -422,6 +443,14 @@ export default {
       this.type = 1
       if (company) {
         this.form.company = company.parentId == 0 ? [company.id] : [company.parentId, company.id]
+      }
+      // isRoleDisabled
+      if (this.loginType == -1) {
+        this.isRoleDisabled = false
+      } else if ((this.loginType == 1) || (this.loginType == 0 && this.role_name == row.rolename)) {
+        this.isRoleDisabled = true
+      } else {
+        this.isRoleDisabled = false
       }
       this.form.companyId = row.companyid
       this.form.userName = row.username

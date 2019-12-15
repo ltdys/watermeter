@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import myMenu from "@/components/common/menu"
-import tagsViews from "@/components/TagsView/index"
-import { treeData, recursionDelete } from '@/utils/publicUtil'
+// import myMenu from "@/components/common/menu"
+// import tagsViews from "@/components/TagsView/index"
+// import { treeData, recursionDelete } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
 import { menu_list } from '@/utils/menu.js'
 import { clearStore } from '@/utils/storageUtil.js'
@@ -45,7 +45,7 @@ import { clearStore } from '@/utils/storageUtil.js'
 export default {
   name: 'commonHeader',
 
-  components: { myMenu, tagsViews },
+  // components: { myMenu, tagsViews },
 
   mixins: [list_mixins, menu_list],
 
@@ -97,7 +97,9 @@ export default {
       this.$store.dispatch('slidebar/setMenuList', value.children)
       this.$store.dispatch('slidebar/setCurrentId', value.id)
       this.$store.dispatch('tagsView/setCurrentTitle', currentTitle)
-      this.$router.push(value.url)
+      // this.$router.push(value.url)
+      let url = value.hasOwnProperty('children') && value.children.length > 0 ? value.children[0].url : value.url
+      this.$router.push(url)
     },
     loginOut () {
       // localStorage.clear()
@@ -274,12 +276,12 @@ export default {
     background: transparent;
     color: #9EA0A6;
   }
-  .el-scrollbar__view{
-    // background-color: red;
-    // position: relative;
-    // margin-top:-7px;
-    // top: -7px;
-  }
+  // .el-scrollbar__view{
+  //   // background-color: red;
+  //   // position: relative;
+  //   // margin-top:-7px;
+  //   // top: -7px;
+  // }
 }
 
 .hide_sidebar{

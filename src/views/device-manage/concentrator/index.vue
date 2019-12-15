@@ -90,6 +90,7 @@
         <template slot-scope="scope">
           <i class="el-icon-edit" @click.stop="handleEdit(scope.row)" />
           <i class="el-icon-delete" @click.stop="handleDelete(scope.row)" />
+          <el-button type="text" size="small" @click.stop="handleDeploy(scope.row)">配置</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -143,11 +144,25 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog title="集中器配置" :visible.sync="deployVisible" @close="close2">
+      <el-form ref="deployForm" :model="deployForm" :rules="deployRules" label-width="100px">
+        <el-form-item label="IP地址" prop="ip">
+          <el-input v-model="deployForm.ip" clearable />
+        </el-form-item>
+        <el-form-item label="端口" prop="port">
+          <el-input v-model="deployForm.port" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="deploySure('deployForm')">{{ $t('common.determine') }}</el-button>
+          <el-button @click="deployVisible = false">{{ $t('common.cancel') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { findMeterConcentrator, addMeterConcentrator, deleteMeterConcentrator, updateMeterConcentrator, findDistrict } from '@/service/api'
+import { findMeterConcentrator, addMeterConcentrator, deleteMeterConcentrator, updateMeterConcentrator, findDistrict, operInstruct } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -223,6 +238,19 @@ export default {
         value: 'id',
         expandTrigger: 'click',
         checkStrictly: true
+      },
+      deployVisible: false, // 集中器配置
+      deployForm: {
+        ip: '',
+        port: ''
+      },
+      deployRules: {
+        ip: [
+          { required: true, message: '请输入集中器IP地址', trigger: 'blur' }
+        ],
+        port: [
+          { required: true, message: '请输入集中器端口', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -251,6 +279,43 @@ export default {
         this.form.areasId = ""
       }
     },
+    handleDeploy (row) { // 集中器配置事件
+      this.rowObj = row
+      console.log('集中器配置事件', row)
+      this.deployVisible = true
+    },
+    deploySure (deployForm) { // 集中器配置确定
+      this.$refs[deployForm].validate((valid) => {
+        if (valid) {
+          let param = {
+            userId: this.userId,
+            concentratorNum: this.rowObj.meterConcentratorNum,
+            cmd: 'AAA',
+            rule: this.rowObj.meterConcentratorRule,
+            nodeBlockAddress: '',
+            waterBlockAddress: '',
+            ip: this.deployForm.ip,
+            port: this.deployForm.port
+          }
+          console.log('配置', param)
+          this.operInstruct(param)
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    async operInstruct (param) {
+      let res = await operInstruct(param)
+      if (res.status == 200 && res.data.code == 1) {
+        this.$message.success(res.data.message);
+        this.close2()
+        this.init()
+      } else {
+        this.$message.error(res.data.message);
+      }
+      console.log('res', res)
+    },
     async findDistrict () { // 查询区域
       const self = this;
       let param = {
@@ -260,12 +325,17 @@ export default {
       console.log('查询区域', res)
       if (res.status === 200 && res.data.data !== null) {
         let list = res.data.data || []
+        console.log('查询区域', list)
         if (list.length !== 0) {
           list = list.map(item => {
             self.$set(item, 'parentId', item.parentid)
             self.$set(item, 'companyId', item.companyid)
             return item
           })
+          list = list.filter(item => {
+            return item.state == 0
+          })
+          console.log(list)
           self.$nextTick(() => {
             self.tableDataFj = list
             self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
@@ -360,6 +430,15 @@ export default {
         nowStatus: '',
         useStatus: '',
         rule: ''
+      }
+      this.init()
+    },
+    close2 () {
+      this.$refs['deployForm'].resetFields();
+      this.deployVisible = false
+      this.deployForm = {
+        ip: '',
+        prot: ''
       }
       this.init()
     },

@@ -75,7 +75,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog title="添加采集器" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="type == 0 ? '添加采集器' : '编辑采集器'" :visible.sync="addVisible" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="集中器编号" prop="concentratorNum">
           <el-input v-model="form.concentratorNum" clearable disabled />
@@ -97,6 +97,9 @@
           <el-select v-model="form.readType">
             <el-option v-for="(item, index) in readTypes" :key="index" :label="item.label" :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.remarks" clearable />
         </el-form-item>
         <!-- <el-form-item label="读取时间">
           <el-date-picker
@@ -147,7 +150,8 @@ export default {
         useStatus: '',
         readType: '',
         readTime: '',
-        concentratorNum: ''
+        concentratorNum: '',
+        remarks: ''
       },
       rules: {
         num: [
@@ -215,7 +219,8 @@ export default {
           useStatus: this.form.useStatus,
           readType: this.form.readType,
           readTime: this.form.readTime,
-          concentratorNum: this.form.concentratorNum
+          concentratorNum: this.form.concentratorNum,
+          remarks: this.form.remarks
         }
       }
       let resData = await addMeterNode(params)
@@ -235,7 +240,8 @@ export default {
           useStatus: this.form.useStatus,
           readType: this.form.readType,
           readTime: this.form.readTime,
-          concentratorNum: this.form.concentratorNum
+          concentratorNum: this.form.concentratorNum,
+          remarks: this.form.remarks
         }
       }
       let resData = await updateMeterNode(params)
@@ -254,6 +260,7 @@ export default {
       this.form.nowStatus = row.nowStatus
       this.form.useStatus = row.useStatus
       this.form.readType = row.readType
+      this.form.remarks = row.remarks
     },
     handleDelete (row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {

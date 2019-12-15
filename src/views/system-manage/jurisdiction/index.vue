@@ -158,7 +158,8 @@ export default {
       isJurisdiction: false, // 头部显示
       tableData: [], // 角色列表
       currentJur: [], // 选中的资源
-      isAllDisabled: true // 是否保存
+      isAllDisabled: true, // 是否保存
+      loginType: 1 // 当前登录的角色type  -1  超级管理员  0  管理员  2  其他人员
     }
   },
   watch: {
@@ -168,12 +169,31 @@ export default {
           let list = val.filter(item => {
             return item.jurVal === ''
           })
-          console.log('list', list)
+          console.log('currentJur', list)
           if (list.length === 0) {
-            this.isAllDisabled = false
+            if (this.loginType == -1) { // 超级管理员
+              this.isAllDisabled = false
+            } else if ((this.loginType == 1) || (this.loginType == 0 && this.role_name == this.currentAcc.roleName)) {
+              this.isAllDisabled = true
+            } else {
+              this.isAllDisabled = false
+            }
           } else {
             this.isAllDisabled = true
           }
+          // if (list.length === 0) {
+          //   if (this.role_name == '超级管理员') {
+          //     this.isAllDisabled = false
+          //   } else {
+          //     if ((this.loginType == 1) || (this.loginType == 0 && this.role_name == this.currentAcc.roleName)) {
+          //       this.isAllDisabled = true
+          //     } else {
+          //       this.isAllDisabled = false
+          //     }
+          //   }
+          // } else {
+          //   this.isAllDisabled = true
+          // }
         }
       },
       deep: true
@@ -184,12 +204,21 @@ export default {
           let list = this.currentJur.filter(item => {
             return item.jurVal === ''
           })
-          console.log('list', list)
-          if (list.length === 0) {
-            this.isAllDisabled = false
-          } else {
-            this.isAllDisabled = true
-          }
+          console.log('currentAcc', list)
+          this.isAllDisabled = true
+          // if (list.length !== 0) {
+          //   if (this.role_name == '超级管理员') {
+          //     this.isAllDisabled = false
+          //   } else {
+          //     if ((this.loginType == 1) || (this.loginType == 0 && this.role_name == this.currentAcc.roleName)) {
+          //       this.isAllDisabled = true
+          //     } else {
+          //       this.isAllDisabled = false
+          //     }
+          //   }
+          // } else {
+          //   this.isAllDisabled = true
+          // }
         }
       },
       deep: true
@@ -211,6 +240,7 @@ export default {
       }
     },
     async getRoleList () { // 获取角色列表
+      const self = this
       const params = {
         userId: this.userId,
         pageSize: this.pageObj.pageSize,
@@ -226,6 +256,13 @@ export default {
         let list = resData.data.data || []
         if (list.length !== 0) {
           this.tableData = resData.data.data
+          if (this.role_name == '超级管理员') {
+            this.loginType = -1
+          } else {
+            this.loginType = this.tableData.filter(item => {
+              return item.roleName == self.role_name
+            })[0].roleType
+          }
           this.pageObj.allTotal = resData.data.page.totalRow || 0
           this.accreditClick(this.tableData[0])
         }
@@ -336,9 +373,14 @@ export default {
           self.treeChangeFun()
           console.log('self.treeDataBf', self.treeDataBf)
           console.log('self.currentJur', self.currentJur)
+          console.log('self.treeData', self.treeData)
           let keys = list.map(item => {
             if (item.parent != 0) {
               return item.id
+            } else {
+              if (item.router == '/chart') {
+                return item.id
+              }
             }
           })
           // self.treeData = JSON.parse(wealthTreeData(list))

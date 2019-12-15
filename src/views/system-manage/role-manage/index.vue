@@ -63,11 +63,11 @@
         width="180"
       />
       <el-table-column
-        :label="$t('systemManageRole.tableE')"
+        label="创建时间"
         width="300"
       >
         <template slot-scope="scope">
-          {{ scope.row.updateTime | fFormatDate }}
+          {{ scope.row.createTime | fFormatDate }}
         </template>
       </el-table-column>
       <el-table-column
@@ -249,20 +249,12 @@ export default {
   },
 
   methods: {
-    async getRoleList () {
+    async getRoleList (params) {
       const self = this
-      const params = {
-        userId: this.userId,
-        pageSize: this.pageObj.pageSize,
-        currentPage: this.pageObj.currentPage,
-        role: {
-          roleName: this.search.roleName,
-          companyId: this.search.companyId
-        }
-      }
       let resData = await getRoleList(params)
       if (resData.status === 200) {
         let list = resData.data.data
+        console.log('获取角色', list)
         this.tableData = []
         list.forEach(item => {
           self.$set(item, 'path', ['0', item.companyId])
@@ -307,7 +299,16 @@ export default {
       }
     },
     init () {
-      this.getRoleList()
+      const params = {
+        userId: this.userId,
+        pageSize: this.pageObj.pageSize,
+        currentPage: this.pageObj.currentPage,
+        role: {
+          roleName: this.search.roleName,
+          companyId: this.search.companyId
+        }
+      }
+      this.getRoleList(params)
     },
     changeOrg () { // 组织机构选择
       this.search.companyId = this.search.orgList[this.search.orgList.length - 1]
