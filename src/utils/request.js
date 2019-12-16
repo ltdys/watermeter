@@ -4,7 +4,7 @@ import router from '@/router/router.js'
 // import store from '@/store/index.js'
 // console.log("--------", process.env)
 const service = axios.create({
-  baseURL: "http://101.200.224.248:8099", // 120.77.248.38   101.200.224.248
+  baseURL: "http://120.77.248.38:8099", // 120.77.248.38   101.200.224.248
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
