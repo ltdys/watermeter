@@ -224,9 +224,9 @@ export default {
         pageSize: 10000
       }
       let resData = await getMeterNbIotL(params)
+      // console.log('resData', resData)
       if (resData.status === 200 && resData.data.code === 1) {
         this.nbIotList = resData.data.data
-        console.log("this.nbIotList", JSON.stringify(this.nbIotList))
       }
     },
     async getMeterUserAndMeterNbIot () {
@@ -295,6 +295,9 @@ export default {
       let resData = await findWaterNatures(params)
       if (resData.status === 200) {
         this.waterNatureList = resData.data.data
+        // this.waterNatureList.forEach(item => {
+        //   item.id = item.id.toString()
+        // })
       }
     },
     // async getHouseTable () {
@@ -337,8 +340,8 @@ export default {
       data.nbiotNum = data.meternbiotnum
       data.areasId = data.districtid
       data.num = data.meterusernum
-      data.waterHouseTypeId = data.waterHouseTypeId || ''
-      data.waterNatureId = data.waterNatureId || ''
+      data.waterHouseTypeId = data.waterhousetypeid || ''
+      data.waterNatureId = data.waternatureid || ''
       data.name = data.meterusername
       data.idNumber = data.meteruseridnumber
       data.tel = data.telephone
@@ -353,7 +356,7 @@ export default {
       // this.form.idNumber = data.meteruseridnumber
       // this.form.tel = data.telephone
 
-      console.log("this.form", this.form)
+      // console.log("this.form", this.form)
       this.userTitle = "编辑用户"
       this.userAddVisible = true
     },
