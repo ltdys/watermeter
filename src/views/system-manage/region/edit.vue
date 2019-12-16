@@ -105,7 +105,27 @@ export default {
     }
   },
 
+  watch: {
+    form: {
+      handler: function (val) {
+        if (val.companyId != '') {
+          let params = {
+            companyId: this.form.companyId
+          }
+          this.findDistrict(params)
+        }
+      },
+      deep: true
+    }
+  },
+
   mounted () {
+    if (this.form.companyId != '') {
+      let params = {
+        companyId: this.form.companyId
+      }
+      this.findDistrict(params)
+    }
   },
 
   methods: {
@@ -125,7 +145,7 @@ export default {
     async findDistrict (param) { // 查询区域
       const self = this;
       let res = await findDistrict(param)
-      console.log('查询区域', res)
+      console.log('edit查询区域', res)
       if (res.status === 200 && res.data.data !== null) {
         let list = res.data.data || []
         if (list.length !== 0) {

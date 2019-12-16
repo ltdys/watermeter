@@ -79,13 +79,6 @@ import { list_mixins } from '@/mixins'
 
 export default {
   mixins: [list_mixins],
-  watch: {
-    form: {
-      handler:function(val, oldval) {
-      },
-      deep: true
-    }
-  },
   props: {
     form: {
       type: Object,
@@ -148,6 +141,13 @@ export default {
       options: []
     }
   },
+  watch: {
+    form: {
+      handler: function (val, oldval) {
+      },
+      deep: true
+    }
+  },
   created () {
     this.findDistrict()
   },
@@ -180,7 +180,7 @@ export default {
       }
       let resData = await addMeterBig(params)
       if (resData.status === 200) {
-        this.$message.info(resData.data.message)
+        this.$message.success(resData.data.message)
         this.close()
       }
     },
@@ -191,17 +191,17 @@ export default {
       }
       let resData = await updateMeterBig(params)
       if (resData.status === 200) {
-        this.$message.info(resData.data.message)
+        this.$message.success(resData.data.message)
         this.close()
       }
     },
-    changeParent() {
+    changeParent () {
       // if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
       //   this.form.areasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
       //   console.log("this.form.areasId", this.form.areasId)
       // }
 
-      if(this.form.areasList && this.form.areasList.length > 0) {
+      if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.areasId", this.form.areasId)
       }
@@ -228,7 +228,7 @@ export default {
           self.list = list
         }
       }
-    },
+    }
   }
 }
 </script>

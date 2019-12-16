@@ -14,6 +14,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item v-if="search.meterConcentratorNum != ''" label="采集器编号">
+        <el-select v-model="search.meterNodeNum" clearable filterable @change="changeCjqbh">
+          <el-option
+            v-for="item in cjqList"
+            :key="item.num"
+            :label="item.num"
+            :value="item.num"
+          />
+        </el-select>
+      </el-form-item>
       <!-- <el-form-item label="集中器编号">
         <el-input v-model="search.meterConcentratorNum" clearable />
       </el-form-item> -->
@@ -240,7 +250,9 @@ export default {
         label: '部分'
       }],
       addVisible: false,
-      jzqList: []
+      jzqList: [],
+      cjqList: [],
+      rule: '' // 通讯规约
     }
   },
 
@@ -279,7 +291,22 @@ export default {
       }
       self.operInstruct(param)
     },
-    changeJzqbh () { // 切换集中器
+    changeJzqbh (val) { // 切换集中器
+      console.log(val)
+      let mcId = this.jzqList.filter(item => {
+        return item.meterConcentratorNum == val
+      })[0].meterConcentratorId
+      this.rule = this.jzqList.filter(item => {
+        return item.meterConcentratorNum == val
+      })[0].meterConcentratorRule
+      const params = {
+        mcId: mcId
+      }
+      this.searchSubmit()
+      this.getMeterNodes(params)
+    },
+    changeCjqbh (val) { // 切换采集器
+      console.log(val)
       this.searchSubmit()
     },
     async findMeterConcentrator () { // 获取集中器
@@ -294,16 +321,10 @@ export default {
         console.log('集中器', this.jzqList)
       }
     },
-    async getMeterNodes () { // 获取采集器
-      const params = {
-        mcId: this.$route.query.concentratorsid,
-        currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
-      }
+    async getMeterNodes (params) { // 获取采集器
       let resData = await getMeterNodes(params)
       if (resData.status === 200) {
-        this.tableData = resData.data.data
-        this.pageObj.allTotal = resData.data.page.totalRow || 0
+        this.cjqList = resData.data.data
       }
     },
     async operInstruct (param) {
@@ -455,9 +476,34 @@ export default {
       console.log(self.tableData)
       if (self.search.meterConcentratorNum == '') {
         self.$message.warning('请选择集中器编号')
+      } else if (self.search.meterNodeNum == '') {
+        self.$message.warning('请选择采集器编号')
       } else {
-        self.$message.warning('写水表暂未开发，敬请期待')
+        let param = {
+          userId: self.userId,
+          concentratorNum: self.search.meterConcentratorNum,
+          cmd: 'WWW',
+          rule: self.rule,
+          nodeBlockAddress: `{${self.search.meterNodeNum}}`,
+          waterBlockAddress: self.filterNodeNum()
+        }
+        console.log(param)
+        self.operInstruct(param)
       }
+    },
+    filterNodeNum () { // 筛选水表
+      const self = this;
+      let arr = self.tableData.filter(item => {
+        return item.bindState == 0
+      })
+      let str = '{'
+      arr.forEach((item, index) => {
+        if (index != 0) str += ','
+        str += item.meterNbiotNum
+      })
+      str += '}'
+      console.log(str)
+      return str
     }
   }
 }

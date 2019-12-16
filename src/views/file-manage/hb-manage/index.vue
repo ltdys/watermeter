@@ -116,7 +116,7 @@
     </el-row>
 
     <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose">
-      <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" :tree-data="treeData" :form="form" :nb-iot-list="nbIotList" @close="userAddVisible = false" :type="type" />
+      <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" :tree-data="treeData" :form="form" :nb-iot-list="nbIotList" :type="type" @close="userAddVisible = false" />
     </el-dialog>
 
     <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose">

@@ -306,6 +306,8 @@ export default {
     },
     close () {
       this.$refs['ruleForm'].resetFields();
+      // this.form.concentratorNum = ''
+      this.form.num = ''
       this.form.useStatus = ''
       this.form.readType = ''
       this.form.nowStatus = ''

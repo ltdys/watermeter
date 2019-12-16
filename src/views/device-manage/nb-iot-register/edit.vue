@@ -17,12 +17,12 @@
           @change="changeParent"
         />
       </el-form-item>
-      <el-form-item label="使用状态">
+      <!-- <el-form-item label="使用状态">
         <el-radio-group v-model="form.bindState">
           <el-radio :label="1">使用</el-radio>
           <el-radio :label="0">未使用</el-radio>
         </el-radio-group>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="倍率">
         <el-select v-model="form.blv">
           <el-option
