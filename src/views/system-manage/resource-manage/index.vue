@@ -617,7 +617,6 @@ export default {
         logoFile: this.logoForm.logoFile,
         companyId: this.logoForm.companyId
       }
-      debugger
       let resData = await logoUpload(params)
     },
     handleDelete (row) {

@@ -43,7 +43,7 @@
           <el-option
             v-for="item in jzqList"
             :key="item.meterConcentratorNum"
-            :label="item.meterConcentratorName"
+            :label="item.meterConcentratorNum"
             :value="item.meterConcentratorNum"
           />
         </el-select>
@@ -78,7 +78,7 @@
 
 <script>
 import { treeDataUtil } from '@/utils/publicUtil'
-import { addMeterNbIot, updateMeterNbIot, findDistrict, getMeterNodes } from "@/service/api"
+import { addMeterNbIot, updateMeterNbIot, findDistrict, getMeterNodes, findMeterConcentrator } from "@/service/api"
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
@@ -121,12 +121,6 @@ export default {
           areasList: []
         }
       }
-    },
-    jzqList: {
-      type: Array,
-      default: () => {
-        return []
-      }
     }
   },
   data () {
@@ -156,6 +150,7 @@ export default {
         expandTrigger: 'click',
         checkStrictly: true
       },
+      jzqList: [],
       bLvList: [
         {
           label: '0.01',
@@ -247,6 +242,22 @@ export default {
         console.log("this.form.meterAreasId", this.form.meterAreasId)
       } else {
         this.form.meterAreasId = ""
+      }
+      this.findMeterConcentrator()
+    },
+    async findMeterConcentrator () { // 获取集中器
+      const params = {
+        userId: this.userId,
+        currentPage: 1,
+        pageSize: 10000,
+        meterConcentrator: {
+          areasId: this.form.meterAreasId
+        }
+      }
+      let resData = await findMeterConcentrator(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.jzqList = resData.data.data
+        console.log('集中器', this.jzqList)
       }
     },
     onSubmit (formName) {

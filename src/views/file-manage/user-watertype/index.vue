@@ -65,14 +65,14 @@
         <el-form-item label="用户水型名称" prop="houseType">
           <el-input v-model="form.houseType" clearable />
         </el-form-item>
-        <el-form-item label="组织" prop="parentId">
+        <el-form-item label="组织" prop="orgList">
           <!-- <el-select v-model="form.companyId">
             <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
             </el-option>
           </el-select> -->
           <el-cascader
             ref="cascader9"
-            v-model="orgList"
+            v-model="form.orgList"
             :options="companyData1"
             placeholder="请选择组织机构"
             clearable
@@ -111,6 +111,7 @@ export default {
   mixins: [list_mixins],
 
   created () {
+    this.search.companyId = this.company_id
     this.init()
   },
 
@@ -124,7 +125,7 @@ export default {
         houseType: '',
         ratedWaterYield: '',
         dayAlertWaterYield: '',
-        companyId: ''
+        companyId: ""
       },
       companyData1: [], // 组织机构
       setProps: { // 设置级联选择器
@@ -133,17 +134,20 @@ export default {
         expandTrigger: 'click',
         checkStrictly: true
       },
-      orgList: [],
       form: {
         houseType: '',
         ratedWaterYield: '',
         dayAlertWaterYield: '',
-        companyId: ''
+        companyId: '',
+        orgList: []
       },
       rules: {
         houseType: [
           { required: true, message: "请输入用户水型名称", trigger: 'blur' }
         ],
+        orgList: [
+          { required: true, message: "请选择组织", trigger: 'blur' }
+        ]
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -175,6 +179,7 @@ export default {
       this.form.ratedWaterYield = row.ratedWaterYield
       this.form.dayAlertWaterYield = row.dayAlertWaterYield
       this.form.companyId = row.companyId
+      this.form.orgList = row.companyId
       this.id = row.id
       this.addVisible = true
     },
@@ -220,6 +225,7 @@ export default {
         waterHouseTypes: this.search,
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
+        companyId: this.company_id
       }
       let resData = await findWaterHouseTypes(params)
       if (resData.status === 200) {
@@ -231,7 +237,12 @@ export default {
     },
     async addWaterHouseTypes() {
       let params = {
-        waterHouseTypes: this.form
+        waterHouseTypes: {
+          houseType: this.form.houseType,
+          ratedWaterYield: this.form.ratedWaterYield,
+          dayAlertWaterYield: this.form.dayAlertWaterYield,
+          companyId: this.form.companyId
+        }
       }
       let resData = await addWaterHouseTypes(params)
       if(resData.status === 200 && resData.data.code === 1) {
@@ -259,17 +270,21 @@ export default {
       }
       this.addVisible = false
     },
-    onSubmit() {
-      if(this.type === 0) {
-        this.addWaterHouseTypes()
-      } else {
-        this.updateWaterHouseTypes()
-      }
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if(this.type === 0) {
+            this.addWaterHouseTypes()
+          } else {
+            this.updateWaterHouseTypes()
+          }
+        }
+      })
     },
     changeOrg () { // 组织机构选择
       this.cascaderFalse('cascader9')
-      if(this.orgList && this.orgList.length > 0) {
-        this.form.companyId = this.orgList[this.orgList.length - 1]
+      if(this.form.orgList && this.form.orgList.length > 0) {
+        this.form.companyId = this.form.orgList[this.form.orgList.length - 1]
       }
     },
     close() {
@@ -278,7 +293,8 @@ export default {
         houseType: '',
         ratedWaterYield: '',
         dayAlertWaterYield: '',
-        companyId: ''
+        companyId: '',
+        orgList: []
       },
       this.init()
     }

@@ -56,16 +56,29 @@ export default {
           parentId: node.data.id
         }
       }
-      let resData = await findChildCompany(params)
-      if (resData.status === 200 && resData.data.data) {
-        if (resData.data.data.length === 0) {
-          this.findDistrict(node, resolve)
-        } else {
-          resolve(resData.data.data)
-        }
-      } else {
-        resolve([])
+      let params1 = {
+        companyId: node.data.id
       }
+      let resData = await findChildCompany(params)
+      let resData1 = await findDistrict(params1)
+      let companyData = resData.data.data || []
+      let districtData = resData1.data.data || []
+      districtData = districtData.filter(item => item.parentid == 0 )
+      districtData.forEach((item, index) => {
+        item.companyName = item.name
+      })
+      let result = companyData.concat(districtData)
+      resolve(result)
+
+      // if (resData.status === 200 && resData.data.data) {
+      //   if (resData.data.data.length === 0) {
+      //     this.findDistrict(node, resolve)
+      //   } else {
+      //     resolve(resData.data.data)
+      //   }
+      // } else {
+      //   resolve([])
+      // }
     },
     // 根据组织查询区域
     async findDistrict(node, resolve) {

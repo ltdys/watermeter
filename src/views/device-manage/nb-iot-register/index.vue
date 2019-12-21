@@ -9,7 +9,7 @@
           <el-option
             v-for="item in jzqList"
             :key="item.meterConcentratorNum"
-            :label="item.meterConcentratorName"
+            :label="item.meterConcentratorNum"
             :value="item.meterConcentratorNum"
           />
         </el-select>
@@ -124,9 +124,13 @@
         label="所属区域"
       />
       <el-table-column
+        prop="blv"
+        label="倍率"
+      />
+      <!-- <el-table-column
         prop="non"
         label="通迅规约"
-      />
+      /> -->
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
         <template slot-scope="scope">
           <i class="el-icon-edit" @click="handleEdit(scope.row)" />

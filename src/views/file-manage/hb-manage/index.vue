@@ -274,7 +274,7 @@ export default {
           houseType: '',
           ratedWaterYield: '',
           dayAlertWaterYield: '',
-          companyId: ''
+          companyId: this.company_id
         },
         currentPage: 1,
         pageSize: 10000
@@ -288,7 +288,7 @@ export default {
       let params = {
         waterNatures: {
           name: '',
-          companyId: '',
+          companyId: this.company_id,
           id: ''
         },
         currentPage: 1,

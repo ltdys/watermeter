@@ -57,14 +57,14 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" clearable />
         </el-form-item>
-        <el-form-item label="组织" prop="parentId">
+        <el-form-item label="组织" prop="orgList">
           <!-- <el-select v-model="form.companyId">
             <el-option :label="item.companyName" :value="item.id" v-for="(item, index) in companyData" :key="index">
             </el-option>
           </el-select> -->
           <el-cascader
             ref="cascader8"
-            v-model="orgList"
+            v-model="form.orgList"
             :options="companyData1"
             placeholder="请选择组织机构"
             clearable
@@ -97,6 +97,7 @@ export default {
   mixins: [list_mixins],
 
   created () {
+    this.search.companyId = this.company_id
     this.init()
   },
 
@@ -121,11 +122,13 @@ export default {
         name: "",
         companyId: ""
       },
-      orgList: [],
       rules: {
         name: [
           { required: true, message: "请输入名称", trigger: 'blur' }
         ],
+        orgList: [
+          { required: true, message: "请选择组织", trigger: 'blur' }
+        ]
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -157,6 +160,7 @@ export default {
       this.form.name = row.name
       this.id = row.id
       this.addVisible = true
+      this.form.orgList = row.companyId
     },
     handleDelete(row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
@@ -240,17 +244,21 @@ export default {
       }
       this.addVisible = false
     },
-    onSubmit() {
-      if(this.type === 0) {
-        this.addWaterNatures()
-      } else {
-        this.updateWaterNatures()
-      }
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+       if (valid) {
+        if(this.type === 0) {
+          this.addWaterNatures()
+        } else {
+          this.updateWaterNatures()
+        }
+       }
+      })
     },
     changeOrg () { // 组织机构选择
       this.cascaderFalse('cascader8')
-      if(this.orgList && this.orgList.length > 0) {
-        this.form.companyId = this.orgList[this.orgList.length - 1]
+      if(this.form.orgList && this.form.orgList.length > 0) {
+        this.form.companyId = this.form.orgList[this.form.orgList.length - 1]
       }
     },
     close() {
