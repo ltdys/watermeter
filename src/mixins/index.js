@@ -64,6 +64,9 @@ export const list_mixins = {
   },
 
   methods: {
-    ...mapMutations(['SET_TABLE_HEIGHT', 'GET_TABLE_HEIGHT'])
+    ...mapMutations(['SET_TABLE_HEIGHT', 'GET_TABLE_HEIGHT']),
+    cascaderFalse (casRef) {
+      this.$refs[casRef].dropDownVisible = false
+    }
   }
 }

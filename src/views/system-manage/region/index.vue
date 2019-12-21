@@ -14,6 +14,7 @@
           </el-form-item> -->
           <el-form-item label="组织机构">
             <el-cascader
+              ref="cascader12"
               v-model="search.orgList"
               :options="treeData"
               :clearable="role_name == '超级管理员'"
@@ -285,6 +286,7 @@ export default {
       }
     },
     changeOrg () { // 组织机构选择
+      this.cascaderFalse('cascader12')
       this.search.org = this.search.orgList[this.search.orgList.length - 1]
       // this.form.company = this.search.orgList
     },

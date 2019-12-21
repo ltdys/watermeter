@@ -6,6 +6,7 @@
           <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
         </el-select> -->
         <el-cascader
+          ref="cascader"
           v-model="search.orgList"
           :options="companyData1"
           placeholder="请选择组织机构"
@@ -90,6 +91,7 @@
             <el-option v-for="(item, index) in companyData" :key="index" :label="item.companyName" :value="item.id" />
           </el-select> -->
           <el-cascader
+            ref="cascader2"
             v-model="form.company"
             :options="companyData1"
             placeholder="请选择组织机构"
@@ -312,10 +314,11 @@ export default {
     },
     changeOrg () { // 组织机构选择
       this.search.companyId = this.search.orgList[this.search.orgList.length - 1]
+      this.cascaderFalse('cascader')
     },
     changeOrgAdd () {
-      console.log(this.form.company)
       this.form.companyId = this.form.company[this.form.company.length - 1]
+      this.cascaderFalse('cascader2')
     },
     searchSubmit () {
       this.init()

@@ -12,6 +12,7 @@
           </el-option>
         </el-select> -->
         <el-cascader
+          ref="cascader6"
           v-model="form.areasId"
           :options="options"
           filterable
@@ -53,7 +54,9 @@
 <script>
 import { addMeterUser, findDistrict, updateMeterUser } from "@/service/api"
 import { treeDataUtil } from "@/utils/publicUtil"
+import { list_mixins } from '@/mixins'
 export default {
+  mixins: [list_mixins],
   props: {
     waterHouseTypeList: {
       type: Array,
@@ -221,6 +224,7 @@ export default {
       }
     },
     changeOrg () {
+      this.cascaderFalse('cascader6')
       if (this.form.areasId && this.form.areasId.length > 0) {
         this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
       }

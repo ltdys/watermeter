@@ -14,6 +14,7 @@
           </el-option>
         </el-select> -->
         <el-cascader
+          ref='cascader4'
           v-model="form.areasList"
           :options="options"
           clearable
@@ -200,7 +201,7 @@ export default {
       //   this.form.areasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
       //   console.log("this.form.areasId", this.form.areasId)
       // }
-
+      this.cascaderFalse('cascader4')
       if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.areasId", this.form.areasId)

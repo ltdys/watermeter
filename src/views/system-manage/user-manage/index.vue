@@ -6,6 +6,7 @@
           <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.companyName" />
         </el-select> -->
         <el-cascader
+          ref="cascader13"
           v-model="search.orgList"
           :options="companyData1"
           clearable
@@ -102,6 +103,7 @@
             <el-option v-for="(item, index) in companyData1" :key="index" :label="item.companyName" :value="item.id" />
           </el-select> -->
           <el-cascader
+            ref="cascader14"
             v-model="form.company"
             :options="companyData1"
             clearable
@@ -420,9 +422,11 @@ export default {
       this.getUserDetailed()
     },
     changeOrg () { // 组织机构选择
+      this.cascaderFalse('cascader13')
       this.search.companyName = this.search.orgList[this.search.orgList.length - 1]
     },
     changeOrgAdd () {
+      this.cascaderFalse('cascader14')
       this.form.companyId = this.form.company[this.form.company.length - 1]
       this.form.roleName = ''
       const params = {

@@ -9,6 +9,7 @@
       </el-form-item>
       <el-form-item label="所属区域" prop="areasList">
         <el-cascader
+          ref="cascader5"
           v-model="form.areasList"
           :options="options"
           clearable
@@ -240,7 +241,7 @@ export default {
       // } else {
       //   this.form.meterAreasId = ""
       // }
-
+      this.cascaderFalse('cascader5')
       if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.meterAreasId = this.form.areasList[this.form.areasList.length - 1]
         console.log("this.form.meterAreasId", this.form.meterAreasId)

@@ -3,6 +3,7 @@
     <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="组织机构" prop="company">
         <el-cascader
+          ref="cascader10"
           v-model="form.company"
           :options="options"
           clearable
@@ -14,6 +15,7 @@
       </el-form-item>
       <el-form-item label="归属区域">
         <el-cascader
+          ref="cascader11"
           v-model="form.parent"
           :options="list"
           clearable
@@ -48,7 +50,9 @@
 <script>
 import { findDistrict } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
+import { list_mixins } from '@/mixins'
 export default {
+  mixins: [list_mixins],
   props: {
     options: { // 组织机构列表
       type: Array,
@@ -137,9 +141,11 @@ export default {
       let params = {
         companyId: this.form.companyId
       }
+      this.cascaderFalse('cascader10')
       this.findDistrict(params)
     },
     changeParent () { // 区域选择、
+      this.cascaderFalse('cascader11')
       this.form.parentId = this.form.parent[this.form.parent.length - 1]
     },
     async findDistrict (param) { // 查询区域

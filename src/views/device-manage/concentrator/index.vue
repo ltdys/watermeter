@@ -117,6 +117,7 @@
           </el-select> -->
           <!-- :disabled="form.parentDis" -->
           <el-cascader
+            ref="cascader3"
             v-model="form.areasList"
             :options="list"
             clearable
@@ -273,6 +274,7 @@ export default {
       this.init()
     },
     changeParent () { // 区域选择、
+      this.cascaderFalse('cascader3')
       if (this.form.areasList && this.form.areasList.length > 0) {
         this.form.areasId = this.form.areasList[this.form.areasList.length - 1]
       } else {

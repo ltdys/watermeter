@@ -17,6 +17,7 @@
               />
             </el-select> -->
             <el-cascader
+              ref="cascader7"
               v-model="areasList"
               class="import_select"
               clearable
@@ -129,6 +130,7 @@ export default {
     handleChange (file, fileList) {
     },
     cascaChange (val) {
+      this.cascaderFalse('cascader7')
       if(this.areasList && this.areasList.length > 0) {
         this.excelModel.areasId = this.areasList[this.areasList.length - 1]
       }

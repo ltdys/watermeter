@@ -71,6 +71,7 @@
             </el-option>
           </el-select> -->
           <el-cascader
+            ref="cascader9"
             v-model="orgList"
             :options="companyData1"
             placeholder="请选择组织机构"
@@ -266,6 +267,7 @@ export default {
       }
     },
     changeOrg () { // 组织机构选择
+      this.cascaderFalse('cascader9')
       if(this.orgList && this.orgList.length > 0) {
         this.form.companyId = this.orgList[this.orgList.length - 1]
       }
