@@ -287,8 +287,10 @@ export default {
         meterNodeId: row.id
       }
       let resData = await deleteMeterNode(params)
-      if (resData.status === 200) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success(resData.data.message)
+      } else {
+        this.$message.warning(resData.data.message)
       }
       this.init()
     },
