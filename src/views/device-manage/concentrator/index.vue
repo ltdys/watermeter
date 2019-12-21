@@ -473,12 +473,12 @@ export default {
         }
       }
       let resData = await addMeterConcentrator(params)
-      if (resData.status === 200) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success(`${resData.data.data.name} 添加成功`);
+        this.addVisible = false
       } else {
         this.$message.warning(resData.data.message)
       }
-      this.addVisible = false
     },
     async updateMeterConcentrator () {
       let params = {
@@ -493,12 +493,12 @@ export default {
         }
       }
       let resData = await updateMeterConcentrator(params)
-      if (resData.status === 200) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success(`${resData.data.data.name} 修改成功`);
+        this.addVisible = false
       } else {
         this.$message.warning(resData.data.message)
       }
-      this.addVisible = false
     }
   }
 }

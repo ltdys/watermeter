@@ -200,7 +200,7 @@ export default {
   data () {
     return {
       type: 0, // 0添加 1编辑
-      title: "NB-IOT添加",
+      title: "水表添加",
       tableData: [],
       search: {
         meterNbiotNum: '',
@@ -365,7 +365,7 @@ export default {
       this.init()
     },
     handleEdit (row) {
-      this.title = "NB-IOT编辑"
+      this.title = "水表编辑"
       this.type = 1
       this.addVisible = true
       this.areaObject.areasList = this.tableDataFj.filter(item => {
@@ -441,7 +441,7 @@ export default {
       this.init()
     },
     addNbIotRegister () {
-      this.title = "NB-IOT添加"
+      this.title = "水表添加"
       this.type = 0
       this.addVisible = true
     },
