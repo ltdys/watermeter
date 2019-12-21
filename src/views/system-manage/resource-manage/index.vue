@@ -496,6 +496,11 @@ export default {
       this.type = 0 // 0-添加 1-编辑
       this.addType = 1 // 1 一级 2 二级
       this.$refs['ruleForm'].resetFields();
+      this.logoForm = {
+        logoFile: "", //logo图片
+        companyId: "",  //组织机构id
+        imageUrl: ""  // 实现预览
+      }
       // this.resourceVisible = false
       this.init()
     },
