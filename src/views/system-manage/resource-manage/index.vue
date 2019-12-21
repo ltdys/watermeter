@@ -223,9 +223,6 @@ export default {
         {
           label: '正常',
           value: 0
-        }, {
-          label: '锁定',
-          value: 1
         }
       ],
       currentTree: {}, // 选中的父组织

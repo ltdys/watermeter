@@ -401,7 +401,7 @@ export default {
         mcId: row.meterConcentratorId
       }
       let resData = await deleteMeterConcentrator(params)
-      if (resData.status === 200) {
+      if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success(`${row.meterConcentratorName} 删除成功`)
       } else {
         this.$message.warning(resData.data.message)
