@@ -17,9 +17,10 @@ export default {
   mixins: [list_mixins],
   data() {
     return {
-       props: {
+      props: {
         label: 'companyName'
-      }
+      },
+      defaultAreasid: ""
     }
   },
   methods: {

@@ -207,3 +207,9 @@ export const findChildDistrict = params => axios.post('/watermeter/findChildDist
 // 系统日志查询
 export const findSysLogInfo = params => axios.post('/watermeter/findSysLogInfo', params)
 
+// 手工抄表（上传excel）
+export const uploadMeterRead = params => axios.post('/watermeter/uploadMeterRead', formUtil(params))
+
+// 上传logo
+export const logoUpload = params => axios.post('/watermeter/logoUpload', formUtil(params))
+

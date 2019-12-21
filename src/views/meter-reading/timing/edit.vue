@@ -7,26 +7,14 @@
       <el-form-item :label="$t('meterReadingTiming.dialogB')" prop="t2">
         <el-input v-model="form.t2" clearable />
       </el-form-item>
-      <el-form-item :label="$t('meterReadingTiming.dialogC')" prop="t3">
-        <el-input v-model="form.t3" clearable />
-      </el-form-item>
-      <el-form-item :label="$t('meterReadingTiming.dialogD')" prop="t4">
-        <el-input v-model="form.t4" clearable />
-      </el-form-item>
-      <el-form-item :label="$t('meterReadingTiming.dialogE')" prop="t5">
-        <el-select v-model="form.t5" clearable filterable>
-          <el-option :label="item.label" :value="item.value" v-for="(item, index) in typeList" :key="index">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item :label="$t('meterReadingTiming.dialogF')" prop="t6">
-        <el-input v-model="form.t6" clearable />
-      </el-form-item>
       <el-form-item :label="$t('meterReadingTiming.dialogG')" prop="t7">
         <el-select v-model="form.t7" clearable filterable>
           <el-option :label="item.label" :value="item.value" v-for="(item, index) in timeTypeList" :key="index">
           </el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item :label="$t('meterReadingTiming.dialogF')" prop="t6">
+        <el-input v-model="form.t6" clearable />
       </el-form-item>
       <el-form-item :label="$t('meterReadingTiming.dialogH')" prop="t8">
         <el-date-picker
@@ -65,11 +53,14 @@ export default {
         value: 1
       }],
       timeTypeList: [{
-        label: '月',
+        label: '日',
         value: 0
       }, {
-        label: '其它',
+        label: '时',
         value: 1
+      }, {
+        label: '分',
+        value: 2
       }],
       rules: {
         t1: [
@@ -77,15 +68,6 @@ export default {
         ],
         t2: [
           { required: true, message: this.$t('meterReadingTiming.dialogB_'), trigger: 'blur' }
-        ],
-        t3: [
-          { required: true, message: this.$t('meterReadingTiming.dialogC_'), trigger: 'blur' }
-        ],
-        t4: [
-          { required: true, message: this.$t('meterReadingTiming.dialogD_'), trigger: 'blur' }
-        ],
-        t5: [
-          { required: true, message: this.$t('meterReadingTiming.dialogE_'), trigger: 'change' }
         ],
         t6: [
           { required: true, message: this.$t('meterReadingTiming.dialogF_'), trigger: 'blur' }

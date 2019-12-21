@@ -22,7 +22,7 @@
         />
       </el-form-item>
       <el-form-item label="用户编号" prop="num">
-        <el-input v-model="form.num" clearable />
+        <el-input v-model="form.num" clearable :disabled="type == 1"/>
       </el-form-item>
       <el-form-item label="用户类型" prop="waterHouseTypeId">
         <el-select v-model="form.waterHouseTypeId" clearable filterable>
@@ -184,7 +184,7 @@ export default {
     async findDistrict () { // 查询区域
       const self = this;
       let param = {
-        companyId: ''
+        companyId: this.company_id
       }
       let res = await findDistrict(param)
       if (res.status === 200 && res.data.data !== null) {

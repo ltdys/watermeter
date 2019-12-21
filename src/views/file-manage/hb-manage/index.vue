@@ -219,7 +219,9 @@ export default {
     async getMeterNbIotL () {
       const params = {
         userId: this.userId,
-        meterNbIot: {},
+        meterNbIot: {
+          meterAreasId: this.search.areasId
+        },
         currentPage: 1,
         pageSize: 10000
       }
@@ -388,7 +390,7 @@ export default {
     },
     handleNodeClick (data) {
       this.search.areasId = data.id
-      this.getMeterUserAndMeterNbIot()
+      this.init()
     },
     addUser () {
       this.type = 0

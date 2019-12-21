@@ -144,13 +144,14 @@
             :before-upload="beforeAvatarUpload" -->
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="#"
             :auto-upload="false"
             :show-file-list="false"
-
-            :on-change="handleChange"
+            accept="image/png,image/jpg,image/jpeg"
+            :on-change="handleAvatarChange"
+            :on-success="handleAvatarSuccess"
           >
-            <img v-if="form.t3" :src="form.t3" class="avatar">
+            <img v-if="logoForm.imageUrl" :src="logoForm.imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -182,7 +183,7 @@
 
 <script>
 // import { getResourceManage } from '@/service/system'
-import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany, findDistrict, findCompany } from '@/service/api'
+import { addCompany, deleteCompany, updateCompany, findChildCompany, findParentCompany, findDistrict, findCompany, logoUpload } from '@/service/api'
 import myRegion1 from '@/components/common/region1'
 import myPagination from "@/components/pagination/my-pagination";
 import { treeDataUtil } from "@/utils/publicUtil";
@@ -259,6 +260,11 @@ export default {
         parentId: '', // 父组织Id
         createBy: '', // 创建者
         t3: '' // 测试图片
+      },
+      logoForm: {
+        logoFile: "", //logo图片
+        companyId: "",  //组织机构id
+        imageUrl: ""  // 实现预览
       },
       companyData1: [],
       type: 0, // 0-添加 1-编辑
@@ -429,6 +435,7 @@ export default {
       this.title = "编辑组织"
       this.id = data.id
       this.form.id = data.id
+      this.logoForm.companyid = data.id
       this.form.companyName = data.companyName
       this.form.parentId = data.parentId
       this.form.logo = data.logo
@@ -509,25 +516,19 @@ export default {
         }
       });
     },
-    handleChange (file, fileList) {
-      console.log('file', file)
-      this.form.t3 = URL.createObjectURL(file.raw);
-    },
-    handleAvatarSuccess (res, file) {
-      console.log('file', file)
-      this.form.t3 = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+    handleAvatarChange(file, fileList) {
+      if (file.size / 1024 > 200) {
+        this.$message.warning('请上传200K以内大小的图片!')
+        return
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
-      }
-      return isJPG && isLt2M;
+      this.logoForm.logoFile = file.raw
+      this.logoForm.imageUrl = URL.createObjectURL(file.raw);
+      this.$forceUpdate()
+    },
+    handleAvatarSuccess (file) {
+      console.log("handleAvatarSuccess")
+      this.model.logoFile = file.raw
+      this.model.imageUrl = URL.createObjectURL(file.raw);
     },
     // 一级菜单功能
     handleNodeEdit (data) { // 一级菜单修改
@@ -535,6 +536,7 @@ export default {
       this.title = "编辑组织"
       this.id = data.id
       this.form.id = data.id
+      this.logoForm.companyId = data.id
       this.form.companyName = data.companyName
       this.form.parentId = data.parentId
       this.form.logo = data.logo
@@ -570,6 +572,7 @@ export default {
       }
       let resData = await addCompany(params)
       if (resData.status === 200 && resData.data.code === 1) {
+        this.logoForm.companyId = resData.data.data.id
         this.$message.success(resData.data.message);
         console.log('this.addType', this.addType)
         if (this.addType == 2) { // 二级
@@ -577,6 +580,7 @@ export default {
         } else {
           this.init()
         }
+        this.logoUpload()
       } else {
         this.$message.warning(resData.data.message)
       }
@@ -599,10 +603,22 @@ export default {
       let resData = await updateCompany(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success(resData.data.message);
+        this.logoUpload()
       } else {
         this.$message.warning(resData.data.message)
       }
       this.resourceVisible = false
+    },
+    async logoUpload() {
+      if(this.logoForm.companyId === "" || this.logoForm.logoFile === "") {
+        return
+      }
+      let params = {
+        logoFile: this.logoForm.logoFile,
+        companyId: this.logoForm.companyId
+      }
+      debugger
+      let resData = await logoUpload(params)
     },
     handleDelete (row) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {

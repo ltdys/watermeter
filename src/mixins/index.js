@@ -19,7 +19,8 @@ export const list_mixins = {
       userName: '',
       company_id: '',
       role_name: '',
-      company_name: ''
+      company_name: '',
+      logo_path: ''
     }
   },
 
@@ -31,6 +32,7 @@ export const list_mixins = {
       this.role_name = userInfo.roleName
       this.company_name = userInfo.companyName
       this.company_id = this.role_name === "超级管理员" ? "" : userInfo.companyId
+      this.logo_path = userInfo.logoPath
     }
   },
 

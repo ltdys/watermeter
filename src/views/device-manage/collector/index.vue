@@ -317,6 +317,10 @@ export default {
       this.init()
     },
     writeNum () { // 写编号
+      if(this.tableData.length === 0) {
+        this.$message.warning("没有采集器数据!")
+        return
+      }
       const self = this;
       let param = {
         userId: this.userId,

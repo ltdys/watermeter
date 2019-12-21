@@ -3,7 +3,8 @@
     <div class="header_main">
       <div class="header_main_header">
         <div class="header_main_header__left">
-          <img src="static/hyy_logo.png" alt="..">
+          <!-- <img src="static/hyy_logo.png" alt=".."> -->
+          <img :src="logoUrl" alt="..">
           <hr>
           <span>{{ userInfo.sysName }}</span>
         </div>
@@ -59,6 +60,7 @@ export default {
         business: "ADMIN",
         img: "static/man1.png"
       },
+      logoUrl: "static/hyy_logo.png",
       hasPadding: true,
       options: [{
         label: '简体中文',
@@ -83,6 +85,11 @@ export default {
   created () {
     this.userInfo.sysName = this.company_name
     this.userInfo.name = this.userName
+    if(this.logo_path) {
+      this.logoUrl = this.LOGO_URL + this.logo_path
+    } else {
+      this.logoUrl = "static/hyy_logo.png"
+    }
     // this.navChange(this.navList[0])
   },
 

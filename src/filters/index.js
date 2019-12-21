@@ -176,3 +176,20 @@ export function fReadType (val) {
     return ''
   }
 }
+
+export function fRuleFormat(val) {
+  if (!val) { return "" }
+  let result = ""
+  if(val == "1") {
+    result = "8位长度"
+  } else if (val == "2") {
+    result = "10位长度"
+  } else if (val == "3") {
+    result = "12位长度"
+  } else if (val == "4") {
+    result = "14位长度"
+  } else {
+    result = ""
+  }
+  return result
+}

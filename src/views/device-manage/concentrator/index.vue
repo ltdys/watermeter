@@ -79,9 +79,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="meterConcentratorRule"
         :label="$t('deviceManageConcentrator.tableG')"
-      />
+      >
+        <template slot-scope="scope">
+          {{ scope.row.meterConcentratorRule | fRuleFormat }}
+        </template>
+      </el-table-column>
       <!-- <el-table-column
         prop="waterDivision"
         :label="$t('deviceManageConcentrator.tableH')"
@@ -137,7 +140,15 @@
           </el-select>
         </el-form-item>
         <el-form-item label="通迅规约">
-          <el-input v-model="form.rule" clearable />
+          <!-- <el-input v-model="form.rule" clearable /> -->
+          <el-select v-model="form.rule" placeholder="请选择">
+            <el-option
+              v-for="item in ruleOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
@@ -252,7 +263,20 @@ export default {
         port: [
           { required: true, message: '请输入集中器端口', trigger: 'blur' }
         ]
-      }
+      },
+      ruleOptions: [{
+        label: "8位长度",
+        value: "1"
+      }, {
+        label: "10位长度",
+        value: "2"
+      }, {
+        label: "12位长度",
+        value: "3"
+      }, {
+        label: "14位长度",
+        value: "4"
+      }]
     }
   },
 

@@ -110,6 +110,7 @@
             filterable
             :props="setProps"
             @change="changeOrgAdd"
+            :disabled="role_name !== '超级管理员'"
           />
         </el-form-item>
         <el-form-item label="用户名" prop="userName">

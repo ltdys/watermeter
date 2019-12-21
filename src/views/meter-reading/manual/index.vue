@@ -9,21 +9,28 @@
       <el-col :span="20" class="manual_wrap" :style="{height: (tableHeight + 52) + 'px', background: '#fff'}">
         <div class="manual_wrap__title">{{ $t('meterReadingManual.toolbarA') }}</div>
         <div class="manual_wrap__download">
-          <el-button type="primary" icon="el-icon-download">{{ $t('meterReadingManual.toolbarB') }}</el-button>
+          <el-button type="primary" icon="el-icon-download" @click="download">{{ $t('meterReadingManual.toolbarB') }}</el-button>
         </div>
         <div>
           <el-upload
-            class="upload-demo"
-            ref="upload"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :file-list="fileList"
-            :auto-upload="false">
-            <el-button slot="trigger" size="small" type="primary">{{ $t('meterReadingManual.toolbarC') }}</el-button>
-            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">{{ $t('meterReadingManual.toolbarD') }}</el-button>
-            <div slot="tip" class="el-upload__tip">{{ $t('meterReadingManual.toolbarE') }}</div>
-          </el-upload>
+              ref="upload"
+              :limit="1"
+              class="upload-demo"
+              action="#"
+              accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              :before-upload="beforeUpload"
+              :on-success="handleSuccess"
+              :on-change="handleAvatarChange"
+              :on-error="handleFailed"
+              :on-exceed="handleExceed"
+              :auto-upload="false"
+              :show-file-list="false"
+            >
+              <el-button size="small" type="primary" icon="el-icon-upload" class="import_upload">{{ $t('fileManageImportant.toolbarC_') }}</el-button>
+              <div slot="tip" class="el-upload__tip" v-show="excelName">{{ excelName }}<i class="el-icon-error" @click="clearExcel"></i></div>
+              <div slot="tip" class="el-upload__tip">仅支持上传EXCEL文件</div>
+            </el-upload>
+            <el-button type="primary" @click="uploadFile" style="margin-top: 15px">上传到服务器</el-button>
         </div>
       </el-col>
     </el-row>  
@@ -32,6 +39,7 @@
 
 <script>
 import myRegion3 from '@/components/common/region3'
+import { uploadMeterRead } from "@/service/api"
 import { list_mixins } from '@/mixins'
 export default {
 
@@ -45,7 +53,11 @@ export default {
 
   data () {
     return {
-      fileList: []
+      fileList: [],
+      excelModel: {
+        file: ''
+      },
+      excelName: ''
     }
   },
 
@@ -65,6 +77,52 @@ export default {
     },
     handlePreview(file) {
       console.log(file);
+    },
+    download () {
+      window.location = this.DOWNLOAD_METER_READ
+    },
+    beforeUpload (file) {
+    },
+    handleSuccess (response, file, fileList) {
+      this.excelModel.file = file.raw
+      console.log("handleSuccess", file)
+    },
+    handleAvatarChange (file) {
+      this.excelName = file.name
+      this.excelModel.file = file.raw
+      console.log("handleAvatarChange", this.excelModel)
+    },
+    handleExceed (file) {
+      this.$message.warning('上传文件个数超出限制！')
+    },
+    handleFailed (err, file, fileList) {
+      this.$message.error('文件上传失败！', err)
+      this.$refs.upload.clearFiles()
+    },
+    clearExcel() {
+      this.excelModel.file = ""
+      this.excelName = ""
+    },
+    uploadFile () {
+      if (!this.excelModel.file) {
+        this.$message.warning('请选择上传的Excel文件！')
+        return
+      }
+      this.uploadMeterRead()
+    },
+    async uploadMeterRead() {
+      let temp = this.excelModel
+      let resData = await uploadMeterRead(this.excelModel)
+      if(resData.status === 200 && resData.data.code == 1) {
+        this.$message({
+          type: 'success',
+          message: resData.data.message + ',' + resData.data.data,
+          duration: 2500
+        })
+      } else {
+        this.$message.warning(resData.data.message + ',' + resData.data.data)
+      }
+      this.clearExcel()
     }
   }
 }
