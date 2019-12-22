@@ -112,7 +112,7 @@
           <el-input v-model="form.name" clearable />
         </el-form-item>
         <el-form-item :label="$t('deviceManageConcentrator.dialogB')" prop="num">
-          <el-input v-model="form.num" clearable />
+          <el-input v-model="form.num" type="number" clearable />
         </el-form-item>
         <el-form-item :label="$t('deviceManageConcentrator.dialogC')" prop="areasId">
           <!-- <el-select v-model="form.areasId" clearable filterable>
@@ -146,8 +146,8 @@
               v-for="item in ruleOptions"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>

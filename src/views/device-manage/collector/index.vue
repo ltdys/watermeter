@@ -33,10 +33,10 @@
         width="300"
       />
       <el-table-column
-        label="使用状态"
+        label="当前状态"
       >
         <template slot-scope="scope">
-          {{ scope.row.useStatus | fUseStatus }}
+          {{ scope.row.nowStatus | fNowStatus }}
         </template>
       </el-table-column>
       <el-table-column
@@ -47,10 +47,10 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="当前状态"
+        label="使用状态"
       >
         <template slot-scope="scope">
-          {{ scope.row.nowStatus | fNowStatus }}
+          {{ scope.row.useStatus | fUseStatus }}
         </template>
       </el-table-column>
       <el-table-column
@@ -87,10 +87,10 @@
           <el-input v-model="form.concentratorNum" clearable disabled />
         </el-form-item>
         <el-form-item label="采集器编号" prop="num">
-          <el-input v-model="form.num" clearable />
+          <el-input v-model="form.num" type="number" clearable />
         </el-form-item>
-        <el-form-item label="当前状态">
-          <el-select v-model="form.nowStatus">
+        <el-form-item label="使用状态">
+          <el-select v-model="form.useStatus">
             <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -152,8 +152,8 @@ export default {
       addVisible: false,
       form: {
         num: '',
-        nowStatus: '',
-        useStatus: 0,
+        nowStatus: 0,
+        useStatus: '',
         readType: '',
         readTime: '',
         concentratorNum: '',
@@ -178,7 +178,8 @@ export default {
           label: '默认',
           value: 1
         }
-      ]
+      ],
+      rowObj: {}
     }
   },
 
@@ -242,7 +243,7 @@ export default {
         meterNode: {
           id: this.id,
           num: this.form.num,
-          nowStatus: this.form.nowStatus,
+          nowStatus: (this.rowObj.num != this.form.num || this.form.useStatus == 0) ? '0' : this.form.nowStatus,
           useStatus: this.form.useStatus,
           readType: this.form.readType,
           readTime: this.form.readTime,
@@ -250,6 +251,7 @@ export default {
           remarks: this.form.remarks
         }
       }
+      debugger
       let resData = await updateMeterNode(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success('修改成功');
@@ -259,6 +261,7 @@ export default {
       this.addVisible = false
     },
     handleEdit (row) {
+      this.rowObj = row
       this.id = row.id
       this.addVisible = true
       this.type = 1
@@ -312,34 +315,52 @@ export default {
       this.form.num = ''
       this.form.useStatus = ''
       this.form.readType = ''
-      this.form.nowStatus = ''
+      this.form.nowStatus = 0
       this.form.remarks = ''
       this.init()
     },
     writeNum () { // 写编号
-      if(this.tableData.length === 0) {
+      const self = this;
+      if (this.tableData.length === 0) {
         this.$message.warning("没有采集器数据!")
         return
+      } else {
+        let useList = this.tableData.filter(item => {
+          return item.useStatus == 1
+        })
+        if (useList.length === self.tableData.length) { // 全是使用状态
+          let shengxiaoList = useList.filter(item => {
+            return item.nowStatus == 1
+          })
+          if (useList.length !== shengxiaoList.length) { // 有不生效状态
+            self.qingq(useList)
+          }
+        } else { // 有未使用的 useList是所有使用状态的集合
+          self.qingq(useList)
+        }
       }
+    },
+    qingq (list) {
       const self = this;
       let param = {
         userId: this.userId,
         concentratorNum: this.$route.query.concentratorNum,
         cmd: 'WWW',
         rule: this.$route.query.rule,
-        nodeBlockAddress: self.filterCollector(),
+        nodeBlockAddress: self.filterCollector(list),
         waterBlockAddress: ''
       }
       console.log(param)
+      debugger
       self.operInstruct(param)
     },
-    filterCollector () { // 筛选采集器
-      const self = this;
-      let arr = self.tableData.filter(item => {
-        return item.useStatus == 0
-      })
+    filterCollector (list) { // 筛选采集器
+      // const self = this;
+      // let arr = self.tableData.filter(item => {
+      //   return item.useStatus == 0
+      // })
       let str = '{'
-      arr.forEach((item, index) => {
+      list.forEach((item, index) => {
         if (index != 0) str += ','
         str += item.num
       })

@@ -1,5 +1,5 @@
 <template>
-  <div id="myChartWater" :style="{ width: width, height: height }"/>
+  <div id="myChartWater" :style="{ width: width, height: height }" />
 </template>
 
 <script>
@@ -30,7 +30,7 @@ export default {
       let myChart = this.$echarts.init(document.getElementById('myChartWater'))
       let option = {
         title: {
-          text: this.$t('chart.waterChartTitle'),
+          text: '当前账户按月用水总量统计',
           padding: [20, 10]
         },
         tooltip: {
@@ -51,13 +51,16 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['1路', '2路', '3路', '4路', '5路', '6路', '7路', '8路', '9路', '10路']
+          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+          axisLabel: {
+            color: '#F00'
+          }
         },
         yAxis: {
           type: 'value'
         },
         series: [{
-          data: [820, 932, 901, 934, 1290, 1330, 1320, 800, 600, 544, 200],
+          data: [820, 932, 901, 934, 1290, 1330, 1320, 800, 600, 544, 200, 544, 200],
           type: 'line'
         }]
       };

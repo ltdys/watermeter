@@ -2,7 +2,7 @@ import { getLocalStorage } from '@/utils/storageUtil.js'
 
 // 当前状态
 export function fNowStatus (str) {
-  return str == 0 ? '未使用' : '使用'
+  return str == 0 ? '未生效' : str == 1 ? '生效' : '故障'
 }
 
 // 使用状态
@@ -177,10 +177,10 @@ export function fReadType (val) {
   }
 }
 
-export function fRuleFormat(val) {
+export function fRuleFormat (val) {
   if (!val) { return "" }
   let result = ""
-  if(val == "1") {
+  if (val == "1") {
     result = "8位长度"
   } else if (val == "2") {
     result = "10位长度"

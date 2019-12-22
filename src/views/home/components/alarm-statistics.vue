@@ -26,12 +26,28 @@ export default {
   },
 
   methods: {
+    getMonDay () {
+      let curDate = new Date();
+      /* 获取当前月份 */
+      let curMonth = curDate.getMonth();
+      /* 生成实际的月份: 由于curMonth会比实际月份小1, 故需加1 */
+      curDate.setMonth(curMonth + 1);
+      /* 将日期设置为0, 这里为什么要这样设置, 我不知道原因, 这是从网上学来的 */
+      curDate.setDate(0);
+      /* 返回当月的天数 */
+      let days = curDate.getDate();
+      let nums = []
+      for (let key = 0; key < days; key++) {
+        nums.push(key + 1)
+      }
+      return nums
+    },
     init () {
       const self = this;
       let myChart = this.$echarts.init(document.getElementById('myChartAlarm'))
       let option = {
         title: {
-          text: this.$t('chart.alarmChartTitle'),
+          text: '当前账户抄表失败统计',
           padding: [20, 10]
         },
         tooltip: {
@@ -52,13 +68,16 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['1路', '2路', '3路', '4路', '5路', '6路', '7路', '8路', '9路', '10路']
+          data: self.getMonDay() || [],
+          axisLabel: {
+            color: '#F00'
+          }
         },
         yAxis: {
           type: 'value'
         },
         series: [{
-          data: [100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200],
+          data: [100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600],
           type: 'line'
         }]
       };
