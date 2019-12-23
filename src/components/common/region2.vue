@@ -42,6 +42,7 @@ export default {
       this.$emit('handleNodeClick', data)
     },
     async findCompany (key) { // 获取组织机构
+      const self = this
       let params = {
         userId: this.userId,
         currentPage: 1,
@@ -50,6 +51,11 @@ export default {
       let resData = await findCompany(params)
       if (resData.status === 200 && resData.data.data !== null) {
         let list = resData.data.data
+        list.forEach(item => {
+          if (item.id == this.company_id && this.company_id != '') {
+            self.$set(item, 'children', [])
+          }
+        })
         this.companyTreeData = JSON.parse(orgTreeData([...list]))
         this.findDistrict()
       }
@@ -57,7 +63,7 @@ export default {
     async findDistrict () { // 查询区域
       const self = this;
       let params = {
-        companyId: ""
+        companyId: this.company_id
       }
       let res = await findDistrict(params)
       if (res.status === 200 && res.data.data !== null) {
@@ -74,20 +80,30 @@ export default {
             self.tableDataFj = list
             self.tableData = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
             self.treeData = self.tableData
-            
-
-            self.companyTreeData.forEach((item, index) => {
-              if (item.children) {
-                item.children.forEach((item1, index1) => {
-                  self.treeData.forEach((item2, index2) => {
-                    if (item1.id === item2.companyid) {
-                      item1.children = []
-                      item1.children.push(item2)
-                    }
+            console.log(self.companyTreeData)
+            if (this.company_id == '') {
+              self.companyTreeData.forEach((item, index) => {
+                if (item.children) {
+                  item.children.forEach((item1, index1) => {
+                    self.treeData.forEach((item2, index2) => {
+                      if (item1.id === item2.companyid) {
+                        item1.children = []
+                        item1.children.push(item2)
+                      }
+                    })
                   })
+                }
+              })
+            } else {
+              self.companyTreeData.forEach((item, index) => {
+                self.treeData.forEach((item2, index2) => {
+                  if (item.id === item2.companyid) {
+                    item.children = []
+                    item.children.push(item2)
+                  }
                 })
-              }
-            })
+              })
+            }
             self.resultTreeData = self.companyTreeData
           })
         } else {
@@ -96,7 +112,7 @@ export default {
           self.treeData = self.tableData
         }
       }
-    },
+    }
   }
 }
 </script>

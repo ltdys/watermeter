@@ -15,8 +15,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarA') }}</el-button>
-        <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarB') }}</el-button>
-        <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarC') }}</el-button>
+        <!-- <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarB') }}</el-button>
+        <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarC') }}</el-button> -->
       </el-form-item>
     </el-form>
     <el-table

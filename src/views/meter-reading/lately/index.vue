@@ -101,10 +101,13 @@
             label="当前读数"
           />
           <el-table-column
-            prop="operatorTime"
             label="更新时间"
             width="160"
-          />
+          >
+            <template slot-scope="scope">
+              {{ scope.row.readTime | fFormatDate }}
+            </template>
+          </el-table-column>
           <el-table-column
             prop="meterValuePrev"
             label="上次读数"
@@ -118,7 +121,7 @@
             label="通信状态"
           >
             <template slot-scope="scope">
-              {{ scope.row.commState }}
+              {{ scope.row.commState | fCommState }}
             </template>
           </el-table-column>
           <el-table-column
@@ -129,7 +132,7 @@
             prop="meterType"
             label="表类型"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="none"
             label="集中器编号"
             width="160"
@@ -142,7 +145,7 @@
           <el-table-column
             prop="autoTapSwitch"
             label="阀门状态"
-          />
+          /> -->
         </el-table>
         <my-pagination
           :all-total="pageObj.allTotal"
@@ -156,7 +159,13 @@
     </el-row>
 
     <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
-      <div class="gather-wrap">
+      <div
+        v-loading="loading"
+        element-loading-text="数据采集中..."
+        element-loading-spinner="el-icon-loading"
+        element-loading-customClass="load-class"
+        class="gather-wrap"
+      >
         <div class="gather-content">
           <!-- <div>
             <el-collapse accordion>
@@ -265,7 +274,8 @@ export default {
       checkMeterConcentrator: {}, // 选中的采集器
       checkMeterConcentratorNum: "", // 选中的集中器编号
       checkNum: "", // 选中的采集器编号
-      checkSb: {} // 选中的水表
+      checkSb: {}, // 选中的水表
+      loading: false
     }
   },
 
@@ -310,6 +320,7 @@ export default {
         }
       }
       let resData = await recentMeterReading(params)
+      this.tableData = []
       if (resData.status === 200 && resData.data.code === 1) {
         this.tableData = resData.data.data
         this.pageObj.allTotal = resData.data.page.totalRow || 0
@@ -375,14 +386,38 @@ export default {
       })
     },
     async operInstruct (param) { // 采集操作指令
+      const self = this
       const res = await operInstruct(param)
+      if (res.status == 200 && res.data.code == 1) {
+        this.$message.success(res.data.message);
+        self.loading = true
+        setTimeout(function () {
+          self.operInstruct2()
+        }, 8000)
+      } else {
+        this.$message.error(res.data.message);
+      }
+      console.log('采集操作指令', res)
+    },
+    async operInstruct2 () { // 读取采集操作指令
+      const self = this
+      let param = {
+        userId: self.userId,
+        concentratorNum: self.checkMeterConcentrator.meterConcentratorNum,
+        rule: self.checkMeterConcentrator.meterConcentratorRule,
+        cmd: 'RRR',
+        waterBlockAddress: '{""}',
+        nodeBlockAddress: '{""}'
+      }
+      const res = await operInstruct(param)
+      self.loading = false
+      console.log('读取采集操作指令', res)
       if (res.status == 200 && res.data.code == 1) {
         this.$message.success(res.data.message);
         this.gatherClose()
       } else {
         this.$message.error(res.data.message);
       }
-      console.log('采集操作指令', res)
     },
     gatherClose () {
       this.nbiotList = []

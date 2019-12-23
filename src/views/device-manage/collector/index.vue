@@ -251,7 +251,6 @@ export default {
           remarks: this.form.remarks
         }
       }
-      debugger
       let resData = await updateMeterNode(params)
       if (resData.status === 200 && resData.data.code === 1) {
         this.$message.success('修改成功');

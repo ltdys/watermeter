@@ -36,12 +36,12 @@
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarB') }}</el-button>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarC') }}</el-button>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarD') }}</el-button>
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarE') }}</el-button>
       </el-form-item>

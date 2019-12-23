@@ -254,3 +254,11 @@ input[type=number]::-webkit-outer-spin-button {
 .color-g{
   color: #0084FF !important;
 }
+
+.lately{
+  .el-loading-spinner{
+    .el-loading-text, .el-icon-loading{
+      color: #000;
+    }
+  }
+}

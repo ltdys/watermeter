@@ -193,3 +193,17 @@ export function fRuleFormat (val) {
   }
   return result
 }
+
+// 通讯状态转化
+export function fCommState (value) {
+  if (!value) { return "" }
+  let res = ''
+  if (value == 'O') {
+    res = '正常'
+  } else if (value == 'M') {
+    res = '读表失败'
+  } else if (value == 'J') {
+    res = '节点失败'
+  }
+  return res
+}
