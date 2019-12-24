@@ -7,31 +7,31 @@ export function fNowStatus (str) {
 
 // 使用状态
 export function fUseStatus (str) {
-  return str === 0 ? '未使用' : '使用'
+  return str == 0 ? '未使用' : '使用'
 }
 
 // 是否在线
 export function fIsOnline (str) {
-  return str === 0 ? '不在线' : '在线'
+  return str == 0 ? '不在线' : '在线'
 }
 
 // 空管状态
 export function fAtcStatus (str) {
-  return str === 0 ? '异常' : '正常'
+  return str == 0 ? '异常' : '正常'
 }
 
 // 表状态
 export function fStatus (str) {
-  return str === 0 ? '异常' : '正常'
+  return str == 0 ? '异常' : '正常'
 }
 
 // 通信状态
 export function fComState (str) {
-  return str === 0 ? '异常' : '正常'
+  return str == 0 ? '异常' : '正常'
 }
 
 export function fUserStatus (str) {
-  return str === 1 ? '锁定' : '正常'
+  return str == 1 ? '锁定' : '正常'
 }
 
 // 转换时间

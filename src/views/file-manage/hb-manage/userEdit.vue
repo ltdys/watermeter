@@ -2,8 +2,8 @@
   <div>
     <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
       <el-form-item label="水表" prop="nbiotNum">
-        <el-select v-model="form.nbiotNum" clearable filterable>
-          <el-option v-for="(item, index) in nbIotList" :key="index" :label="item.meterNbiotNum" :value="item.meterNbiotNum" />
+        <el-select v-model="form.nbiotNum" clearable filterable @change="nbiotChange()">
+          <el-option v-for="(item, index) in nbIotList" :key="index" :label="item.meterNbiotNum" :value="item.meterNbiotNum"/>
         </el-select>
       </el-form-item>
       <el-form-item label="所属区域" prop="areasId">
@@ -19,6 +19,7 @@
           :props="setProps"
           clearable
           @change="changeOrg"
+          disabled="disabled"
         />
       </el-form-item>
       <el-form-item label="用户编号" prop="num">
@@ -227,6 +228,14 @@ export default {
       this.cascaderFalse('cascader6')
       if (this.form.areasId && this.form.areasId.length > 0) {
         this.form.areasId = this.form.areasId[this.form.areasId.length - 1]
+      }
+    },
+    nbiotChange() {
+      let checkNbiot = this.nbIotList.filter((item) => {
+        return item.meterNbiotNum === this.form.nbiotNum
+      })
+      if(checkNbiot && checkNbiot.length > 0) {
+        this.form.areasId = checkNbiot[0].meterAreasId
       }
     }
   }

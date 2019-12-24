@@ -87,11 +87,10 @@
         label="压力报警"
       />
       <el-table-column
-        prop="status"
         label="表状态"
       >
         <template slot-scope="scope">
-          {{ scope.status | fStatus }}
+          {{ scope.row.status | fStatus }}
         </template>
       </el-table-column>
       <el-table-column
@@ -103,7 +102,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="remarkes"
+        prop="remarks"
         label="备注"
       />
       <el-table-column fixed="right" :label="$t('common.operation')" width="120">
