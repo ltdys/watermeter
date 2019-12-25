@@ -125,7 +125,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="title" :visible.sync="resourceVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="resourceVisible" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
         <el-form-item v-if="addType === 2" label="所属组织" prop="parentId">
           <el-select v-model="form.parentId">

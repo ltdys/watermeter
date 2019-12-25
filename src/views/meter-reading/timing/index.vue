@@ -73,7 +73,7 @@
         @currentChange="currentChange"
       />
 
-      <el-dialog :title="$t('meterReadingTiming.dialogTitle')" :visible.sync="addVisible" @close="close">
+      <el-dialog :title="$t('meterReadingTiming.dialogTitle')" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
         <my-edit @close="close" />
       </el-dialog>
   </div>

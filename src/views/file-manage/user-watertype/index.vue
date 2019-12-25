@@ -60,7 +60,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <el-form :model="form" ref="ruleForm" :rules="rules" label-width="120px">
         <el-form-item label="用户水型名称" prop="houseType">
           <el-input v-model="form.houseType" clearable />

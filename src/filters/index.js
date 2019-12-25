@@ -178,7 +178,6 @@ export function fReadType (val) {
 }
 
 export function fRuleFormat (val) {
-  if (!val) { return "" }
   let result = ""
   if (val == "1") {
     result = "8位长度"
@@ -189,7 +188,7 @@ export function fRuleFormat (val) {
   } else if (val == "4") {
     result = "14位长度"
   } else {
-    result = ""
+    result = val
   }
   return result
 }

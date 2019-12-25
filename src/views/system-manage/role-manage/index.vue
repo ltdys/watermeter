@@ -84,7 +84,7 @@
     </el-table>
 
     <!-- 添加 -->
-    <el-dialog :visible.sync="addVisible" :title="title" @close="close">
+    <el-dialog :visible.sync="addVisible" :title="title" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item v-if="type == 0" label="组织" prop="companyId">
           <!-- <el-select v-model="form.companyId" clearable>

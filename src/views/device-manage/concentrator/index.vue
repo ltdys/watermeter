@@ -106,7 +106,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item :label="$t('deviceManageConcentrator.dialogA')" prop="name">
           <el-input v-model="form.name" clearable />
@@ -156,7 +156,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog title="集中器配置" :visible.sync="deployVisible" @close="close2">
+    <el-dialog title="集中器配置" :visible.sync="deployVisible" @close="close2" :close-on-click-modal="false">
       <el-form ref="deployForm" :model="deployForm" :rules="deployRules" label-width="100px">
         <el-form-item label="IP地址" prop="ip">
           <el-input v-model="deployForm.ip" clearable />

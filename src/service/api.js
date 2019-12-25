@@ -213,3 +213,5 @@ export const uploadMeterRead = params => axios.post('/watermeter/uploadMeterRead
 // 上传logo
 export const logoUpload = params => axios.post('/watermeter/logoUpload', formUtil(params))
 
+// 水表管理excel导出
+export const meterNbIotLDownLoad = params => axios.post('/watermeter/meterNbIotLDownLoad', params)

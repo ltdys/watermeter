@@ -81,7 +81,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="type == 0 ? '添加采集器' : '编辑采集器'" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="type == 0 ? '添加采集器' : '编辑采集器'" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="集中器编号" prop="concentratorNum">
           <el-input v-model="form.concentratorNum" clearable disabled />
@@ -350,7 +350,6 @@ export default {
         waterBlockAddress: ''
       }
       console.log(param)
-      debugger
       self.operInstruct(param)
     },
     filterCollector (list) { // 筛选采集器

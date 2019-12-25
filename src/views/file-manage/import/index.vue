@@ -214,6 +214,7 @@ export default {
       this.clearExcel()
       this.excelModel.areasId = ""
       this.areasList = []
+      this.$refs.upload.clearFiles()
     }
   }
 }

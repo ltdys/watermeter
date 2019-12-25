@@ -158,7 +158,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose">
+    <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose" :close-on-click-modal="false">
       <div
         v-loading="loading"
         element-loading-text="数据采集中..."
@@ -205,7 +205,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible="readVisiable" title="当前读数" @close="readClose">
+    <el-dialog :visible="readVisiable" title="当前读数" @close="readClose" :close-on-click-modal="false">
       <div class="read-wrap">
         123321
       </div>

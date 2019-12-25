@@ -96,7 +96,7 @@
     </el-table>
 
     <!-- 添加 -->
-    <el-dialog :visible.sync="addVisible" :title="type == 0 ? '添加用户' : '编辑用户'" @close="close">
+    <el-dialog :visible.sync="addVisible" :title="type == 0 ? '添加用户' : '编辑用户'" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="组织" prop="companyId">
           <!-- <el-select v-model="form.companyId" placeholder="请选择组织" clearable filterable>

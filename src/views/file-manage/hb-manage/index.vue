@@ -72,6 +72,26 @@
             width="200"
           />
           <el-table-column
+            prop="areasname"
+            label="小区"
+            width="120"
+          />
+           <el-table-column
+            prop="meteruseraddress"
+            label="楼栋"
+            width="120"
+          />
+          <el-table-column
+            prop="meterconcentratornum"
+            label="集中器编号"
+            width="200"
+          />
+          <el-table-column
+            prop="meternodenum"
+            label="采集器编号"
+            width="200"
+          />
+          <el-table-column
             prop="tableAddress"
             :label="$t('fileManageHb.tableF')"
           />
@@ -115,11 +135,11 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose">
+    <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose" :close-on-click-modal="false">
       <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" :tree-data="treeData" :form="form" :nb-iot-list="nbIotList" :type="type" @close="userAddVisible = false" />
     </el-dialog>
 
-    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose">
+    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose" :close-on-click-modal="false">
       <table-edit @close="tableClose" />
     </el-dialog>
   </div>

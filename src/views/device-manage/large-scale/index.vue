@@ -113,7 +113,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="大表添加" :visible.sync="addVisible" @close="close">
+    <el-dialog title="大表添加" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <my-edit :form="form" :type="type" :area-object="areaObject" :list="list" @close="close" />
     </el-dialog>
 

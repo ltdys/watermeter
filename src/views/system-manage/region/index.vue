@@ -98,7 +98,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" @close="close">
+    <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" @close="close" :close-on-click-modal="false">
       <my-edit ref="edit" :options="treeData" :form="form" @onSubmit="onSubmit" @close="close" />
     </el-dialog>
   </div>

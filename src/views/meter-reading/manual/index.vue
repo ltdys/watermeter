@@ -123,6 +123,7 @@ export default {
         this.$message.warning(resData.data.message + ',' + resData.data.data)
       }
       this.clearExcel()
+      this.$refs.upload.clearFiles()
     }
   }
 }

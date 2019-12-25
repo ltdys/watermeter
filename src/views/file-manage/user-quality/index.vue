@@ -52,7 +52,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <el-form :model="form" ref="ruleForm" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" clearable />

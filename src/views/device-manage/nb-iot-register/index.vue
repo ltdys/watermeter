@@ -34,7 +34,7 @@
         <el-button type="primary" size="mini" class="custom-button" @click="addNbIotRegister">{{ $t('common.add') }}</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarB') }}</el-button>
+        <el-button type="primary" size="mini" class="custom-button" @click="exportExcel">{{ $t('deviceManageRegister.toolbarB') }}</el-button>
       </el-form-item>
       <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarC') }}</el-button>
@@ -148,7 +148,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="title" :visible.sync="addVisible" @close="close">
+    <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
       <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" />
     </el-dialog>
 
@@ -187,7 +187,7 @@
 </template>
 
 <script>
-import { findMeterConcentrator, getMeterNodes, getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct } from '@/service/api'
+import { findMeterConcentrator, getMeterNodes, getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct, meterNbIotLDownLoad } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -340,6 +340,16 @@ export default {
         this.$message.error(res.data.message);
       }
       console.log('res', res)
+    },
+    exportExcel() {
+      this.meterNbIotLDownLoad()
+    },
+    async meterNbIotLDownLoad() {
+      let params = {
+        userId: this.userId,
+        meterNbIot: this.search
+      }
+      let resData = await meterNbIotLDownLoad(params);
     },
     async getMeterNbIotL () {
       const self = this

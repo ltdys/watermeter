@@ -94,6 +94,7 @@
           <el-button class="jur-tree-header_right" type="primary" size="mini" icon="el-icon-document-checked" :disabled="isAllDisabled" @click="urightSave">保存</el-button>
         </div>
         <div class="slqx">
+          <!-- <el-checkbox v-model="checked" style="margin-bottom: 10px" @change="allChange">全选</el-checkbox> -->
           <div v-for="(item, index) in currentJur" :key="index" class="slqx_box">
             <div class="slqx_box_name">{{ item.resName }}</div>
             <div class="slqx_box_qx">
@@ -159,7 +160,8 @@ export default {
       tableData: [], // 角色列表
       currentJur: [], // 选中的资源
       isAllDisabled: true, // 是否保存
-      loginType: 1 // 当前登录的角色type  -1  超级管理员  0  管理员  2  其他人员
+      loginType: 1, // 当前登录的角色type  -1  超级管理员  0  管理员  2  其他人员
+      checked: false
     }
   },
   watch: {
@@ -347,6 +349,9 @@ export default {
       this.getRoleResource()
       // this.checkList = row.account === '123456' ? [5] : [3]
     },
+    allChange() {
+      console.log("allChange", this.currentJur)
+    },
     async getRoleResource () { // 根据角色查询资源
       const self = this;
       const param = {
@@ -495,5 +500,8 @@ export default {
         overflow: auto;
       }
     }
+  }
+  .el-checkbox__input.is-checked + .el-checkbox__label {
+    color: #606266;
   }
 </style>

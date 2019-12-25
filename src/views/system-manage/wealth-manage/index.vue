@@ -78,7 +78,7 @@
         /> -->
       </el-col>
     </el-row>
-    <el-dialog :title="dialog.status === 0 ? '新增资源' : '修改资源'" :visible.sync="dialog.resourceVisible" @close="close">
+    <el-dialog :title="dialog.status === 0 ? '新增资源' : '修改资源'" :visible.sync="dialog.resourceVisible" @close="close" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="父菜单资源">
           <el-select v-model="form.parent" placeholder="请选择父菜单资源" filterable clearable>
