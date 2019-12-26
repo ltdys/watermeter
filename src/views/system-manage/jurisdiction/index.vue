@@ -95,10 +95,14 @@
         </div>
         <div class="slqx">
           <!-- <el-checkbox v-model="checked" style="margin-bottom: 10px" @change="allChange">全选</el-checkbox> -->
+          <div v-show="qxBoxShow" class="slqx_qx slqx_box_qx">
+            <el-checkbox v-model="llChecked" @change="llSelect">浏览全选</el-checkbox>
+            <el-checkbox v-model="whChecked" @change="whSelect">维护全选</el-checkbox>
+          </div>
           <div v-for="(item, index) in currentJur" :key="index" class="slqx_box">
             <div class="slqx_box_name">{{ item.resName }}</div>
             <div class="slqx_box_qx">
-              <el-radio v-for="(check, ind) in checkBoxList" :key="ind" v-model="item.jurVal" :label="check.value">{{ check.label }}</el-radio>
+              <el-radio v-for="(check, ind) in checkBoxList" :key="ind" v-model="item.jurVal" :label="check.value" style="margin-right: 60px;">{{ check.label }}</el-radio>
             </div>
             <!-- <el-checkbox-group v-model="item.jurVal" @change="handleCheckedCitiesChange">
               <el-checkbox v-for="(check, ind) in checkBoxList" :key="ind" :label="check.label">{{ check.label }}</el-checkbox>
@@ -125,6 +129,9 @@ export default {
   mixins: [list_mixins],
   data () {
     return {
+      qxBoxShow: false,
+      llChecked: false,
+      whChecked: false,
       checkBoxList: [
         {
           label: '浏览',
@@ -168,9 +175,29 @@ export default {
     currentJur: {
       handler: function (val, old) {
         if (val.length !== 0 && Object.keys(this.currentAcc).length !== 0) {
+          this.qxBoxShow = true
           let list = val.filter(item => {
             return item.jurVal === ''
           })
+          let list0 = val.filter(item => {
+            return item.jurVal === 0
+          })
+          let list1 = val.filter(item => {
+            return item.jurVal === 1
+          })
+          console.log('-----', list0, list1)
+          this.llChecked = list0.length !== 0 && list0.length === val.length
+          this.whChecked = list1.length !== 0 && list1.length === val.length
+          // if (list0.length === 0) {
+          //   this.llChecked = true
+          // } else {
+          //   this.llChecked = false
+          // }
+          // if (list1.length === 0) {
+          //   this.llChecked = true
+          // } else {
+          //   this.llChecked = false
+          // }
           console.log('currentJur', list)
           if (list.length === 0) {
             if (this.loginType == -1) { // 超级管理员
@@ -196,6 +223,8 @@ export default {
           // } else {
           //   this.isAllDisabled = true
           // }
+        } else {
+          this.qxBoxShow = false
         }
       },
       deep: true
@@ -240,6 +269,29 @@ export default {
       } else {
         this.getUserResource()
       }
+    },
+    llSelect () { // 浏览全选
+      // this.llChecked = !this.llChecked
+      this.whChecked = false
+      this.currentJur = this.currentJur.map(item => {
+        if (this.llChecked) {
+          item.jurVal = 0
+        } else {
+          item.jurVal = ''
+        }
+        return item
+      })
+    },
+    whSelect () { // 维护全选
+      this.llChecked = false
+      this.currentJur = this.currentJur.map(item => {
+        if (this.whChecked) {
+          item.jurVal = 1
+        } else {
+          item.jurVal = ''
+        }
+        return item
+      })
     },
     async getRoleList () { // 获取角色列表
       const self = this
@@ -349,7 +401,7 @@ export default {
       this.getRoleResource()
       // this.checkList = row.account === '123456' ? [5] : [3]
     },
-    allChange() {
+    allChange () {
       console.log("allChange", this.currentJur)
     },
     async getRoleResource () { // 根据角色查询资源
@@ -470,6 +522,9 @@ export default {
     .slqx{
       padding: 20px;
       box-sizing: border-box;
+      &_qx{
+        margin-bottom: 10px;
+      }
       &_box{
         margin-bottom: 10px;
         &_name{

@@ -158,10 +158,10 @@
       </el-col>
     </el-row>
 
-    <el-dialog :visible="gatherVisiable" title="数据采集" @close="gatherClose" :close-on-click-modal="false">
+    <el-dialog :visible="gatherVisiable" :title="gaTitle" :close-on-click-modal="false" @close="gatherClose">
       <div
         v-loading="loading"
-        element-loading-text="数据采集中..."
+        :element-loading-text="gaTitle + '中...'"
         element-loading-spinner="el-icon-loading"
         element-loading-customClass="load-class"
         class="gather-wrap"
@@ -200,12 +200,12 @@
           </div>
         </div>
         <div class="gather-btn" @click="sureGather">
-          确认采集
+          {{ gaSure }}
         </div>
       </div>
     </el-dialog>
 
-    <el-dialog :visible="readVisiable" title="当前读数" @close="readClose" :close-on-click-modal="false">
+    <el-dialog :visible="readVisiable" title="当前读数" :close-on-click-modal="false" @close="readClose">
       <div class="read-wrap">
         123321
       </div>
@@ -230,6 +230,9 @@ export default {
 
   data () {
     return {
+      gaType: 0, // 0 数据采集 1 数据读取
+      gaTitle: '数据采集',
+      gaSure: '确认采集',
       tableData: [],
       treeData: [],
       gatherVisiable: false, // 数据采集弹窗
@@ -357,6 +360,13 @@ export default {
       item.isSelect = true
     },
     sureGather () { // 确认采集
+      if (this.gaType == 0) {
+        this.sureCjFun()
+      } else if (this.gaType == 1) {
+        this.operInstruct2()
+      }
+    },
+    sureCjFun () {
       const self = this;
       let param = {
         userId: self.userId
@@ -368,13 +378,13 @@ export default {
         param.rule = self.checkMeterConcentrator.meterConcentratorRule
         param.cmd = 'MMM'
         if (self.checkNum == '') { // 采集器为空
-          param.nodeBlockAddress = Number(param.rule) == 0 ? '{"ffffffffffff"}' : Number(param.rule) == 1 ? '{"ffffffff"}' : Number(param.rule) == 2 ? '{"ffffffffffffff"}' : '{"ffffffff"}'
-          param.waterBlockAddress = param.rule == '02' ? '{""}' : `{"ffffffff"}`
+          param.nodeBlockAddress = Number(param.rule) == 0 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
+          param.waterBlockAddress = param.rule == '02' ? '{""}' : `{FFFFFFFF}`
           // checkMeterConcentrator
         } else {
           param.nodeBlockAddress = `{${self.checkNum}}`
           if (Object.keys(self.checkSb).length == 0) { // 水表为空
-            param.waterBlockAddress = param.rule == '02' ? '{""}' : `{"ffffffff"}`
+            param.waterBlockAddress = param.rule == '02' ? '{""}' : `{FFFFFFFF}`
           } else {
             param.waterBlockAddress = param.rule == '02' ? '{""}' : `{${self.checkSb.meterNbiotNum}}`
           }
@@ -390,10 +400,11 @@ export default {
       const res = await operInstruct(param)
       if (res.status == 200 && res.data.code == 1) {
         this.$message.success(res.data.message);
-        self.loading = true
-        setTimeout(function () {
-          self.operInstruct2()
-        }, 8000)
+        self.gatherClose()
+        // self.loading = true
+        // setTimeout(function () {
+        //   self.operInstruct2()
+        // }, 8000)
       } else {
         this.$message.error(res.data.message);
       }
@@ -421,6 +432,7 @@ export default {
     },
     gatherClose () {
       this.nbiotList = []
+      this.checkSb = {}
       this.gatherVisiable = false
     },
     readClose () {
@@ -430,6 +442,9 @@ export default {
 
     },
     handleGather () {
+      this.gaType = 0
+      this.gaTitle = '数据采集'
+      this.gaSure = '确定采集'
       console.log("当前选中的区域" + this.search.areasId)
       if (!this.search.areasId) {
         this.$message.warning("请选择区域");
@@ -451,7 +466,16 @@ export default {
       console.log('集中器', item)
     },
     handleRead () {
-      this.readVisiable = true
+      // this.readVisiable = true
+      this.gaType = 1
+      this.gaTitle = '数据读取'
+      this.gaSure = '确定读取'
+      if (!this.search.areasId) {
+        this.$message.warning("请选择区域");
+        return
+      }
+      this.gatherVisiable = true
+      this.findMeterConcentrator()
     },
     // 集中器查询
     async findMeterConcentrator () {
