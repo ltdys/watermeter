@@ -33,7 +33,7 @@ import alarmStatistics from './components/alarm-statistics'
 import installStatistics from './components/install-statistics'
 import { list_mixins } from '@/mixins'
 import { wealthTreeData } from '@/utils/publicUtil'
-import { getUserResource, countMeterNbIotL, getAllResource } from '@/service/api'
+import { getUserResource, countMeterNbIotL, getAllResource, waterAnalysisByMonth, meterIsNotOnline, meterIsNotInstall } from '@/service/api'
 import i18n from '@/lang'
 
 export default {
@@ -85,6 +85,9 @@ export default {
     this.countMeterNbIotL1()
     this.countMeterNbIotL2()
     this.countMeterNbIotL3()
+    this.waterAnalysisByMonth()
+    this.meterIsNotOnline()
+    this.meterIsNotInstall()
   },
 
   methods: {
@@ -231,6 +234,30 @@ export default {
       }
       let resData = await countMeterNbIotL(params)
       this.deviceList[2].value = resData.data.data.count || 0
+    },
+    async waterAnalysisByMonth () { // 按月统计水表用量
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await waterAnalysisByMonth(param)
+      console.log('按月统计水表用量', res)
+    },
+    async meterIsNotOnline () { // 统计抄表失败
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await meterIsNotOnline(param)
+      console.log('统计抄表失败', res)
+    },
+    async meterIsNotInstall () { // 统计抄表安装
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await meterIsNotInstall(param)
+      console.log('统计抄表安装', res)
     }
   }
 };

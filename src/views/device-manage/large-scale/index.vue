@@ -14,7 +14,7 @@
         <el-button type="primary" size="mini" @click="handleAdd">{{ $t('common.add') }}</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarA') }}</el-button>
+        <el-button type="primary" class="custom-button" size="mini" @click="meterBigDownLoad">{{ $t('deviceManageLarge.toolbarA') }}</el-button>
         <!-- <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarB') }}</el-button>
         <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarC') }}</el-button> -->
       </el-form-item>
@@ -113,7 +113,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="大表添加" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
+    <el-dialog :title="type == 0 ? '大表添加' : '大表编辑'" :visible.sync="addVisible" :close-on-click-modal="false" @close="close">
       <my-edit :form="form" :type="type" :area-object="areaObject" :list="list" @close="close" />
     </el-dialog>
 
@@ -129,7 +129,8 @@
 </template>
 
 <script>
-import { getMeterBigList, deleteMeterBig, findDistrict } from '@/service/api'
+// import axios from 'axios'
+import { getMeterBigList, deleteMeterBig, findDistrict, meterBigDownLoad } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import myEdit from './edit'
@@ -209,6 +210,67 @@ export default {
         self.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
+    async meterBigDownLoad () { // 大表导出
+      let param = {
+        userId: this.userId
+      }
+      let res = await meterBigDownLoad(param);
+      console.log('res', res)
+      let data = res.data
+      let blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+      const fileName = 'ssss.xlsx'
+      if ('download' in document.createElement('a')) { // 非IE下载
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href) // 释放URL 对象
+        document.body.removeChild(elink)
+      } else { // IE10+下载
+        navigator.msSaveBlob(blob, fileName)
+      }
+    },
+    // meterBigDownLoad () { // 大表导出
+    //   axios.create({
+    //     method: 'post',
+    //     baseURL: 'http://120.77.248.38:8099/watermeter/meterBigDownLoad',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+    //       'ziguangapi-validate-appid': '28647975',
+    //       'ziguangapi-validate-nonce': '44446543',
+    //       'ziguangapi-validate-timestamp': '1234567890'
+    //     },
+    //     responseType: 'arraybuffer',
+    //     data: {
+    //       userId: this.userId
+    //     },
+    //     success: (res) => {
+    //       console.log(res);
+    //       let blob = new Blob([res.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+    //       const fileName = '导出信息.xlsx'
+    //       if ('download' in document.createElement('a')) { // 非IE下载
+    //         const elink = document.createElement('a')
+    //         elink.download = fileName
+    //         elink.style.display = 'none'
+    //         elink.href = URL.createObjectURL(blob)
+    //         document.body.appendChild(elink)
+    //         elink.click()
+    //         URL.revokeObjectURL(elink.href) // 释放URL 对象
+    //         document.body.removeChild(elink)
+    //       } else { // IE10+下载
+    //         navigator.msSaveBlob(blob, fileName)
+    //       }
+    //     }
+    //   })
+    //   // let param = {
+    //   //   userId: this.userId
+    //   // }
+    //   // let res = await meterBigDownLoad(param);
+    //   // console.log('res', res)
+    // },
     init () {
       this.findDistrict()
     },

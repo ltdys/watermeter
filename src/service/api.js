@@ -215,3 +215,15 @@ export const logoUpload = params => axios.post('/watermeter/logoUpload', formUti
 
 // 水表管理excel导出
 export const meterNbIotLDownLoad = params => axios.post('/watermeter/meterNbIotLDownLoad', params)
+
+// 按月统计水表用量
+export const waterAnalysisByMonth = params => axios.post('/watermeter/waterAnalysisByMonth', params)
+
+// 统计抄表失败
+export const meterIsNotOnline = params => axios.post('/watermeter/meterIsNotOnline', params)
+
+// 统计抄表安装
+export const meterIsNotInstall = params => axios.post('/watermeter/meterIsNotInstall', params)
+
+// 大表管理excel导出
+export const meterBigDownLoad = params => axios.post('/watermeter/meterBigDownLoad', params)

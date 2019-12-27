@@ -98,7 +98,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" @close="close" :close-on-click-modal="false">
+    <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" :close-on-click-modal="false" @close="close">
       <my-edit ref="edit" :options="treeData" :form="form" @onSubmit="onSubmit" @close="close" />
     </el-dialog>
   </div>
@@ -395,12 +395,20 @@ export default {
       })
     },
     handleNodeClick (data) {
+      console.log('data', data)
       this.currentOrg = data
       let params = {
         companyId: data.id
       }
       this.form.company = data.parentId == 0 ? [data.id] : [data.parentId, data.id]
       this.form.companyId = this.form.company[this.form.company.length - 1]
+      this.search.orgList = []
+      if (data.parentId == 0) {
+        this.search.orgList = [data.id]
+      } else {
+        this.search.orgList = [data.parentId, data.id]
+      }
+      this.search.org = data.id
       this.findDistrict(params)
       // this.$message.success(`切换${data.companyName}成功`)
     },

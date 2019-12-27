@@ -96,7 +96,7 @@
     </el-table>
 
     <!-- 添加 -->
-    <el-dialog :visible.sync="addVisible" :title="type == 0 ? '添加用户' : '编辑用户'" @close="close" :close-on-click-modal="false">
+    <el-dialog :visible.sync="addVisible" :title="type == 0 ? '添加用户' : '编辑用户'" :close-on-click-modal="false" @close="close">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="组织" prop="companyId">
           <!-- <el-select v-model="form.companyId" placeholder="请选择组织" clearable filterable>
@@ -109,8 +109,8 @@
             clearable
             filterable
             :props="setProps"
+            :disabled="isRoleD"
             @change="changeOrgAdd"
-            :disabled="role_name !== '超级管理员'"
           />
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
@@ -221,6 +221,7 @@ export default {
 
   data () {
     return {
+      isRoleD: false,
       setProps: { // 设置级联选择器
         label: 'companyName',
         value: 'id',
@@ -308,6 +309,20 @@ export default {
   },
 
   created () {
+    let resourcesList = JSON.parse(localStorage.getItem("USER_INFO")).resources
+    if (resourcesList.length !== 0) {
+      let comL = resourcesList.filter(item => {
+        if (item.resName == '用户管理' && item.oper == '1') {
+          return item
+        }
+      })
+      console.log('ssssss', comL)
+      if (comL.length === 0) {
+        this.isRoleD = true
+      } else {
+        this.isRoleD = false
+      }
+    }
     this.init()
   },
 

@@ -377,10 +377,12 @@ export default {
         param.concentratorNum = self.checkMeterConcentrator.meterConcentratorNum
         param.rule = self.checkMeterConcentrator.meterConcentratorRule
         param.cmd = 'MMM'
-        if (self.checkNum == '') { // 采集器为空
-          param.nodeBlockAddress = Number(param.rule) == 0 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
-          param.waterBlockAddress = param.rule == '02' ? '{""}' : `{FFFFFFFF}`
-          // checkMeterConcentrator
+        if (self.checkNum == '') { // 采集器为空 1 -> 8F, 2 -> 10F, 3 -> 12F, 4 -> 14F
+          // param.nodeBlockAddress = Number(param.rule) == 0 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
+          // param.waterBlockAddress = param.rule == '02' ? '{""}' : `{FFFFFFFF}`
+
+          param.nodeBlockAddress = Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFF}' : Number(param.rule) == 3 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 4 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
+          param.waterBlockAddress = `{FFFFFFFF}`
         } else {
           param.nodeBlockAddress = `{${self.checkNum}}`
           if (Object.keys(self.checkSb).length == 0) { // 水表为空
@@ -492,11 +494,15 @@ export default {
           this.$set(item, 'maxHeight', 0)
           this.$set(item, 'meterList', [])
         })
+        if (this.concentratorList.length !== 0) {
+          this.openJzq(this.concentratorList[0], 0)
+        }
         console.log("this.concentratorList", this.concentratorList)
       }
     },
     // 集中器点击
     concentratorChange (item, index) {
+      console.log(item, index)
       this.getMeterNodes(item.meterConcentratorId || "")
     },
     async getMeterNodes (item, index) {
@@ -513,7 +519,7 @@ export default {
         if (item.meterList.length != 0) {
           // item.meterList[0].isSelect = true
           // this.checkNum = item.meterList[0].num
-          this.meterChange(item.meterList[0], item.meterList)
+          // this.meterChange(item.meterList[0], item.meterList)
         }
         this.concentratorList.forEach(val => {
           // val.isShow = false

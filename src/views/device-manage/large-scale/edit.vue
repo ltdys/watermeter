@@ -14,7 +14,7 @@
           </el-option>
         </el-select> -->
         <el-cascader
-          ref='cascader4'
+          ref="cascader4"
           v-model="form.areasList"
           :options="options"
           clearable
@@ -66,7 +66,7 @@
         <el-input v-model="form.remarks" clearable />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
+        <el-button type="primary" :disabled="isDBShow" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
         <el-button @click="close">{{ $t('common.cancel') }}</el-button>
       </el-form-item>
     </el-form>
@@ -121,6 +121,7 @@ export default {
   },
   data () {
     return {
+      isDBShow: false, // 大表新增确定按钮是否点击显示
       // areasList: [],
       rules: {
         num: [
@@ -163,6 +164,7 @@ export default {
             this.$message.warning("请选择所属区域!")
             return
           }
+          this.isDBShow = true
           if (this.type === 0) {
             this.addMeterBig()
           } else {
@@ -181,6 +183,7 @@ export default {
       }
       let resData = await addMeterBig(params)
       if (resData.status === 200) {
+        this.isDBShow = false
         this.$message.success(resData.data.message)
         this.close()
       }
@@ -192,6 +195,7 @@ export default {
       }
       let resData = await updateMeterBig(params)
       if (resData.status === 200) {
+        this.isDBShow = false
         this.$message.success(resData.data.message)
         this.close()
       }
