@@ -16,20 +16,19 @@ import { btnPermission } from '@/utils/btnPermission.js'
 import Icon from 'vue-svg-icon/Icon.vue'
 import i18n from './lang'
 Vue.component('icon', Icon)
-import VueAMap from 'vue-amap'
-Vue.use(VueAMap)
+// import VueAMap from 'vue-amap'
+// Vue.use(VueAMap)
 import * as filters from './filters' // global filters
 // register global utility filters.
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
-VueAMap.initAMapApiLoader({
-  key: '81339b9a7dc95b45358f545c74f3b797',
-  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
-  // 默认高德 sdk 版本为 1.4.4
-  v: '1.4.4'
-});
+// VueAMap.initAMapApiLoader({
+//   key: '81339b9a7dc95b45358f545c74f3b797',
+//   plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+//   v: '1.4.4'
+// });
 import echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 Vue.prototype.hasPerm = btnPermission
