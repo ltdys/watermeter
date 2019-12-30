@@ -81,10 +81,10 @@ export default {
     } else {
       this.getUserResource()
     }
-    this.countMeterNbIotL()
-    this.countMeterNbIotL1()
-    this.countMeterNbIotL2()
-    this.countMeterNbIotL3()
+    // this.countMeterNbIotL()
+    // this.countMeterNbIotL1()
+    // this.countMeterNbIotL2()
+    // this.countMeterNbIotL3()
   },
 
   methods: {

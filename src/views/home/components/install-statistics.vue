@@ -3,8 +3,10 @@
 </template>
 
 <script>
-import { meterIsNotInstall } from '@/service/api'
+import { list_mixins } from '@/mixins'
+import { meterIsInstall } from '@/service/api'
 export default {
+  mixins: [list_mixins],
   props: {
     width: {
       type: String,
@@ -18,13 +20,14 @@ export default {
 
   data () {
     return {
-
+      xAxis: [],
+      dataList: [200, 100, 501, 934, 590, 830, 130, 500, 1600, 1200, 20, 200, 100, 501, 934, 590, 830, 130, 500, 1600, 1200, 20, 200, 100, 501, 934, 590, 830, 130, 500, 1600]
     }
   },
 
   mounted () {
+    this.xAxis = this.getMonDay()
     this.init()
-    this.meterIsNotInstall()
   },
 
   methods: {
@@ -45,6 +48,32 @@ export default {
       return nums
     },
     init () {
+      this.meterIsInstall()
+    },
+    async meterIsInstall () { // 统计抄表安装
+      const self = this;
+      let param = {
+        userId: self.userId
+        // userId: 'USD1ED59A8133C42BFAEFBBC339EA660A5'
+      }
+      let res = await meterIsInstall(param)
+      console.log('统计抄表安装', res)
+      if (res.status == 200 && res.data.code == 1) {
+        let list = res.data.data
+        self.xAxis = list.map(item => {
+          return item.day
+        })
+        self.dataList = list.map(item => {
+          return item.total
+        })
+        self.$nextTick(() => {
+          self.installEchart()
+        })
+      } else {
+        self.$message.error(res.data.message);
+      }
+    },
+    installEchart () {
       const self = this
       let myChart = this.$echarts.init(document.getElementById('myChartInstall'))
       let option = {
@@ -70,7 +99,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: self.getMonDay() || [],
+          data: self.xAxis,
           axisLabel: {
             color: '#F00'
           }
@@ -79,24 +108,16 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [200, 100, 501, 934, 590, 830, 130, 500, 1600, 1200, 20, 200, 100, 501, 934, 590, 830, 130, 500, 1600, 1200, 20, 200, 100, 501, 934, 590, 830, 130, 500, 1600],
+          data: self.dataList,
           type: 'line'
         }]
       };
 
+      myChart.resize()
       myChart.setOption(option, true);
       window.addEventListener("resize", function () {
         myChart.resize();
       });
-      // myChart.resize()
-    },
-    async meterIsNotInstall () { // 统计抄表安装
-      const self = this;
-      let param = {
-        userId: self.userId
-      }
-      let res = await meterIsNotInstall(param)
-      console.log('统计抄表安装', res)
     }
   }
 }

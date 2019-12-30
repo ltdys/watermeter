@@ -3,8 +3,10 @@
 </template>
 
 <script>
+import { list_mixins } from '@/mixins'
 import { meterIsNotOnline } from '@/service/api'
 export default {
+  mixins: [list_mixins],
   props: {
     width: {
       type: String,
@@ -18,11 +20,13 @@ export default {
 
   data () {
     return {
-
+      xAxis: [],
+      dataList: [100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600]
     }
   },
 
   mounted () {
+    this.xAxis = this.getMonDay()
     this.init()
   },
 
@@ -39,11 +43,41 @@ export default {
       let days = curDate.getDate();
       let nums = []
       for (let key = 0; key < days; key++) {
-        nums.push(key + 1)
+        let k = (key + 1) < 10 ? '0' + (key + 1) : (key + 1)
+        let date = curDate.getFullYear() + '-' + (curDate.getMonth() + 1) + '-' + k
+        nums.push(date)
       }
       return nums
     },
     init () {
+      this.meterIsNotOnline()
+    },
+    async meterIsNotOnline () { // 统计抄表失败
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await meterIsNotOnline(param)
+      console.log('统计抄表失败', res)
+      if (res.status == 200 && res.data.code == 1) {
+        let list = res.data.data
+        self.xAxis = list.map(item => {
+          return item.day
+        })
+        self.dataList = list.map(item => {
+          return item.total
+        })
+        self.$nextTick(() => {
+          self.notOnlineEchart()
+        })
+      } else {
+        self.$message.error(res.data.message);
+        // self.xAxis = self.getMonDay()
+        // self.dataList = Array(self.xAxis.length).fill(0)
+        // self.notOnlineEchart()
+      }
+    },
+    notOnlineEchart () {
       const self = this;
       let myChart = this.$echarts.init(document.getElementById('myChartAlarm'))
       let option = {
@@ -69,7 +103,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: self.getMonDay() || [],
+          data: self.xAxis,
           axisLabel: {
             color: '#F00'
           }
@@ -78,11 +112,12 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600, 200, 200, 100, 932, 201, 934, 1290, 1330, 1320, 600, 600],
+          data: self.dataList,
           type: 'line'
         }]
       };
 
+      myChart.resize()
       myChart.setOption(option);
       window.addEventListener("resize", function () {
         myChart.resize();
@@ -91,15 +126,6 @@ export default {
         console.log(params)
         self.$router.push('/meter-reading/alarm')
       })
-      // myChart.resize()
-    },
-    async meterIsNotOnline () { // 统计抄表失败
-      const self = this;
-      let param = {
-        userId: self.userId
-      }
-      let res = await meterIsNotOnline(param)
-      console.log('统计抄表失败', res)
     }
   }
 }
