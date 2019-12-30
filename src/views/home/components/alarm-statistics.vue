@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { meterIsNotOnline } from '@/service/api'
 export default {
   props: {
     width: {
@@ -91,6 +92,14 @@ export default {
         self.$router.push('/meter-reading/alarm')
       })
       // myChart.resize()
+    },
+    async meterIsNotOnline () { // 统计抄表失败
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await meterIsNotOnline(param)
+      console.log('统计抄表失败', res)
     }
   }
 }

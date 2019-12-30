@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { meterIsNotInstall } from '@/service/api'
 export default {
   props: {
     width: {
@@ -23,6 +24,7 @@ export default {
 
   mounted () {
     this.init()
+    this.meterIsNotInstall()
   },
 
   methods: {
@@ -87,6 +89,14 @@ export default {
         myChart.resize();
       });
       // myChart.resize()
+    },
+    async meterIsNotInstall () { // 统计抄表安装
+      const self = this;
+      let param = {
+        userId: self.userId
+      }
+      let res = await meterIsNotInstall(param)
+      console.log('统计抄表安装', res)
     }
   }
 }

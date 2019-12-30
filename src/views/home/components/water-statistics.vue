@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { waterAnalysisByMonth } from '@/service/api'
 export default {
   props: {
     width: {
@@ -23,6 +24,7 @@ export default {
 
   mounted () {
     this.init()
+    this.waterAnalysisByMonth()
   },
 
   methods: {
@@ -70,6 +72,15 @@ export default {
         myChart.resize();
       });
       // myChart.resize()
+    },
+    async waterAnalysisByMonth () { // 按月统计水表用量
+      const self = this;
+      // USD1ED59A8133C42BFAEFBBC339EA660A5
+      let param = {
+        userId: self.userId
+      }
+      let res = await waterAnalysisByMonth(param)
+      console.log('按月统计水表用量', res)
     }
   }
 }

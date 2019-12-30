@@ -223,7 +223,7 @@ export const waterAnalysisByMonth = params => axios.post('/watermeter/waterAnaly
 export const meterIsNotOnline = params => axios.post('/watermeter/meterIsNotOnline', params)
 
 // 统计抄表安装
-export const meterIsNotInstall = params => axios.post('/watermeter/meterIsNotInstall', params)
+export const meterIsInstall = params => axios.post('/watermeter/meterIsInstall', params)
 
 // 大表管理excel导出
 export const meterBigDownLoad = params => axios.post('/watermeter/meterBigDownLoad', params)
