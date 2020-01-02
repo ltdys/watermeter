@@ -58,12 +58,17 @@
       <el-col :span="12" class="import_explain">
         <div class="import_explain__top">
           <div>{{ $t('fileManageImportant.infoTopTitle') }}</div>
-          <div>{{ $t('fileManageImportant.infoTopA') }}</div>
-          <div>{{ $t('fileManageImportant.infoTopB') }}</div>
-          <div>{{ $t('fileManageImportant.infoTopC') }}</div>
-          <div>{{ $t('fileManageImportant.infoTopD') }}</div>
+          <div>1.导入的excel 表格里面数据不能重复，重复会导入失败。</div>
+          <div>2.导入的用户编号和水表编号唯一，并且系统已经存在会导入失败。</div>
+          <div>3.本次导入操作失败，所有记录导入记录不会写入系统。</div>
+          <div>4.水表编号和用户编号需要纯数字。</div>
+          <div>5.集中器和节点编号不能错误，系统不做正确识别，导入一定不能填错。</div>
+          <div>6.导入之前需要先添加集中器和节点编号。</div>
+          <div>7.导入的需要选择正确的区域。</div>
+          <div>8.NB表设备ID为第3方平台的deviceID，不做正确识别。</div>
+          <div>9.导入完成之后，需要在 设备管理/水表管理/写水表地址，把对应的水表地址写入到对应的集中器或节点下面。</div>
         </div>
-        <div class="import_explain__bottom">
+        <!-- <div class="import_explain__bottom">
           <div>{{ $t('fileManageImportant.infoBottomTitle') }}</div>
           <div>{{ $t('fileManageImportant.infoBottomA') }}</div>
           <div>{{ $t('fileManageImportant.infoBottomB') }}</div>
@@ -73,7 +78,7 @@
           <div>{{ $t('fileManageImportant.infoBottomF') }}</div>
           <div>{{ $t('fileManageImportant.infoBottomG') }}</div>
           <div>{{ $t('fileManageImportant.infoBottomH') }}</div>
-        </div>
+        </div> -->
       </el-col>
     </el-row>
   </div>

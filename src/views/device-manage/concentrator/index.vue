@@ -129,17 +129,17 @@
             @change="changeParent"
           />
         </el-form-item>
-        <el-form-item :label="$t('deviceManageConcentrator.dialogD')">
+        <el-form-item :label="$t('deviceManageConcentrator.dialogD')" prop="useStatus">
           <el-select v-model="form.useStatus">
             <el-option v-for="(item, index) in isUseList" :key="index" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="当前状态">
+        <el-form-item label="当前状态" prop="nowStatus">
           <el-select v-model="form.nowStatus">
             <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="通迅规约">
+        <el-form-item label="通迅规约" prop="rule">
           <!-- <el-input v-model="form.rule" clearable /> -->
           <el-select v-model="form.rule" placeholder="请选择">
             <el-option
@@ -241,6 +241,15 @@ export default {
         ],
         areasId: [
           { required: true, message: "请选择所属区域", trigger: 'change' }
+        ],
+        nowStatus: [
+          { required: true, message: "请选择当前状态", trigger: 'change' }
+        ],
+        useStatus: [
+          { required: true, message: "请选择是否使用", trigger: 'change' }
+        ],
+        rule: [
+          { required: true, message: "请选择通讯规约", trigger: 'change' }
         ]
       },
       tableDataFj: [],

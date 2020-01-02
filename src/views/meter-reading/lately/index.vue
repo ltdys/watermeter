@@ -21,7 +21,7 @@
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="mini" icon="el-icon-refresh" class="custom-button">{{ $t('common.refresh') }}</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-refresh" class="custom-button" @click="refresh">{{ $t('common.refresh') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarC') }}</el-button>
@@ -41,12 +41,12 @@
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarH') }}</el-button>
           </el-form-item> -->
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarI') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarJ') }}</el-button>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
@@ -289,6 +289,28 @@ export default {
   methods: {
     init () {
       this.recentMeterReading()
+    },
+    refresh () {
+      this.search = {
+        type: '',
+        value: '',
+        areasId: "",
+        num: "", // 用户编号
+        meterNbiotNum: "", // 编号
+        meterType: "", // 表类型
+        address: "" // 安装地址
+      }
+      this.pageObj = {
+        allTotal: 0, // 总条数
+        currentPage: 1, // 当前页数
+        pageSize: 50, // 每页条数
+        pageSizes: [10, 20, 50, 100]
+      }
+      this.checkMeterConcentrator = {}
+      this.checkMeterConcentratorNum = ""
+      this.checkNum = ""
+      this.checkSb = {}
+      this.init()
     },
     async recentMeterReading () {
       switch (this.search.type) {
