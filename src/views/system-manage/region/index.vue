@@ -151,7 +151,9 @@ export default {
         parentDis: false,
         name: '', // 区域名称
         state: '', // 状态 0 --> 有效  1 --> 无效
-        address: '' // 地址
+        address: '', // 地址
+        longitude: '',  // 经度
+        latitude: ''  // 纬度
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -320,6 +322,8 @@ export default {
       this.form.address = item.address
       this.form.companyId = item.companyId
       this.form.parentId = item.parentId
+      this.form.longitude = item.longitude || ""
+      this.form.latitude = item.latitude || ""
       // this.form.parent = item.path
       // this.form.company
 
@@ -427,7 +431,9 @@ export default {
           parentId: form.parentId === '' ? '0' : form.parentId,
           companyId: form.companyId,
           state: form.state,
-          address: form.address || ''
+          address: form.address || '',
+          longitude: form.longitude,
+          latitude: form.latitude
         }
       }
       if (this.regionStatus === 0) {
@@ -448,7 +454,9 @@ export default {
         parentDis: false,
         name: '', // 区域名称
         state: '', // 状态 0 --> 有效  1 --> 无效
-        address: '' // 地址
+        address: '', // 地址
+        longitude: '', // 经度
+        latitude: ''  // 纬度
       }
     }
   }

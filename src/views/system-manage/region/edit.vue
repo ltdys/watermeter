@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px">
+    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px"  v-loading="loading" element-loading-text="正在获取地址经纬度"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
       <el-form-item label="组织机构" prop="company">
         <el-cascader
           ref="cascader10"
@@ -32,7 +34,13 @@
         <el-input v-model="form.name" clearable />
       </el-form-item>
       <el-form-item label="区域地址">
-        <el-input v-model="form.address" clearable />
+        <el-input v-model="form.address" clearable @blur="addressBlur"/>
+      </el-form-item>
+       <el-form-item label="经度">
+        <el-input v-model="form.longitude" clearable disabled/>
+      </el-form-item>
+      <el-form-item label="纬度">
+        <el-input v-model="form.latitude" clearable disabled/>
       </el-form-item>
       <el-form-item label="区域状态" prop="state">
         <el-select v-model="form.state">
@@ -51,6 +59,7 @@
 import { findDistrict } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import { list_mixins } from '@/mixins'
+import { geocode } from "@/service/map"
 export default {
   mixins: [list_mixins],
   props: {
@@ -70,6 +79,8 @@ export default {
   data () {
     return {
       list: [],
+      loading: false,
+      key: "112840ed7892989fa8faf9e33f0a7f02",
       stateList: [
         {
           label: '有效',
@@ -171,6 +182,9 @@ export default {
         }
       });
     },
+    addressBlur() {
+      this.geocode()
+    },
     clearForm () { // 清除form表单
       let self = this;
       self.form = {
@@ -182,7 +196,21 @@ export default {
         state: '', // 状态 0 --> 有效  1 --> 无效
         address: '' // 地址
       }
-    }
+    },
+     async geocode() {
+      this.loading = true
+      let params = `?key=${this.key}&address=${this.form.address}`;
+      let resData = await geocode(params)
+      if(resData.status === 200 && resData.data.status === "1") {
+        let temp = resData.data.geocodes[0].location
+        this.form.longitude = temp.split(",")[0]
+        this.form.latitude = temp.split(",")[1]
+        this.loading = false
+      } else {
+        this.$message.error("获取经纬度失败,请输入正确的地址")
+        this.loading = false
+      }
+    },
   }
 }
 </script>

@@ -227,3 +227,6 @@ export const meterIsInstall = params => axios.post('/watermeter/meterIsInstall',
 
 // 大表管理excel导出
 export const meterBigDownLoad = params => axios.post('/watermeter/meterBigDownLoad', params)
+
+// 地图显示
+export const showDistrictInMap = params => axios.post('/watermeter/showDistrictInMap', params)
