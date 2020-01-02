@@ -257,8 +257,6 @@ export default {
       }
     },
     searchSubmit1() {
-      console.log(1111111111111)
-      debugger
       let temp = this.currentCompany
     }
   }

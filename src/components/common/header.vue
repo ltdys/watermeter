@@ -129,6 +129,7 @@ export default {
 <style lang="scss">
 .header {
   width: 100%;
+  height: 80px;
   position: absolute;
   top: 0;
   bottom: 0;

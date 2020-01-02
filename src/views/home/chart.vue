@@ -245,8 +245,10 @@ export default {
     &_header {
       height: 80px;
       line-height: 80px;
+      z-index: 111;
     }
     &_content {
+      z-index: 222;
       width: 100%;
       min-height: calc(100vh - 80px);
       box-sizing: border-box;
@@ -283,6 +285,7 @@ export default {
         }
         &___map {
           width: 69.2%;
+          height: 100%;
           background: pink;
         }
       }
