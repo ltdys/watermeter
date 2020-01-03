@@ -120,7 +120,8 @@ export default {
         file: ''
       },
       areasList: [],
-      excelName: ''
+      excelName: '',
+      loading: false
     }
   },
 
@@ -167,10 +168,10 @@ export default {
       }
     },
     downloadUserTemplate() {
-      window.location = this.DOWNLOAD_USER_EXCEL
+      window.location = this.DOWNLOAD_NBIOT_EXCEL
     },
     downloadNbiotTemplate() {
-      window.location = this.DOWNLOAD_NBIOT_EXCEL
+      window.location = this.DOWNLOAD_USER_EXCEL
     },
     beforeUpload (file) {
     },
@@ -198,6 +199,11 @@ export default {
         this.$message.warning('请选择上传的Excel文件！')
         return
       }
+      this.loading = this.$loading({
+        lock: true,
+        text: '正在导入中...',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
       this.uploadUserAndMeter()
     },
     clearExcel() {
@@ -206,6 +212,7 @@ export default {
     },
     // 户表导入
     async uploadUserAndMeter() {
+      const self = this
       let resData = await uploadUserAndMeter(this.excelModel)
       if(resData.status === 200 && resData.data.code == 1) {
         this.$message({
@@ -220,6 +227,9 @@ export default {
       this.excelModel.areasId = ""
       this.areasList = []
       this.$refs.upload.clearFiles()
+      setTimeout(() => {
+        self.loading.close();
+      }, 1500);
     }
   }
 }

@@ -6,7 +6,7 @@
     <div class="chart_content">
       <div class="chart_content__top">
         <div class="chart_content__top___data">
-          <div v-for="(item, index) in deviceList" :key="index">
+          <div v-for="(item, index) in deviceList" :key="index" class='chart_content_box' @click="chartJumpClick(item)">
             <icon name="example" style="width: 36px;height: 36px" />
             <span class="chart-value">{{ item.value }}</span>
             <span class="chart-label">{{ item.label }}</span>
@@ -49,15 +49,19 @@ export default {
       collapsed: false,
       hasPadding: true,
       deviceList: [{
+        id: 1,
         label: i18n.t('chart.deviceTotal'),
         value: 3240
       }, {
+        id: 2,
         label: i18n.t('chart.deviceOnline'),
         value: 5420 // 设备在线
       }, {
+        id: 3,
         label: i18n.t('chart.alarmStatistics'),
         value: 2513
       }, {
+        id: 4,
         label: i18n.t('chart.deviceOffline'),
         value: 6514
       }],
@@ -88,6 +92,34 @@ export default {
   },
 
   methods: {
+    chartJumpClick (item) { // 路径跳转
+      console.log('item', item)
+      const self = this;
+      let list = []
+      if (item.id == 1) { // 设备总数
+        list = self.listBf.filter(val => {
+          return val.router == '/data-manage/statistical-analysis'
+        })
+      } else if (item.id == 2 || item.id == 4) { // 设备在线 或者 设备离线
+        list = self.listBf.filter(val => {
+          return val.router == '/device-manage/nb-iot-register'
+        })
+      } else if (item.id == 3) { // 警告统计
+        list = self.listBf.filter(val => {
+          return val.router == '/meter-reading/alarm'
+        })
+      }
+      if (list.length === 0) {
+        self.$message.warning('当前用户没有权限查看详情！')
+      } else {
+        let currentTitle = list[0].children && list[0].children.length > 0 ? list[0].children[0].name : list[0].name
+        self.$store.dispatch('slidebar/setMenuList', list[0].children)
+        self.$store.dispatch('slidebar/setCurrentId', list[0].parent)
+        self.$store.dispatch('tagsView/setCurrentTitle', currentTitle)
+        let url = list[0].hasOwnProperty('children') && list[0].children.length > 0 ? list[0].children[0].url : list[0].url
+        self.$router.push(url)
+      }
+    },
     async getUserResource () { // 获取菜单资源
       const self = this;
       const param = {
@@ -272,6 +304,9 @@ export default {
             height: 250px;
             background: #fff;
             margin-bottom: 30px;
+          }
+          .chart_content_box{
+            cursor: pointer;
           }
           .chart-label {
             font-size: 18px;
