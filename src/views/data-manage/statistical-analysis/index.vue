@@ -129,8 +129,18 @@ export default {
   created () {
     this.companyId = this.company_id
     this.search.year = new Date().getFullYear();
-    this.search.month = parseInt(new Date().getMonth() + 1);
+
+
+    var month = parseInt(new Date().getMonth() + 1);
+    this.search.month = month
     this.cond = this.search.month
+    for(let i = 0; i < month;) {
+      this.condOptions.push({
+        label: month + "月",
+        value: month
+      })
+      month--
+    }
     
     if(this.role_name === "超级管理员") {
       this.findCompany('0')
