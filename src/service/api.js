@@ -230,3 +230,6 @@ export const meterBigDownLoad = params => axios.post('/watermeter/meterBigDownLo
 
 // 地图显示
 export const showDistrictInMap = params => axios.post('/watermeter/showDistrictInMap', params)
+
+// 统计分析
+export const meterReadAnalysisByYearQuarterMonth = params => axios.post('/watermeter/meterReadAnalysisByYearQuarterMonth', params)

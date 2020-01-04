@@ -33,15 +33,15 @@
             />
           </el-form-item>
           <el-form-item label="统计方式">
-            <el-select v-model="search.way" placeholder="请选择" @change="wayChange">
+            <el-select v-model="search.readType" placeholder="请选择" @change="wayChange">
               <el-option
-                v-for="item in wayOptions"
+                v-for="item in readTypeList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-select v-model="search.cond" placeholder="请选择">
+            <el-select v-model="cond" placeholder="请选择">
               <el-option
                 v-for="item in condOptions"
                 :key="item.value"
@@ -58,7 +58,7 @@
         <el-col :span="24">
           <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
             <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
-              抄表用水图表
+              <div id="analysisNode" :style="{ height: tableHeight + 'px'}"></div>
             </div>
           </el-scrollbar>
         </el-col>
@@ -69,7 +69,7 @@
 <script>
 import { list_mixins } from '@/mixins'
 import { orgTreeData, treeDataUtil, treeDataTest } from '@/utils/publicUtil'
-import { showDistrictInMap, findCompany, findDistrict } from "@/service/api";
+import { findCompany, findDistrict, meterReadAnalysisByYearQuarterMonth } from "@/service/api";
 
 export default {
 
@@ -82,13 +82,16 @@ export default {
       lnglatsList: [],
       companyId: "",
       tableData: [],
+      cond: "",
       search: {
         areasList: [],
         areasId: '',
         orgList: [],
         org: "",
-        way: "",
-        cond: ""
+        readType: 2,
+        year: "",
+        month: "",
+        quarter: ""
       },
       setProps: { // 设置级联选择器
         label: 'companyName',
@@ -105,34 +108,45 @@ export default {
       treeData: [],
       tableDataFj: [],
       list: [],
-      wayOptions: [{
+      readTypeList: [{
         label: "按年统计",
-        value: 1
+        value: 0
       }, {
         label: "按月统计",
         value: 2
       }, {
         label: "按季统计",
-        value: 3
+        value: 1
       }],
-      condOptions: []
+      condOptions: [],
+      chartList: [],
+      xAxis: [],
+      dataList: [],
+      isFirst: true
     }
   },
 
   created () {
     this.companyId = this.company_id
-    this.findCompany('0')
-    this.findDistrict()
+    this.search.year = new Date().getFullYear();
+    this.search.month = parseInt(new Date().getMonth() + 1);
+    this.cond = this.search.month
+    
+    if(this.role_name === "超级管理员") {
+      this.findCompany('0')
+    } else {
+      this.findDistrict()
+    }
   },
 
   mounted() {
-    this.showDistrictInMap()
   },
 
   methods: {
     init () {
     },
-     changeOrg () { // 组织机构选择
+    changeOrg () { // 组织机构选择
+      this.isFirst = false
       this.cascaderFalse('cascader12')
       if(this.search.orgList && this.search.orgList.length > 0) {
         this.search.org = this.search.orgList[this.search.orgList.length - 1]
@@ -141,39 +155,6 @@ export default {
       } else {
         this.search.org = ""
         this.companyId = this.company_id
-      }
-    },
-    async showDistrictInMap() {
-      let params = {
-        userId: this.userId,
-        companyId: this.companyId,
-        districtId: this.search.areasId
-      }
-      let resData = await showDistrictInMap(params)
-      if(resData.status === 200) {
-        this.regionList = resData.data.data
-        if(this.regionList.length > 0) {
-          this.regionList.forEach((item, index) => {
-            if(item.distList.length > 0) {
-              item.distList.forEach((item1, index1) => {
-                this.lnglatsList.push({
-                  companyName: item.company.companyName || "",
-                  latitude: item1.dist.latitude,
-                  longitude: item1.dist.longitude,
-                  name: item1.dist.name,
-                  address: item1.dist.address,
-                  meterConcentratorNum: item1.meterConcentratorNum,
-                  meterNodeNum: item1.meterNodeNum,
-                  meterNum: item1.meterNum,
-                  meterFailNum: item1.meterFailNum,
-                  id: item1.id,
-                  companyId: item1.companyId
-                })
-              })
-            }
-          })
-        }
-
       }
     },
     async findCompany (key) { // 获取组织机构
@@ -194,17 +175,24 @@ export default {
           let param = {
             companyId: this.treeData[0].id
           }
-          // this.search.orgList = [this.treeData[0].id]
-          this.search.org = this.search.orgList[this.search.orgList.length - 1]
+
+          if(this.role_name === "超级管理员") {
+            this.search.orgList = [this.treeData[0].id]
+            this.search.org = this.search.orgList[this.search.orgList.length - 1]
+            this.companyId = this.search.org
+            if(this.isFirst) {
+              this.meterReadAnalysisByYearQuarterMonth();
+            }
+          }
         }
       }
     },
     async findDistrict () { // 查询区域
       const self = this;
-      let param = {
+      let params = {
         companyId: this.companyId
       }
-      let res = await findDistrict(param)
+      let res = await findDistrict(params)
       console.log('查询区域', res)
       if (res.status === 200 && res.data.data !== null) {
         let list = res.data.data || []
@@ -222,6 +210,12 @@ export default {
           self.$nextTick(() => {
             self.tableDataFj = list
             self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
+
+            //如果是非超级管理员
+            if(self.role_name !== "超级管理员") {
+              self.search.areasList = [self.list[0].id]
+              self.search.areasId = self.search.areasList[self.search.areasList.length - 1]
+            }
           })
         } else {
           self.tableDataFj = list
@@ -230,6 +224,7 @@ export default {
       }
     },
     changeParent () { // 区域选择、
+      this.isFirst = false
       this.cascaderFalse('cascader3')
       if (this.search.areasList && this.search.areasList.length > 0) {
         this.search.areasId = this.search.areasList[this.search.areasList.length - 1]
@@ -238,13 +233,18 @@ export default {
       }
     },
     searchSubmit1() {
-      this.showDistrictInMap()
+      this.isFirst = false
+      this.meterReadAnalysisByYearQuarterMonth()
     },
     wayChange() {
       this.condOptions = []
-      this.search.cond = ""
-      if (this.search.way === 1) {  // 按年
-        let year = parseInt(new Date().getFullYear());
+      this.cond = ""
+      this.search.year = ""
+      this.search.month = ""
+      this.search.quarter = ""
+      var year = parseInt(new Date().getFullYear());
+      var month = parseInt(new Date().getMonth() + 1)
+      if (this.search.readType === 0) {  // 按年
         console.log("当前年份", year)
         for(let i = 0; i < 5; i ++) {
           this.condOptions.push({
@@ -253,14 +253,15 @@ export default {
           })
           year--
         }
-      } else if(this.search.way === 2) {  // 按月
-        for(let i = 1; i < 13; i++) {
+      } else if(this.search.readType === 2) {  // 按月
+        for(let i = 0; i < month;) {
           this.condOptions.push({
-            label: i + "月",
-            value: i
+            label: month + "月",
+            value: month
           })
+          month--
         }
-      } else if(this.search.way === 3) {  // 按季度
+      } else if(this.search.readType === 1) {  // 按季度
         this.condOptions = [{
           label: "第一季度",
           value: 1
@@ -275,6 +276,97 @@ export default {
           value: 4
         }]
       }
+    },
+    chartInit() {
+      
+    },
+    // 查询用水统计
+    async meterReadAnalysisByYearQuarterMonth() {
+      if(this.search.readType === 0) {  // 按年
+        this.search.year = this.cond
+        this.search.month = ""
+        this.search.quarter = ""
+      } else if(this.search.readType === 2) {  // 按月
+        this.search.year = parseInt(new Date().getFullYear())
+        this.search.month = this.cond
+        this.search.quarter = ""
+      } else if(this.search.readType === 1) {  // 按季度
+        this.search.quarter = this.cond
+        this.search.year = parseInt(new Date().getFullYear())
+        this.search.month = ""
+      }
+
+      let params = {
+        companyId: this.companyId,
+        districtId: this.search.areasId,
+        readType: this.search.readType,
+        year: this.search.year.toString(),
+        month: this.search.month.toString(),
+        quarter: this.search.quarter.toString()
+      }
+      console.log("params", params)
+      let resData = await meterReadAnalysisByYearQuarterMonth(params)
+      if(resData.status === 200 && resData.data.code === 1) {
+        this.chartList = resData.data.data || []
+        
+        this.xAxis = this.chartList.map(item => {
+          return item.day || item.month || item.quarter
+        })
+        this.dataList = this.chartList.map(item => {
+          return item.total
+        })
+
+        this.$nextTick(() => {
+          this.chartInit()
+        })
+      }
+    },
+
+    chartInit () {
+      const self = this
+      let myChart = this.$echarts.init(document.getElementById('analysisNode'))
+      let option = {
+        title: {
+          text: '',
+          padding: [20, 10]
+        },
+        tooltip: {
+          trigger: 'axis',
+          padding: 10,
+          backgroundColor: "rgba(2,15,34,0.8)",
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'none' // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        color: ['#8F74FF'],
+        toolbox: {
+          show: true,
+          padding: [20, 10],
+          feature: {
+            magicType: { type: ['line', 'bar'] }
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: self.xAxis,
+          axisLabel: {
+            color: '#F00'
+          }
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: self.dataList,
+          type: 'line'
+        }]
+      };
+
+      myChart.resize()
+      myChart.setOption(option, true);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     }
   }
 }
@@ -285,8 +377,9 @@ export default {
     // overflow-y: scroll;
     .exception-wrap {
       width: 100%;
-      display: flex;
-      flex-wrap: wrap;
+      #analysisNode {
+        width: 100%;
+      }
     }
     .el-scrollbar__wrap {
       background: #fff;

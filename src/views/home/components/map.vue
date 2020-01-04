@@ -29,7 +29,7 @@
               :props="setParent"
               @change="changeParent"
             />
-          <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
+          <el-button icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
         </div>
       </div>
       <div class="amap-page-container_bottom" id="mapContainer">
