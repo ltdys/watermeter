@@ -3,15 +3,33 @@
     <div :style="{width:'100%',height:'530px'}">
       <div class="amap-page-container_top">
         <div>
-          <span @click.self="test">{{ $t('chart.mapTitle') }}</span>
-          <el-cascader
-            :options="resultTreeData"
-            :props="defaultProps"
-            size="mini"
-            class="map-cascader"
-            v-model="currentCompany"
-            clearable></el-cascader>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
+          <span>{{ $t('chart.mapTitle') }}</span>
+            <el-cascader
+              ref="cascader12"
+              v-model="search.orgList"
+              clearable
+              placeholder="请选择组织"
+              :options="treeData"
+              filterable
+              :props="setProps"
+              size="mini"
+              class="cascader12"
+              @change="changeOrg"
+              v-if="role_name === '超级管理员'"
+            />
+            <el-cascader
+              ref="cascader3"
+              class="cascader3"
+              placeholder="请选择区域"
+              size="mini"
+              v-model="search.areasList"
+              :options="list"
+              clearable
+              filterable
+              :props="setParent"
+              @change="changeParent"
+            />
+          <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
         </div>
       </div>
       <div class="amap-page-container_bottom" id="mapContainer">
@@ -39,37 +57,46 @@ export default {
       infoWindow: null,
       regionList: [],
       lnglatsList: [],
+      companyId: "",
 
-      tableDataFj: [],
-      tableData: [],
-      treeData: [],
-      companyTreeData: [],
-      filterText: '',
-      defaultProps: {
-        children: 'children',
+      search: {
+        areasList: [],
+        areasId: '',
+        orgList: [],
+        org: ""
+      },
+      setProps: { // 设置级联选择器
         label: 'companyName',
         value: 'id',
+        expandTrigger: 'click',
         checkStrictly: true
       },
-      resultTreeData: [],
-      currentCompany: []
+      setParent: { // 设置级联选择器
+        label: 'name',
+        value: 'id',
+        expandTrigger: 'click',
+        checkStrictly: true
+      },
+      treeData: [],
+      tableDataFj: [],
+      list: []
     }
   },
   created() {
+    this.companyId = this.company_id
     // this.geocode()
-    this.findCompany()
+    this.findCompany('0')
+    this.findDistrict()
   },
   mounted() {
     this.showDistrictInMap()
   },
   methods: {
-    test() {
-      debugger
-    },
     async showDistrictInMap() {
       let params = {
         userId: this.userId,
-        companyId: this.company_id
+        companyId: this.companyId,
+        districtId: this.search.areasId
       }
       let resData = await showDistrictInMap(params)
       if(resData.status === 200) {
@@ -88,13 +115,20 @@ export default {
                   address: item1.dist.address,
                   meterConcentratorNum: item1.meterConcentratorNum,
                   meterNodeNum: item1.meterNodeNum,
-                  meterNum: item1.meterNum
+                  meterNum: item1.meterNum,
+                  id: item1.id,
+                  companyId: item1.companyId
                 })
               })
             }
           })
         }
-        this.init()
+
+        if(this.map === null) {
+          this.init()
+        } else {
+          this.markerAndInfoInit()
+        }
       }
     },
     async geocode() {
@@ -113,13 +147,8 @@ export default {
           center: this.center //初始化地图中心点
       });
 
-      // this.map.on("complete", function(){
-      // });
-
       this.map.on("complete", () => {
         this.markerAndInfoInit()
-        // this.markerInit()
-        // this.openInfo()
       })
     },
     // 点标记
@@ -174,7 +203,7 @@ export default {
 
           this.marker.content = infoHtml;
           this.marker.on('click', this.markerClick);
-          this.marker.emit('click', {target: this.marker});
+          // this.marker.emit('click', {target: this.marker});
         }
       }
       this.map.setFitView();
@@ -183,82 +212,85 @@ export default {
       this.infoWindow.setContent(e.target.content);
       this.infoWindow.open(this.map, e.target.getPosition());
     },
-
+    searchSubmit1() {
+      this.removeMarkers()
+      this.showDistrictInMap()
+    },
+    removeMarkers() {
+      this.map.clearMap()
+    },
+    changeOrg () { // 组织机构选择
+      this.cascaderFalse('cascader12')
+      if(this.search.orgList && this.search.orgList.length > 0) {
+        this.search.org = this.search.orgList[this.search.orgList.length - 1]
+        this.companyId = this.search.org
+        this.findDistrict()
+      } else {
+        this.search.org = ""
+        this.companyId = this.company_id
+      }
+    },
     async findCompany (key) { // 获取组织机构
-      const self = this
       let params = {
         userId: this.userId,
         currentPage: 1,
-        pageSize: 10000
+        pageSize: 10000,
+        company: {
+          id: this.companyId
+        }
       }
       let resData = await findCompany(params)
+      console.log('获取组织机构', resData)
       if (resData.status === 200 && resData.data.data !== null) {
         let list = resData.data.data
-        list.forEach(item => {
-          if (item.id == this.company_id && this.company_id != '') {
-            self.$set(item, 'children', [])
+        this.treeData = JSON.parse(orgTreeData([...list]))
+        if (key === '0') {
+          let param = {
+            companyId: this.treeData[0].id
           }
-        })
-        this.companyTreeData = JSON.parse(orgTreeData([...list]))
-        this.findDistrict()
+          // this.search.orgList = [this.treeData[0].id]
+          this.search.org = this.search.orgList[this.search.orgList.length - 1]
+        }
       }
     },
     async findDistrict () { // 查询区域
       const self = this;
-      let params = {
-        companyId: this.company_id
+      let param = {
+        companyId: this.companyId
       }
-      let res = await findDistrict(params)
+      let res = await findDistrict(param)
+      console.log('查询区域', res)
       if (res.status === 200 && res.data.data !== null) {
         let list = res.data.data || []
+        console.log('查询区域', list)
         if (list.length !== 0) {
           list = list.map(item => {
             self.$set(item, 'parentId', item.parentid)
             self.$set(item, 'companyId', item.companyid)
-            self.$set(item, 'companyName', item.name)
             return item
           })
-
+          list = list.filter(item => {
+            return item.state == 0
+          })
+          console.log(list)
           self.$nextTick(() => {
             self.tableDataFj = list
-            self.tableData = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
-            self.treeData = self.tableData
-            console.log(self.companyTreeData)
-            if (this.company_id == '') {
-              self.companyTreeData.forEach((item, index) => {
-                if (item.children) {
-                  item.children.forEach((item1, index1) => {
-                    self.treeData.forEach((item2, index2) => {
-                      if (item1.id === item2.companyid) {
-                        item1.children = []
-                        item1.children.push(item2)
-                      }
-                    })
-                  })
-                }
-              })
-            } else {
-              self.companyTreeData.forEach((item, index) => {
-                self.treeData.forEach((item2, index2) => {
-                  if (item.id === item2.companyid) {
-                    item.children = []
-                    item.children.push(item2)
-                  }
-                })
-              })
-            }
-            self.resultTreeData = self.companyTreeData
+            self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
           })
         } else {
           self.tableDataFj = list
-          self.treeData = list
-          self.treeData = self.tableData
+          self.list = list
         }
       }
     },
-    searchSubmit1() {
-      let temp = this.currentCompany
-    }
+    changeParent () { // 区域选择、
+      this.cascaderFalse('cascader3')
+      if (this.search.areasList && this.search.areasList.length > 0) {
+        this.search.areasId = this.search.areasList[this.search.areasList.length - 1]
+      } else {
+        this.search.areasId = ""
+      }
+    },
   }
 }
 </script>
@@ -283,15 +315,19 @@ export default {
     &_bottom {
       height: 470px;
     }
+    .cascader12 {
+      margin-left: 10px;
+      width: 200px;
+    }
+    .cascader3 {
+      margin-left: 10px;
+      width: 200px;
+    }
   }
   .amap-demo {
     height: 530px;
   }
   .search-box {
     height: 40px !important;
-  }
-  .map-cascader {
-    margin-left: 10px;
-    width: 300px;
   }
 </style>
