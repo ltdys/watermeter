@@ -51,7 +51,7 @@
       <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarG') }}</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-show="search.meterNodeNum == '' || tableData.length !== 0">
         <el-button type="primary" size="mini" class="custom-button" @click="writeWaterMeter">写水表地址</el-button>
       </el-form-item>
     </el-form>
@@ -148,7 +148,7 @@
       @currentChange="currentChange"
     />
 
-    <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
+    <el-dialog :title="title" :visible.sync="addVisible" :close-on-click-modal="false" @close="close">
       <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" />
     </el-dialog>
 
@@ -341,15 +341,16 @@ export default {
       }
       console.log('res', res)
     },
-    exportExcel() {
+    exportExcel () {
       this.meterNbIotLDownLoad()
     },
-    async meterNbIotLDownLoad() {
+    async meterNbIotLDownLoad () {
       let params = {
         userId: this.userId,
         meterNbIot: this.search
       }
       let resData = await meterNbIotLDownLoad(params);
+      console.log('res', resData)
     },
     async getMeterNbIotL () {
       const self = this
@@ -488,36 +489,60 @@ export default {
     writeWaterMeter () { // 写水表地址
       const self = this;
       console.log(self.tableData)
+      //  else if (self.search.meterNodeNum == '') {
+      //   self.$message.warning('请选择采集器编号')
+      // }
       if (self.search.meterConcentratorNum == '') {
         self.$message.warning('请选择集中器编号')
-      } else if (self.search.meterNodeNum == '') {
-        self.$message.warning('请选择采集器编号')
       } else {
         let param = {
           userId: self.userId,
           concentratorNum: self.search.meterConcentratorNum,
           cmd: 'WWW',
           rule: self.rule,
-          nodeBlockAddress: `{${self.search.meterNodeNum}}`,
+          // nodeBlockAddress: `{${self.search.meterNodeNum}}`,
+          // waterBlockAddress: self.filterNodeNum()
+          nodeBlockAddress: self.filterNode(),
           waterBlockAddress: self.filterNodeNum()
         }
         console.log(param)
         self.operInstruct(param)
       }
     },
-    filterNodeNum () { // 筛选水表
+    filterNode () { // 筛选采集器
       const self = this;
-      let arr = self.tableData.filter(item => {
-        return item.bindState == 0
-      })
       let str = '{'
-      arr.forEach((item, index) => {
+      self.cjqList.forEach((item, index) => {
         if (index != 0) str += ','
-        str += item.meterNbiotNum
+        str += item.num
       })
       str += '}'
-      console.log(str)
       return str
+    },
+    filterNodeNum () { // 筛选水表
+      const self = this;
+      let arrObj = {}
+      let arr = []
+      // 筛选同采集器下的水表
+      self.tableData.forEach(item => {
+        arrObj[item.meterNodeNum] = arrObj[item.meterNodeNum] || [];
+        arrObj[item.meterNodeNum].push(item);
+      })
+      // 筛选并组合数组
+      for (let key in arrObj) {
+        let obj = {
+          nodeBlock: `{${key}}`,
+          waterAddress: ''
+        }
+        obj.waterAddress = '{'
+        arrObj[key].forEach((item, index) => {
+          if (index != 0) obj.waterAddress += ','
+          obj.waterAddress += item.meterNbiotNum
+        })
+        obj.waterAddress += '}'
+        arr.push(obj)
+      }
+      return arr
     }
   }
 }

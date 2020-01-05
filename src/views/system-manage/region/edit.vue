@@ -1,8 +1,15 @@
 <template>
   <div>
-    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="120px"  v-loading="loading" element-loading-text="正在获取地址经纬度"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)">
+    <el-form
+      ref="ruleForm"
+      v-loading="loading"
+      :model="form"
+      :rules="rules"
+      label-width="120px"
+      element-loading-text="正在获取地址经纬度"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+    >
       <el-form-item label="组织机构" prop="company">
         <el-cascader
           ref="cascader10"
@@ -34,13 +41,13 @@
         <el-input v-model="form.name" clearable />
       </el-form-item>
       <el-form-item label="区域地址">
-        <el-input v-model="form.address" clearable @blur="addressBlur"/>
+        <el-input v-model="form.address" clearable @blur="addressBlur" />
       </el-form-item>
-       <el-form-item label="经度">
-        <el-input v-model="form.longitude" clearable disabled/>
+      <el-form-item label="经度">
+        <el-input v-model="form.longitude" clearable disabled />
       </el-form-item>
       <el-form-item label="纬度">
-        <el-input v-model="form.latitude" clearable disabled/>
+        <el-input v-model="form.latitude" clearable disabled />
       </el-form-item>
       <el-form-item label="区域状态" prop="state">
         <el-select v-model="form.state">
@@ -182,35 +189,45 @@ export default {
         }
       });
     },
-    addressBlur() {
+    addressBlur () {
       this.geocode()
     },
     clearForm () { // 清除form表单
       let self = this;
-      self.form = {
-        company: [], // 组织全部
-        companyId: '', // 组织机构
-        parent: [], // 区域全部
-        parentId: '', // 归属区域
-        name: '', // 区域名称
-        state: '', // 状态 0 --> 有效  1 --> 无效
-        address: '' // 地址
-      }
+      self.loading = false
+      // self.form = {
+      //   company: [], // 组织全部
+      //   companyId: '', // 组织机构
+      //   parent: [], // 区域全部
+      //   parentId: '', // 归属区域
+      //   name: '', // 区域名称
+      //   state: '', // 状态 0 --> 有效  1 --> 无效
+      //   address: '' // 地址
+      // }
     },
-     async geocode() {
+    async geocode () {
       this.loading = true
       let params = `?key=${this.key}&address=${this.form.address}`;
       let resData = await geocode(params)
-      if(resData.status === 200 && resData.data.status === "1") {
-        let temp = resData.data.geocodes[0].location
-        this.form.longitude = temp.split(",")[0]
-        this.form.latitude = temp.split(",")[1]
-        this.loading = false
+      console.log('res', resData)
+      if (resData.status === 200 && resData.data.status === "1") {
+        if (resData.data.geocodes.length != 0) {
+          let temp = resData.data.geocodes[0].location
+          this.form.longitude = temp.split(",")[0]
+          this.form.latitude = temp.split(",")[1]
+          this.loading = false
+        } else {
+          this.loading = false
+          this.form.longitude = ''
+          this.form.latitude = ''
+          // this.form.address = ''
+          // this.$message.warning("获取经纬度失败,请输入正确的地址")
+        }
       } else {
         this.$message.error("获取经纬度失败,请输入正确的地址")
         this.loading = false
       }
-    },
+    }
   }
 }
 </script>

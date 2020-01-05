@@ -5,6 +5,7 @@
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
           <el-form-item label="组织">
             <el-cascader
+              v-if="role_name === '超级管理员'"
               ref="cascader12"
               v-model="search.orgList"
               clearable
@@ -15,16 +16,15 @@
               size="mini"
               class="cascader12"
               @change="changeOrg"
-              v-if="role_name === '超级管理员'"
             />
           </el-form-item>
           <el-form-item label="区域">
             <el-cascader
               ref="cascader3"
+              v-model="search.areasList"
               class="cascader3"
               placeholder="请选择区域"
               size="mini"
-              v-model="search.areasList"
               :options="list"
               clearable
               filterable
@@ -33,42 +33,51 @@
             />
           </el-form-item>
           <el-form-item label="统计方式">
-            <el-select v-model="search.readType" placeholder="请选择" @change="wayChange">
+            <el-select v-model="search.readType" placeholder="请选择统计方式" @change="wayChange">
               <el-option
                 v-for="item in readTypeList"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-              </el-option>
+                :value="item.value"
+              />
             </el-select>
-            <el-select v-model="cond" placeholder="请选择">
+            <el-select v-model="send" placeholder="请选择" @change="yearChange">
+              <el-option
+                v-for="item in sendOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-select v-if="search.readType != 0" v-model="cond" placeholder="请选择">
               <el-option
                 v-for="item in condOptions"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-              </el-option>
+                :value="item.value"
+                :disabled="item.disabled"
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
-             <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
           </el-form-item>
         </el-form>
       </el-col>
-        <el-col :span="24">
-          <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-            <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
-              <div id="analysisNode" :style="{ height: tableHeight + 'px'}"></div>
-            </div>
-          </el-scrollbar>
-        </el-col>
-    </el-row>  
+      <el-col :span="24">
+        <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
+          <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
+            <div id="analysisNode" :style="{ height: tableHeight + 'px'}" />
+          </div>
+        </el-scrollbar>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 import { list_mixins } from '@/mixins'
-import { orgTreeData, treeDataUtil, treeDataTest } from '@/utils/publicUtil'
+import { orgTreeData, treeDataUtil } from '@/utils/publicUtil'
 import { findCompany, findDistrict, meterReadAnalysisByYearQuarterMonth } from "@/service/api";
 
 export default {
@@ -83,6 +92,7 @@ export default {
       companyId: "",
       tableData: [],
       cond: "",
+      send: "",
       search: {
         areasList: [],
         areasId: '',
@@ -119,6 +129,7 @@ export default {
         value: 1
       }],
       condOptions: [],
+      sendOptions: [],
       chartList: [],
       xAxis: [],
       dataList: [],
@@ -130,26 +141,40 @@ export default {
     this.companyId = this.company_id
     this.search.year = new Date().getFullYear();
 
-
     var month = parseInt(new Date().getMonth() + 1);
     this.search.month = month
     this.cond = this.search.month
-    for(let i = 0; i < month;) {
-      this.condOptions.push({
-        label: month + "月",
-        value: month
+    this.send = this.search.year
+    // for (let i = 0; i < month;) {
+    //   this.condOptions.push({
+    //     label: month + "月",
+    //     value: month
+    //   })
+    //   month--
+    // }
+    for (let i = 0; i < 6; i++) {
+      this.sendOptions.push({
+        label: this.search.year + "年",
+        value: this.search.year
       })
-      month--
+      this.search.year--
     }
-    
-    if(this.role_name === "超级管理员") {
+    for (let i = 0; i < 12; i++) {
+      this.condOptions.push({
+        label: i + 1 + "月",
+        value: i + 1,
+        disabled: false
+      })
+    }
+
+    if (this.role_name === "超级管理员") {
       this.findCompany('0')
     } else {
       this.findDistrict()
     }
   },
 
-  mounted() {
+  mounted () {
   },
 
   methods: {
@@ -158,7 +183,7 @@ export default {
     changeOrg () { // 组织机构选择
       this.isFirst = false
       this.cascaderFalse('cascader12')
-      if(this.search.orgList && this.search.orgList.length > 0) {
+      if (this.search.orgList && this.search.orgList.length > 0) {
         this.search.org = this.search.orgList[this.search.orgList.length - 1]
         this.companyId = this.search.org
         this.findDistrict()
@@ -182,15 +207,15 @@ export default {
         let list = resData.data.data
         this.treeData = JSON.parse(orgTreeData([...list]))
         if (key === '0') {
-          let param = {
-            companyId: this.treeData[0].id
-          }
+          // let param = {
+          //   companyId: this.treeData[0].id
+          // }
 
-          if(this.role_name === "超级管理员") {
+          if (this.role_name === "超级管理员") {
             this.search.orgList = [this.treeData[0].id]
             this.search.org = this.search.orgList[this.search.orgList.length - 1]
             this.companyId = this.search.org
-            if(this.isFirst) {
+            if (this.isFirst) {
               this.meterReadAnalysisByYearQuarterMonth();
             }
           }
@@ -221,8 +246,8 @@ export default {
             self.tableDataFj = list
             self.list = JSON.parse(treeDataUtil([...list], 'parentId', 'id'))
 
-            //如果是非超级管理员
-            if(self.role_name !== "超级管理员") {
+            // 如果是非超级管理员
+            if (self.role_name !== "超级管理员") {
               self.search.areasList = [self.list[0].id]
               self.search.areasId = self.search.areasList[self.search.areasList.length - 1]
             }
@@ -242,67 +267,85 @@ export default {
         this.search.areasId = ""
       }
     },
-    searchSubmit1() {
+    searchSubmit1 () {
       this.isFirst = false
       this.meterReadAnalysisByYearQuarterMonth()
     },
-    wayChange() {
-      this.condOptions = []
+    wayChange () {
+      this.sendOptions = []
       this.cond = ""
+      this.send = ""
       this.search.year = ""
       this.search.month = ""
       this.search.quarter = ""
       var year = parseInt(new Date().getFullYear());
-      var month = parseInt(new Date().getMonth() + 1)
-      if (this.search.readType === 0) {  // 按年
-        console.log("当前年份", year)
-        for(let i = 0; i < 5; i ++) {
+      for (let i = 0; i < 6; i++) {
+        this.sendOptions.push({
+          label: year + "年",
+          value: year
+        })
+        year--
+      }
+    },
+    yearChange (val) {
+      this.condOptions = []
+      this.cond = ''
+      let year = parseInt(new Date().getFullYear()); // 当前年份
+      let month = parseInt(new Date().getMonth() + 1) // 当前月份
+      if (this.search.readType === 2) { // 按月
+        for (let i = 0; i < 12; i++) {
           this.condOptions.push({
-            label: year + "年",
-            value: year
+            label: i + 1 + "月",
+            value: i + 1,
+            disabled: false
           })
-          year--
         }
-      } else if(this.search.readType === 2) {  // 按月
-        for(let i = 0; i < month;) {
-          this.condOptions.push({
-            label: month + "月",
-            value: month
+        if (year == val) {
+          this.condOptions.map(item => {
+            if (item.value > month) {
+              item.disabled = true
+            }
+            return item
           })
-          month--
         }
-      } else if(this.search.readType === 1) {  // 按季度
+      } else if (this.search.readType === 1) { // 按季度
         this.condOptions = [{
           label: "第一季度",
-          value: 1
+          value: 1,
+          disabled: false
         }, {
           label: "第二季度",
-          value: 2
+          value: 2,
+          disabled: year == val && month < 4
         }, {
           label: "第三季度",
-          value: 3
+          value: 3,
+          disabled: year == val && month < 7
         }, {
           label: "第四季度",
-          value: 4
+          value: 4,
+          disabled: year == val && month < 10
         }]
       }
     },
-    chartInit() {
-      
-    },
+    // monthChange (val) {
+    //   if (this.search.readType === 2) {
+    //     this.search.month = val
+    //   } else if (this.search.readType === 1) {
+    //     this.search.quarter = val
+    //   }
+    // },
     // 查询用水统计
-    async meterReadAnalysisByYearQuarterMonth() {
-      if(this.search.readType === 0) {  // 按年
-        this.search.year = this.cond
+    async meterReadAnalysisByYearQuarterMonth () {
+      this.search.year = this.send
+      if (this.search.readType === 0) { // 按年
         this.search.month = ""
         this.search.quarter = ""
-      } else if(this.search.readType === 2) {  // 按月
-        this.search.year = parseInt(new Date().getFullYear())
+      } else if (this.search.readType === 2) { // 按月
         this.search.month = this.cond
         this.search.quarter = ""
-      } else if(this.search.readType === 1) {  // 按季度
+      } else if (this.search.readType === 1) { // 按季度
         this.search.quarter = this.cond
-        this.search.year = parseInt(new Date().getFullYear())
         this.search.month = ""
       }
 
@@ -316,9 +359,10 @@ export default {
       }
       console.log("params", params)
       let resData = await meterReadAnalysisByYearQuarterMonth(params)
-      if(resData.status === 200 && resData.data.code === 1) {
+      console.log('resData', resData)
+      if (resData.status === 200 && resData.data.code === 1) {
         this.chartList = resData.data.data || []
-        
+
         this.xAxis = this.chartList.map(item => {
           return item.day || item.month || item.quarter
         })
@@ -329,6 +373,8 @@ export default {
         this.$nextTick(() => {
           this.chartInit()
         })
+      } else {
+        this.$message.warning(resData.data.message);
       }
     },
 

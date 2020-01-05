@@ -3,19 +3,36 @@
     <el-row>
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
-          <el-form-item :label="$t('meterReadingAlarm.toolbarA')">
+          <el-form-item label="用户编号">
+            <el-input v-model="search.userCode" clearable />
+          </el-form-item>
+          <el-form-item label="表编号">
+            <el-input v-model="search.listCode" clearable />
+          </el-form-item>
+          <el-form-item label="用水状态">
+            <el-select v-model="search.waterStatus">
+              <el-option
+                v-for="item in waterOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                clearable
+              />
+            </el-select>
+          </el-form-item>
+          <!-- <el-form-item label="$t('meterReadingAlarm.toolbarA')">
             <el-select v-model="search.t2">
               <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                clearable>
-              </el-option>
+                clearable
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-input v-model="search.t3" clearable></el-input>
+            <el-input v-model="search.t3" clearable />
           </el-form-item>
           <el-form-item :label="$t('meterReadingAlarm.toolbarB')">
             <el-select v-model="search.t1">
@@ -24,24 +41,24 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                clearable>
-              </el-option>
+                clearable
+              />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search">{{ $t('common.query') }}</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="searchAlarm">{{ $t('common.query') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-refresh" class="custom-button">{{ $t('common.refresh') }}</el-button>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" icon="el-icon-setting" class="custom-button">{{ $t('meterReadingAlarm.toolbarC') }}</el-button>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52 - 30) + 'px', background: '#E9E9E9'}">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-          <my-region3 @handleNodeClick="handleNodeClick"></my-region3>
+          <my-region3 @handleNodeClick="handleNodeClick" />
         </el-scrollbar>
       </el-col>
       <el-col :span="20">
@@ -56,8 +73,8 @@
         >
           <el-table-column
             type="selection"
-            width="55">
-          </el-table-column>
+            width="55"
+          />
           <el-table-column
             type="index"
             width="50"
@@ -82,10 +99,10 @@
             prop="tableType"
             :label="$t('meterReadingAlarm.tableD')"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="IMEI"
             label="IMEI"
-          />
+          /> -->
           <el-table-column
             prop="currentNum"
             :label="$t('meterReadingAlarm.tableE')"
@@ -130,7 +147,7 @@
           @currentChange="currentChange"
         />
       </el-col>
-    </el-row>  
+    </el-row>
   </div>
 </template>
 
@@ -153,10 +170,22 @@ export default {
     return {
       tableData: [],
       search: {
+        userCode: '',
+        listCode: '',
+        waterStatus: '',
         t1: '',
         t2: '',
         t3: ''
       },
+      waterOptions: [
+        {
+          value: 1,
+          label: '正常'
+        }, {
+          value: 0,
+          label: '异常'
+        }
+      ],
       pageObj: {
         allTotal: 0, // 总条数
         currentPage: 1, // 当前页数
@@ -181,6 +210,9 @@ export default {
     init () {
       this.getAlarm()
     },
+    searchAlarm () {
+
+    },
     async getAlarm () {
       const params = {
         rows: this.pageObj.pageSize,
@@ -198,7 +230,7 @@ export default {
       this.pageObj.currentPage = data;
       this.init()
     },
-    handleNodeClick(data) {
+    handleNodeClick (data) {
       console.log(data);
     },
     searchSubmit () {
@@ -209,10 +241,10 @@ export default {
     },
     handleDelete () {
 
-    },
-    handleNodeClick (data) {
-      this.$message.success(`切换${data.label}成功`)
     }
+    // handleNodeClick (data) {
+    //   this.$message.success(`切换${data.label}成功`)
+    // }
   }
 }
 </script>

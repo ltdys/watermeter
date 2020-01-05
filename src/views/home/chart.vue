@@ -6,7 +6,7 @@
     <div class="chart_content">
       <div class="chart_content__top">
         <div class="chart_content__top___data">
-          <div v-for="(item, index) in deviceList" :key="index" class='chart_content_box' @click="chartJumpClick(item)">
+          <div v-for="(item, index) in deviceList" :key="index" class="chart_content_box" @click="chartJumpClick(item)">
             <icon name="example" style="width: 36px;height: 36px" />
             <span class="chart-value">{{ item.value }}</span>
             <span class="chart-label">{{ item.label }}</span>
@@ -51,19 +51,19 @@ export default {
       deviceList: [{
         id: 1,
         label: i18n.t('chart.deviceTotal'),
-        value: 3240
+        value: 0
       }, {
         id: 2,
         label: i18n.t('chart.deviceOnline'),
-        value: 5420 // 设备在线
+        value: 0 // 设备在线
       }, {
         id: 3,
         label: i18n.t('chart.alarmStatistics'),
-        value: 2513
+        value: 0
       }, {
         id: 4,
         label: i18n.t('chart.deviceOffline'),
-        value: 6514
+        value: 0
       }],
       listBf: []
     };
@@ -85,7 +85,7 @@ export default {
     } else {
       this.getUserResource()
     }
-    // this.countMeterNbIotL()
+    this.countMeterNbIotL()
     // this.countMeterNbIotL1()
     // this.countMeterNbIotL2()
     // this.countMeterNbIotL3()
@@ -98,7 +98,7 @@ export default {
       let list = []
       if (item.id == 1) { // 设备总数
         list = self.listBf.filter(val => {
-          return val.router == '/data-manage/statistical-analysis'
+          return val.router == '/data-manage/meter-reading-exception'
         })
       } else if (item.id == 2 || item.id == 4) { // 设备在线 或者 设备离线
         list = self.listBf.filter(val => {
@@ -228,13 +228,18 @@ export default {
     },
     async countMeterNbIotL () { // 设备在线
       let params = {
-        userId: this.userId,
-        meterNbIot: {
-          isOnline: "0"
-        }
+        userId: this.userId
+        // meterNbIot: {
+        //   isOnline: "0"
+        // }
       }
       let resData = await countMeterNbIotL(params)
-      this.deviceList[1].value = resData.data.data.count || 0
+      console.log(resData)
+      this.deviceList[0].value = resData.data.data.meterAllCount
+      this.deviceList[1].value = resData.data.data.meterOnLineCount
+      this.deviceList[2].value = resData.data.data.meterAlarmCount
+      this.deviceList[3].value = resData.data.data.meterOfflineCount
+      // this.deviceList[1].value = resData.data.data.count || 0
     },
     async countMeterNbIotL1 () { // 设备离线
       let params = {

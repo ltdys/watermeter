@@ -98,7 +98,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="$t('systemManageRegion.dialogTitle')" :visible.sync="regionVisible" width="40%" :close-on-click-modal="false" @close="close">
+    <el-dialog :title="myTitle" :visible.sync="regionVisible" width="40%" :close-on-click-modal="false" @close="close">
       <my-edit ref="edit" :options="treeData" :form="form" @onSubmit="onSubmit" @close="close" />
     </el-dialog>
   </div>
@@ -125,6 +125,7 @@ export default {
 
   data () {
     return {
+      myTitle: '添加区域',
       treeData: [], // 组织机构树状
       currentOrg: {}, // 当前组织
       tableData: [],
@@ -152,8 +153,8 @@ export default {
         name: '', // 区域名称
         state: '', // 状态 0 --> 有效  1 --> 无效
         address: '', // 地址
-        longitude: '',  // 经度
-        latitude: ''  // 纬度
+        longitude: '', // 经度
+        latitude: '' // 纬度
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -164,6 +165,18 @@ export default {
       districtData1: [],
       regionVisible: false,
       regionStatus: 0 // 弹框状态  0  新增  1  修改
+    }
+  },
+
+  watch: {
+    form: {
+      handler: function (val) {
+        if (val.address == '') {
+          val.longitude = ''
+          val.latitude = ''
+        }
+      },
+      deep: true
     }
   },
 
@@ -315,6 +328,7 @@ export default {
     handleEdit (item) { // 编辑
       // company
       console.log('编辑item', item)
+      this.myTitle = '编辑区域'
       this.regionStatus = 1
       this.form.id = item.id
       this.form.name = item.name
@@ -351,6 +365,7 @@ export default {
       }
     },
     addNext (item) { // 直接增加子项
+      this.myTitle = '添加子区域'
       this.regionStatus = 0
       this.form.companyDis = true
       this.form.parentDis = true
@@ -418,6 +433,7 @@ export default {
     },
     close () { // 关闭弹框
       this.regionVisible = false
+      this.$refs['edit'].clearForm()
       this.clearForm()
     },
     regionAdd () { // 添加
@@ -456,7 +472,7 @@ export default {
         state: '', // 状态 0 --> 有效  1 --> 无效
         address: '', // 地址
         longitude: '', // 经度
-        latitude: ''  // 纬度
+        latitude: '' // 纬度
       }
     }
   }

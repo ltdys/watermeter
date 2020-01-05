@@ -97,8 +97,9 @@ export default {
             } else {
               self.companyTreeData.forEach((item, index) => {
                 self.treeData.forEach((item2, index2) => {
+                  console.log(item, item2)
                   if (item.id === item2.companyid) {
-                    item.children = []
+                    // item.children = []
                     item.children.push(item2)
                   }
                 })
