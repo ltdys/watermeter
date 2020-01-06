@@ -67,7 +67,8 @@
       <el-col :span="24">
         <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
           <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
-            <div id="analysisNode" :style="{ height: tableHeight + 'px'}" />
+            <div v-show="!errorShow" id="analysisNode" :style="{ height: tableHeight + 'px'}" />
+            <div v-show="errorShow" class="exce_error" :style="{ height: tableHeight + 'px'}">{{ errormsg }}</div>
           </div>
         </el-scrollbar>
       </el-col>
@@ -88,6 +89,8 @@ export default {
 
   data () {
     return {
+      errorShow: false,
+      errormsg: '',
       lnglatsList: [],
       companyId: "",
       tableData: [],
@@ -163,9 +166,17 @@ export default {
       this.condOptions.push({
         label: i + 1 + "月",
         value: i + 1,
-        disabled: false
+        disabled: (i + 1) > month
       })
     }
+    // if (year == val) {
+    //   this.condOptions.map(item => {
+    //     if (item.value > month) {
+    //       item.disabled = true
+    //     }
+    //     return item
+    //   })
+    // }
 
     if (this.role_name === "超级管理员") {
       this.findCompany('0')
@@ -362,6 +373,7 @@ export default {
       console.log('resData', resData)
       if (resData.status === 200 && resData.data.code === 1) {
         this.chartList = resData.data.data || []
+        this.errorShow = false
 
         this.xAxis = this.chartList.map(item => {
           return item.day || item.month || item.quarter
@@ -374,7 +386,9 @@ export default {
           this.chartInit()
         })
       } else {
-        this.$message.warning(resData.data.message);
+        this.errorShow = true
+        this.errormsg = resData.data.message
+        // this.$message.warning(resData.data.message);
       }
     },
 
@@ -410,6 +424,7 @@ export default {
           }
         },
         yAxis: {
+          name: '用水量(吨)',
           type: 'value'
         },
         series: [{
@@ -435,6 +450,12 @@ export default {
       width: 100%;
       #analysisNode {
         width: 100%;
+      }
+      .exce_error{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
     .el-scrollbar__wrap {

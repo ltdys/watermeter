@@ -43,7 +43,7 @@
               :show-file-list="false"
             >
               <el-button size="small" type="primary" icon="el-icon-upload" class="import_upload">{{ $t('fileManageImportant.toolbarC_') }}</el-button>
-              <div slot="tip" class="el-upload__tip" v-show="excelName">{{ excelName }}<i class="el-icon-error" @click="clearExcel"></i></div>
+              <div v-show="excelName" slot="tip" class="el-upload__tip">{{ excelName }}<i class="el-icon-error" @click="clearExcel" /></div>
               <div slot="tip" class="el-upload__tip">仅支持上传EXCEL文件</div>
             </el-upload>
           </el-form-item>
@@ -116,7 +116,7 @@ export default {
         checkStrictly: true
       },
       excelModel: {
-        areasId: '',  // 区域ID
+        areasId: '', // 区域ID
         file: ''
       },
       areasList: [],
@@ -137,7 +137,7 @@ export default {
     },
     cascaChange (val) {
       this.cascaderFalse('cascader7')
-      if(this.areasList && this.areasList.length > 0) {
+      if (this.areasList && this.areasList.length > 0) {
         this.excelModel.areasId = this.areasList[this.areasList.length - 1]
       }
     },
@@ -167,10 +167,10 @@ export default {
         }
       }
     },
-    downloadUserTemplate() {
+    downloadUserTemplate () {
       window.location = this.DOWNLOAD_NBIOT_EXCEL
     },
-    downloadNbiotTemplate() {
+    downloadNbiotTemplate () {
       window.location = this.DOWNLOAD_USER_EXCEL
     },
     beforeUpload (file) {
@@ -190,7 +190,7 @@ export default {
       this.$refs.upload.clearFiles()
     },
     uploadFile () {
-      let temp = this.excelModel
+      // let temp = this.excelModel
       if (!this.excelModel.areasId) {
         this.$message.warning('请选择区域!')
         return
@@ -206,22 +206,22 @@ export default {
       });
       this.uploadUserAndMeter()
     },
-    clearExcel() {
+    clearExcel () {
       this.excelModel.file = ""
       this.excelName = ""
     },
     // 户表导入
-    async uploadUserAndMeter() {
+    async uploadUserAndMeter () {
       const self = this
       let resData = await uploadUserAndMeter(this.excelModel)
-      if(resData.status === 200 && resData.data.code == 1) {
+      if (resData.status === 200 && resData.data.code == 1) {
         this.$message({
           type: 'success',
-          message: resData.data.message + ',' + resData.data.data,
+          message: resData.data.message,
           duration: 2500
         })
       } else {
-        this.$message.warning(resData.data.message + ',' + resData.data.data)
+        this.$message.warning(resData.data.message)
       }
       this.clearExcel()
       this.excelModel.areasId = ""
