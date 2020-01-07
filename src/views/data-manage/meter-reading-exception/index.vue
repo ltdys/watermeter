@@ -5,6 +5,7 @@
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
           <el-form-item label="组织">
             <el-cascader
+              v-if="role_name === '超级管理员'"
               ref="cascader12"
               v-model="search.orgList"
               clearable
@@ -15,16 +16,16 @@
               size="mini"
               class="cascader12"
               @change="changeOrg"
-              v-if="role_name === '超级管理员'"
             />
+            <el-input v-else v-model="company_name" placeholder="请输入内容" :disabled="true" />
           </el-form-item>
           <el-form-item label="区域">
             <el-cascader
               ref="cascader3"
+              v-model="search.areasList"
               class="cascader3"
               placeholder="请选择区域"
               size="mini"
-              v-model="search.areasList"
               :options="list"
               clearable
               filterable
@@ -33,25 +34,25 @@
             />
           </el-form-item>
           <el-form-item>
-             <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click.native="searchSubmit1()">查询</el-button>
           </el-form-item>
         </el-form>
       </el-col>
-        <el-col :span="24">
-          <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
-            <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
-              <div class="exception-content" v-for="(item, index) in lnglatsList" :key="index">
-                <div class="text-ellipsis"><span :title="item.name">{{ item.name }}</span></div>
-                <div></div>
-                <div>总数：{{ item.meterNum }}</div>
-                <div :class="[item.meterNum - item.meterFailNum > 0 ? 'success-text' : '']">成功：{{ item.meterNum - item.meterFailNum }}</div>
-                <div :class="[item.meterFailNum > 0 ? 'fail-text' : '']">失败：{{ item.meterFailNum }}</div>
-                <div class="text-ellipsis">{{ item.name }}</div>
-              </div>
+      <el-col :span="24">
+        <el-scrollbar class="scrollbar-page" wrap-class="scrollbar-wrapper">
+          <div class="exception-wrap" :style="{ height: tableHeight + 'px'}">
+            <div v-for="(item, index) in lnglatsList" :key="index" class="exception-content">
+              <div class="text-ellipsis"><span :title="item.name">{{ item.name }}</span></div>
+              <div />
+              <div>总数：{{ item.meterNum }}</div>
+              <div :class="[item.meterNum - item.meterFailNum > 0 ? 'success-text' : '']">成功：{{ item.meterNum - item.meterFailNum }}</div>
+              <div :class="[item.meterFailNum > 0 ? 'fail-text' : '']">失败：{{ item.meterFailNum }}</div>
+              <div class="text-ellipsis">{{ item.name }}</div>
             </div>
-          </el-scrollbar>
-        </el-col>
-    </el-row>  
+          </div>
+        </el-scrollbar>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -101,16 +102,16 @@ export default {
     this.findDistrict()
   },
 
-  mounted() {
+  mounted () {
     this.showDistrictInMap()
   },
 
   methods: {
     init () {
     },
-     changeOrg () { // 组织机构选择
+    changeOrg () { // 组织机构选择
       this.cascaderFalse('cascader12')
-      if(this.search.orgList && this.search.orgList.length > 0) {
+      if (this.search.orgList && this.search.orgList.length > 0) {
         this.search.org = this.search.orgList[this.search.orgList.length - 1]
         this.companyId = this.search.org
         this.findDistrict()
@@ -119,18 +120,18 @@ export default {
         this.companyId = this.company_id
       }
     },
-    async showDistrictInMap() {
+    async showDistrictInMap () {
       let params = {
         userId: this.userId,
         companyId: this.companyId,
         districtId: this.search.areasId
       }
       let resData = await showDistrictInMap(params)
-      if(resData.status === 200) {
+      if (resData.status === 200) {
         this.regionList = resData.data.data
-        if(this.regionList.length > 0) {
+        if (this.regionList.length > 0) {
           this.regionList.forEach((item, index) => {
-            if(item.distList.length > 0) {
+            if (item.distList.length > 0) {
               item.distList.forEach((item1, index1) => {
                 this.lnglatsList.push({
                   companyName: item.company.companyName || "",
@@ -212,7 +213,7 @@ export default {
         this.search.areasId = ""
       }
     },
-    searchSubmit1() {
+    searchSubmit1 () {
       this.showDistrictInMap()
     }
   }
@@ -246,7 +247,7 @@ export default {
         >div:nth-child(2) {
           width: 90%;
           height: 1px;
-          border-top: 1px solid #D8DBD7; 
+          border-top: 1px solid #D8DBD7;
         }
         >div:nth-child(3) {
           margin-top: 10px;
@@ -274,6 +275,9 @@ export default {
           white-space: nowrap;
         }
       }
+    }
+    .zz-box{
+      margin: 0 20px;
     }
     .el-scrollbar__wrap {
       background: #fff;

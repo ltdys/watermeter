@@ -9,35 +9,10 @@
           <el-form-item label="表编号">
             <el-input v-model="search.listCode" clearable />
           </el-form-item>
-          <el-form-item label="用水状态">
+          <!-- <el-form-item label="用水状态">
             <el-select v-model="search.waterStatus">
               <el-option
                 v-for="item in waterOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                clearable
-              />
-            </el-select>
-          </el-form-item>
-          <!-- <el-form-item label="$t('meterReadingAlarm.toolbarA')">
-            <el-select v-model="search.t2">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                clearable
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model="search.t3" clearable />
-          </el-form-item>
-          <el-form-item :label="$t('meterReadingAlarm.toolbarB')">
-            <el-select v-model="search.t1">
-              <el-option
-                v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -49,7 +24,7 @@
             <el-button type="primary" icon="el-icon-search" @click="searchAlarm">{{ $t('common.query') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-refresh" class="custom-button">{{ $t('common.refresh') }}</el-button>
+            <el-button type="primary" icon="el-icon-refresh" class="custom-button" @click="refreshAlarm">{{ $t('common.refresh') }}</el-button>
           </el-form-item>
           <!-- <el-form-item>
             <el-button type="primary" icon="el-icon-setting" class="custom-button">{{ $t('meterReadingAlarm.toolbarC') }}</el-button>
@@ -81,62 +56,56 @@
             label="#"
           />
           <el-table-column
-            prop="id"
-            :label="$t('meterReadingAlarm.tableA')"
-            width="300"
+            prop="meterUserNum"
+            label="用户编号"
           />
           <el-table-column
-            prop="name"
-            :label="$t('meterReadingAlarm.tableB')"
-            width="120"
+            prop="meterUserName"
+            label="用户名称"
           />
           <el-table-column
-            prop="tableId"
-            :label="$t('meterReadingAlarm.tableC')"
-            width="220"
+            prop="meterNbiotNum"
+            label="表号"
           />
           <el-table-column
-            prop="tableType"
-            :label="$t('meterReadingAlarm.tableD')"
-          />
-          <!-- <el-table-column
-            prop="IMEI"
-            label="IMEI"
-          /> -->
-          <el-table-column
-            prop="currentNum"
-            :label="$t('meterReadingAlarm.tableE')"
+            prop="meter_type"
+            label="表类型"
           />
           <el-table-column
-            prop="lastNum"
-            :label="$t('meterReadingAlarm.tableF')"
+            prop="meter_value"
+            label="当前读数"
           />
           <el-table-column
-            prop="useNum"
-            :label="$t('meterReadingAlarm.tableG')"
-            width="160"
+            prop="read_time"
+            label="读取时间"
           />
           <el-table-column
-            prop="isAlarm"
-            :label="$t('meterReadingAlarm.tableH')"
+            prop="read_time_pre"
+            label="上次读取时间"
           />
           <el-table-column
-            prop="alarmType"
-            :label="$t('meterReadingAlarm.tableI')"
-            width="160"
+            prop="meter_value_pre"
+            label="上次读数"
           />
           <el-table-column
-            prop="alarmToplimit"
-            :label="$t('meterReadingAlarm.tableJ')"
+            prop="value"
+            label="用量"
           />
           <el-table-column
-            prop="alarmBottomlimit"
-            :label="$t('meterReadingAlarm.tableK')"
+            prop="value_alert"
+            label="警戒值"
           />
           <el-table-column
-            prop="surchargeType"
-            :label="$t('meterReadingAlarm.tableL')"
+            prop="meter_type"
+            label="用水类型"
           />
+          <el-table-column
+            label="用水状态"
+          >
+            <div slot-scope="scope" style="color: red;">
+              {{ scope.row.meter_state }}
+            </div>
+          </el-table-column>
         </el-table>
         <my-pagination
           :all-total="pageObj.allTotal"
@@ -152,7 +121,7 @@
 </template>
 
 <script>
-import { getAlarm } from '@/service/reading'
+import { getMeterNbIotAlarm, getMeterNbIotAllAlarm, findParentCompany } from '@/service/api'
 import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -198,7 +167,10 @@ export default {
       }, {
         value: 1,
         label: '其它'
-      }]
+      }],
+      qyId: '', // 区域id
+      status: 0,
+      companyId: ''
     }
   },
 
@@ -208,30 +180,85 @@ export default {
 
   methods: {
     init () {
-      this.getAlarm()
+      this.status = 0
+      this.findParentCompany()
+    },
+    async findParentCompany () {
+      let params = {
+        userId: this.userId
+      }
+      let resData = await findParentCompany(params)
+      if (resData.status === 200 && resData.data.data) {
+        let list = resData.data.data
+        this.companyId = list.length > 0 ? list[0].id : ''
+        this.getMeterNbIotAllAlarm()
+      }
+    },
+    async getMeterNbIotAllAlarm () {
+      const params = {
+        userId: this.userId,
+        companyId: this.companyId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let res = await getMeterNbIotAllAlarm(params)
+      this.tableData = res.data.data
+      this.pageObj.allTotal = res.data.allTotal
     },
     searchAlarm () {
-
-    },
-    async getAlarm () {
-      const params = {
-        rows: this.pageObj.pageSize,
-        page: this.pageObj.currentPage
+      if (this.qyId == '') {
+        this.$message.warning('请选择小区');
+        return
       }
-      let res = await getAlarm(params)
+      this.pageObj.currentPage = 1
+      this.getMeterNbIotAlarm()
+    },
+    refreshAlarm () { // 刷新
+      this.pageObj.currentPage = 1
+      this.pageObj.pageSize = 50
+      this.search.userCode = ''
+      this.search.listCode = ''
+      this.getMeterNbIotAlarm()
+    },
+    async getMeterNbIotAlarm () {
+      const params = {
+        userId: this.userId,
+        areasId: this.qyId,
+        // userId: 'US3F87B8733B2C4C2898B0D5CFDBE7153D',
+        // areasId: 23,
+        meterUserNum: this.search.userCode,
+        meterNbiotNum: this.search.listCode,
+        meter_state: '1',
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
+      }
+      let res = await getMeterNbIotAlarm(params)
       this.tableData = res.data.data
       this.pageObj.allTotal = res.data.allTotal
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
-      this.init()
+      if (this.status == 0) {
+        this.getMeterNbIotAllAlarm()
+      } else if (this.status == 1) {
+        this.getMeterNbIotAlarm()
+      }
     },
     currentChange (data) { // 当前页切换事件
       this.pageObj.currentPage = data;
-      this.init()
+      if (this.status == 0) {
+        this.getMeterNbIotAllAlarm()
+      } else if (this.status == 1) {
+        this.getMeterNbIotAlarm()
+      }
     },
     handleNodeClick (data) {
+      this.qyId = data.id
+      this.status = 1
+      this.pageObj.currentPage = 1
+      this.pageObj.pageSize = 50
       console.log(data);
+      this.getMeterNbIotAlarm()
     },
     searchSubmit () {
 

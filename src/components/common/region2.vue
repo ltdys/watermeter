@@ -85,9 +85,9 @@ export default {
               self.companyTreeData.forEach((item, index) => {
                 if (item.children) {
                   item.children.forEach((item1, index1) => {
+                    item1.children = []
                     self.treeData.forEach((item2, index2) => {
                       if (item1.id === item2.companyid) {
-                        item1.children = []
                         item1.children.push(item2)
                       }
                     })

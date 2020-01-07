@@ -49,26 +49,31 @@
           />
           <el-table-column
             prop="meterusernum"
-            :label="$t('fileManageHb.tableA')"
+            label="用户编号"
             width="200"
           />
           <el-table-column
             prop="meterusername"
-            :label="$t('fileManageHb.tableB')"
+            label="用户名称"
             width="120"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="address"
             :label="$t('fileManageHb.tableC')"
-          />
+          /> -->
           <el-table-column
             prop="telephone"
-            :label="$t('fileManageHb.tableD')"
+            label="电话"
             width="120"
+          />
+          <el-table-column
+            prop="meternbiottype"
+            label="表类型"
+            width="100"
           />
           <el-table-column
             prop="meternbiotnum"
-            :label="$t('fileManageHb.tableE')"
+            label="表编号"
             width="200"
           />
           <el-table-column
@@ -76,45 +81,41 @@
             label="小区"
             width="120"
           />
-           <el-table-column
+          <el-table-column
             prop="meteruseraddress"
             label="楼栋"
             width="120"
           />
           <el-table-column
-            prop="meterconcentratornum"
+            prop="meterConcentratorNum"
             label="集中器编号"
             width="200"
           />
           <el-table-column
-            prop="meternodenum"
+            prop="meterNodeNum"
             label="采集器编号"
             width="200"
           />
           <el-table-column
-            prop="tableAddress"
-            :label="$t('fileManageHb.tableF')"
-          />
-          <el-table-column
-            prop="IMIE"
+            prop="imei"
             label="IMEI"
+            width="150"
           />
           <el-table-column
-            prop="communication"
-            :label="$t('fileManageHb.tableG')"
-          />
-          <el-table-column
-            prop="installTime"
-            :label="$t('fileManageHb.tableH')"
+            label="安装日期"
             width="200"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.createtime | fFormatDate }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="meter_value"
+            label="表读数"
           />
           <el-table-column
-            prop="readNum"
-            :label="$t('fileManageHb.tableI')"
-          />
-          <el-table-column
-            prop="useNum"
-            :label="$t('fileManageHb.tableJ')"
+            prop="value"
+            label="用量"
           />
           <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
@@ -135,11 +136,11 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="userTitle" :visible.sync="userAddVisible" @close="userClose" :close-on-click-modal="false">
+    <el-dialog :title="userTitle" :visible.sync="userAddVisible" :close-on-click-modal="false" @close="userClose">
       <user-edit :water-house-type-list="waterHouseTypeList" :water-nature-list="waterNatureList" :tree-data="treeData" :form="form" :nb-iot-list="nbIotList" :type="type" @close="userAddVisible = false" />
     </el-dialog>
 
-    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" @close="tableClose" :close-on-click-modal="false">
+    <el-dialog :title="$t('fileManageHb.dialogTableTitle')" :visible.sync="tableAddVisible" class="region-manage-dialog" :close-on-click-modal="false" @close="tableClose">
       <table-edit @close="tableClose" />
     </el-dialog>
   </div>

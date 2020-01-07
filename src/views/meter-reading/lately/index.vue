@@ -32,9 +32,9 @@
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="handleRead">{{ $t('meterReadingLately.toolbarE') }}</el-button>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarF') }}</el-button>
-          </el-form-item>
+          </el-form-item> -->
           <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarG') }}</el-button>
           </el-form-item>

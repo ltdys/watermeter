@@ -32,9 +32,9 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('dataManageReading.toolbarD') }}</el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <el-table
       :data="tableData"

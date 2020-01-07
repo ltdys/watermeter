@@ -233,3 +233,9 @@ export const showDistrictInMap = params => axios.post('/watermeter/showDistrictI
 
 // 统计分析
 export const meterReadAnalysisByYearQuarterMonth = params => axios.post('/watermeter/meterReadAnalysisByYearQuarterMonth', params)
+
+// 水表报警
+export const getMeterNbIotAlarm = params => axios.post('/watermeter/getMeterNbIotAlarm', params)
+
+// 水表ALL报警
+export const getMeterNbIotAllAlarm = params => axios.post('/watermeter/getMeterNbIotAllAlarm', params)
