@@ -144,7 +144,7 @@ export default {
     async findDistrict () { // 查询区域
       const self = this;
       let params = {
-        companyId: ""
+        companyId: this.role_name == '超级管理员' ? '' : this.company_id
       }
       let res = await findDistrict(params)
       if (res.status === 200 && res.data.data !== null) {

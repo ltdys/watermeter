@@ -24,7 +24,7 @@
             <el-button type="primary" size="mini" icon="el-icon-refresh" class="custom-button" @click="refresh">{{ $t('common.refresh') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarC') }}</el-button>
+            <el-button type="primary" size="mini" class="custom-button" @click="recentMeterDownLoad">{{ $t('meterReadingLately.toolbarC') }}</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="handleGather">{{ $t('meterReadingLately.toolbarD') }}</el-button>
@@ -214,7 +214,7 @@
 </template>
 
 <script>
-import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct } from '@/service/api'
+import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct, recentMeterDownLoad } from '@/service/api'
 import myRegion2 from '@/components/common/region2'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -373,6 +373,28 @@ export default {
     handleDelete () {
 
     },
+    async recentMeterDownLoad () {
+      let param = {
+        userId: this.userId
+      }
+      let res = await recentMeterDownLoad(param);
+      console.log('res', res)
+      let data = res.data
+      let blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+      const fileName = '最近抄表.xlsx'
+      if ('download' in document.createElement('a')) { // 非IE下载
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href) // 释放URL 对象
+        document.body.removeChild(elink)
+      } else { // IE10+下载
+        navigator.msSaveBlob(blob, fileName)
+      }
+    },
     nbiotClick (item) { // 切换水表时
       console.log('水表', item)
       this.checkSb = item
@@ -403,7 +425,7 @@ export default {
           // param.nodeBlockAddress = Number(param.rule) == 0 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
           // param.waterBlockAddress = param.rule == '02' ? '{""}' : `{FFFFFFFF}`
 
-          param.nodeBlockAddress = Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFF}' : Number(param.rule) == 3 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 4 ? '{FFFFFFFFFFFFFF}' : '{FFFFFFFF}'
+          param.nodeBlockAddress = Number(param.rule) == 1 ? '{FFFFFFFF}' : Number(param.rule) == 2 ? '{FFFFFFFFFF}' : Number(param.rule) == 3 ? '{FFFFFFFFFFFF}' : Number(param.rule) == 4 ? '{FFFFFFFF}' : '{FFFFFFFF}'
           param.waterBlockAddress = `{FFFFFFFF}`
         } else {
           param.nodeBlockAddress = `{${self.checkNum}}`

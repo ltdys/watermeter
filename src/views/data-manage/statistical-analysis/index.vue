@@ -17,6 +17,7 @@
               class="cascader12"
               @change="changeOrg"
             />
+            <el-input v-else v-model="company_name" placeholder="请输入内容" :disabled="true" />
           </el-form-item>
           <el-form-item label="区域">
             <el-cascader

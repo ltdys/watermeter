@@ -203,7 +203,7 @@ export default {
       }
       let res = await getMeterNbIotAllAlarm(params)
       this.tableData = res.data.data
-      this.pageObj.allTotal = res.data.allTotal
+      this.pageObj.allTotal = res.data.page.totalRow
     },
     searchAlarm () {
       if (this.qyId == '') {

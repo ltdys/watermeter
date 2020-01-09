@@ -239,3 +239,9 @@ export const getMeterNbIotAlarm = params => axios.post('/watermeter/getMeterNbIo
 
 // 水表ALL报警
 export const getMeterNbIotAllAlarm = params => axios.post('/watermeter/getMeterNbIotAllAlarm', params)
+
+// 抄表记录
+export const getMeterRecord = params => axios.post('/watermeter/getMeterRecord', params)
+
+// 抄表导出
+export const recentMeterDownLoad = params => axios.post('/watermeter/recentMeterDownLoad', params)
