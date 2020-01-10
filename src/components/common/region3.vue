@@ -4,9 +4,9 @@
     <el-tree
       :props="props"
       :load="loadNode"
+      lazy
       @node-click="handleNodeClick"
-      lazy>
-    </el-tree>
+    />
   </div>
 </template>
 
@@ -15,7 +15,7 @@ import { findParentCompany, findChildCompany, findDistrict, findChildDistrict } 
 import { list_mixins } from '@/mixins'
 export default {
   mixins: [list_mixins],
-  data() {
+  data () {
     return {
       props: {
         label: 'companyName'
@@ -29,14 +29,14 @@ export default {
         this.findParentCompany(resolve)
       } else if (node.level === 1) {
         this.findChildCompany(node, resolve)
-      } else if(node.level === 2) {
+      } else if (node.level === 2) {
         this.findDistrict(node, resolve)
       } else {
         this.findChildDistrict(node, resolve)
       }
     },
     // 查询一级组织
-    async findParentCompany(resolve) {
+    async findParentCompany (resolve) {
       let params = {
         userId: this.userId
       }
@@ -48,7 +48,7 @@ export default {
       }
     },
     // 查询二级组织
-    async findChildCompany(node, resolve) {
+    async findChildCompany (node, resolve) {
       let params = {
         currentPage: 1,
         pageSize: 10000,
@@ -63,7 +63,7 @@ export default {
       let resData1 = await findDistrict(params1)
       let companyData = resData.data.data || []
       let districtData = resData1.data.data || []
-      districtData = districtData.filter(item => item.parentid == 0 )
+      districtData = districtData.filter(item => item.parentid == 0)
       districtData.forEach((item, index) => {
         item.companyName = item.name
       })
@@ -81,17 +81,17 @@ export default {
       // }
     },
     // 根据组织查询区域
-    async findDistrict(node, resolve) {
+    async findDistrict (node, resolve) {
       let params = {
         companyId: node.data.id
       }
       let resData = await findDistrict(params)
       if (resData.status === 200 && resData.data.data) {
         let temp = resData.data.data
-        if(temp.length === 0) {
+        if (temp.length === 0) {
           this.findChildDistrict(node, resolve)
         } else {
-          temp = temp.filter(item => item.parentid == 0 )
+          temp = temp.filter(item => item.parentid == 0)
           temp.forEach((item, index) => {
             item.companyName = item.name
           })
@@ -101,13 +101,13 @@ export default {
         resolve([])
       }
     },
-    //区域查询子区域
-    async findChildDistrict(node, resolve) {
+    // 区域查询子区域
+    async findChildDistrict (node, resolve) {
       let params = {
         districtId: node.data.id
       }
       let resData = await findChildDistrict(params)
-      if(resData.status === 200 && resData.data.data) {
+      if (resData.status === 200 && resData.data.data) {
         let temp = resData.data.data
         temp.forEach((item, index) => {
           item.companyName = item.name

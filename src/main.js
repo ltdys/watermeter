@@ -24,6 +24,9 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
+import axios from 'axios'
+Vue.prototype.$axios = axios
+
 // VueAMap.initAMapApiLoader({
 //   key: '81339b9a7dc95b45358f545c74f3b797',
 //   plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],

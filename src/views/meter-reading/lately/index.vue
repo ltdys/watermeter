@@ -332,16 +332,24 @@ export default {
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize,
         meterRead: {
-          num: this.search.num, // 用户编号
-          meterNbiotNum: this.search.meterNbiotNum, // 编号
-          meterType: this.search.meterType, // 表类型
-          address: this.search.address // 安装地址
+          // num: this.search.num, // 用户编号
+          // meterNbiotNum: this.search.meterNbiotNum, // 编号
+          // meterType: this.search.meterType, // 表类型
+          // address: this.search.address // 安装地址
+          meterState: '', // 表状态
+          commState: '', // 通信状态
+          operator: '', // 抄表人
+          readingMode: '' // 读取模式
         },
         meterNbIot: {
-          num: this.search.num, // 用户编号
-          meterNbiotNum: this.search.meterNbiotNum, // 编号
-          meterType: this.search.meterType, // 表类型
-          address: this.search.address // 安装地址
+          // num: this.search.num, // 用户编号
+          // meterNbiotNum: this.search.meterNbiotNum, // 编号
+          // meterType: this.search.meterType, // 表类型
+          // address: this.search.address // 安装地址
+          meterNbiotNum: '', // 水表编号
+          simCardCcid: '', // SIM卡号
+          imei: '', // IMEI
+          reportCycle: '' // 上报周期
         }
       }
       let resData = await recentMeterReading(params)
@@ -373,9 +381,41 @@ export default {
     handleDelete () {
 
     },
+    // recentMeterDownLoad () {
+    //   let that = this
+    //   let param = {
+    //     areasId: that.search.areasId
+    //   }
+    //   that.$axios({
+    //     method: 'post',
+    //     url: 'http://101.200.224.248:8099/watermeter/recentMeterDownLoad',
+    //     data: param,
+    //     responseType: 'blob'
+    //   }).then(res => {
+    //     that.downloadFile(res, that)
+    //   }).catch(resp => {
+    //     that.$message.error(resp.msg || '导出失败')
+    //   })
+    // },
+    // downloadFile (resp, that) {
+    //   let data = resp.data
+    //   // 此处提示自定义提示语，从header中获取
+    //   if (resp.headers['errormsg'] || !data) {
+    //     that.$message.error(decodeURI(resp.headers['errormsg']) || '导出失败')
+    //     return
+    //   }
+    //   let url = window.URL.createObjectURL(new Blob([data]))
+    //   let link = document.createElement('a')
+    //   link.style.display = 'none'
+    //   link.href = url
+    //   // 文件名在后端设置
+    //   link.setAttribute('download', decodeURI(resp.headers['filename']))
+    //   document.body.appendChild(link)
+    //   link.click()
+    // },
     async recentMeterDownLoad () {
       let param = {
-        userId: this.userId
+        areasId: this.search.areasId
       }
       let res = await recentMeterDownLoad(param);
       console.log('res', res)

@@ -69,7 +69,7 @@
         width="200"
       />
       <el-table-column
-        prop="meterNbiotNum"
+        prop="meterNbIotNum"
         label="表编号"
       />
       <el-table-column
@@ -183,18 +183,18 @@ export default {
   methods: {
     async getMeterRecord () {
       const params = {
-        userId: 'USD1ED59A8133C42BFAEFBBC339EA660A5',
-        companyId: '8888',
-        // userId: this.userId,
-        // companyId: JSON.parse(localStorage.getItem("USER_INFO")).companyId,
-        // meterUserNum: this.search.userCode,
-        // meterUserNum: '003',
-        meterNbiotNum: '76000180',
-        // meterNbiotNum: this.search.waterCode,
-        // startDate: this.fFormatDate(this.search.startTime, '{y}/{m}/{d} {h}:{i}:{s}'),
-        // endDate: this.fFormatDate(this.search.endTime, '{y}/{m}/{d} {h}:{i}:{s}'),
-        startDate: '2020/01/01 12:00:00',
-        endDate: '2020/01/01 12:00:00',
+        // userId: 'USD1ED59A8133C42BFAEFBBC339EA660A5',
+        // companyId: '8888',
+        // // meterUserNum: '003',
+        // meterNbiotNum: '19102509',
+        // startDate: '2020/01/01 12:00:00',
+        // endDate: '2020/01/01 12:00:00',
+        userId: this.userId,
+        companyId: JSON.parse(localStorage.getItem("USER_INFO")).companyId,
+        meterUserNum: this.search.userCode,
+        meterNbiotNum: this.search.waterCode,
+        startDate: this.fFormatDate(this.search.startTime, '{y}/{m}/{d} {h}:{i}:{s}'),
+        endDate: this.fFormatDate(this.search.endTime, '{y}/{m}/{d} {h}:{i}:{s}'),
         pageSize: this.pageObj.pageSize,
         currentPage: this.pageObj.currentPage
       }
@@ -208,7 +208,13 @@ export default {
       this.getMeterRecord()
     },
     searchSubmit () {
-      this.getMeterRecord()
+      if (this.search.startTime === '') {
+        this.$message.warning('请选择开始时间');
+      } else if (this.search.endTime === '') {
+        this.$message.warning('请选择结束时间');
+      } else {
+        this.getMeterRecord()
+      }
     },
     handleEdit () {
 
