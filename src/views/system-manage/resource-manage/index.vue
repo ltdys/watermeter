@@ -17,7 +17,7 @@
             <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmit">{{ $t('common.query') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-refresh" size="mini" @click="refresh()">刷新</el-button>
+            <el-button type="primary" icon="el-icon-refresh" class="custom-button" size="mini" @click="refresh()">刷新</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="add1()">{{ $t('common.add') }}</el-button>

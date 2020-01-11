@@ -21,41 +21,29 @@
         />
         <el-table-column
           prop="id"
-          :label="$t('meterReadingTiming.tableA')"
+          label="记录ID"
           width="220"
         />
         <el-table-column
-          prop="name"
-          :label="$t('meterReadingTiming.tableB')"
+          prop="timerName"
+          label="定时抄表名称"
           width="180"
         />
         <el-table-column
-          prop="concentratorAddress"
-          :label="$t('meterReadingTiming.tableC')"
+          prop="concentratorBlockAddress"
+          label="集中器编号"
         />
         <el-table-column
-          prop="collectorAddress"
-          :label="$t('meterReadingTiming.tableD')"
+          prop="timerTime"
+          label="定时时间"
         />
         <el-table-column
-          prop="tableAddress"
-          :label="$t('meterReadingTiming.tableE')"
+          prop="createBy"
+          label="创建人"
         />
         <el-table-column
-          prop="operationType"
-          :label="$t('meterReadingTiming.tableF')"
-        />
-        <el-table-column
-          prop="interval"
-          :label="$t('meterReadingTiming.tableG')"
-        />
-        <el-table-column
-          prop="timeTpe"
-          :label="$t('meterReadingTiming.tableH')"
-        />
-        <el-table-column
-          prop="beginTime"
-          :label="$t('meterReadingTiming.tableI')"
+          prop="createTime"
+          label="创建时间"
         />
         <el-table-column fixed="right" :label="$t('common.operation')" width="120">
           <template slot-scope="scope">
@@ -73,14 +61,14 @@
         @currentChange="currentChange"
       />
 
-      <el-dialog :title="$t('meterReadingTiming.dialogTitle')" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
-        <my-edit @close="close" />
+      <el-dialog :title="title" :visible.sync="addVisible" @close="close" :close-on-click-modal="false">
+        <my-edit @close="close" :form="form" :type="type"/>
       </el-dialog>
   </div>
 </template>
 
 <script>
-import { getReading } from '@/service/reading'
+import { findGatherTimer, delGatherTimer } from "@/service/api";
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
 import myEdit from './edit'
@@ -95,6 +83,7 @@ export default {
 
   data () {
     return {
+      title: "定时方案添加",
       tableData: [],
       search: {
         t1: '',
@@ -106,7 +95,21 @@ export default {
         pageSize: 50, // 每页条数
         pageSizes: [10, 20, 50, 100]
       },
-      addVisible: false
+      addVisible: false,
+
+      form: {
+        areasId: "",  // 区域ID
+        areasList: [],
+        timerName: "",  // 定时名称
+        concentratorBlockAddress: "",  // 集中器ID
+        rule: "", // 通迅规约
+        timerTime: "", // 定时时间
+        dd: "",  // 定时日
+        hh: "",  // 时
+        mm: "",  // 分
+        ss: ""  // 秒
+      },
+      type: 0
     }
   },
 
@@ -115,26 +118,71 @@ export default {
   },
   
   methods: {
-    async getReading () {
-      const params = {
-        rows: this.pageObj.pageSize,
-        page: this.pageObj.currentPage
-      }
-      let res = await getReading(params)
-      this.tableData = res.data.data
-      this.pageObj.allTotal = res.data.allTotal
-    },
     init () {
-      this.getReading()
+      this.findGatherTimer()
+    },
+    async findGatherTimer() {
+      let params = {
+        userId: this.userId
+      }
+      let resData = await findGatherTimer(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.tableData = resData.data.data
+        this.pageObj.allTotal = resData.data.page.totalRow || 0
+      }
     },
     searchSubmit () {
 
     },
-    handleEdit () {
-
+    handleEdit (row) {
+      console.log("handleEdit", row)
+      this.title = "定时方案编辑"
+      this.type = 1
+      this.form.areasId = row.areasId
+      // timerName: "",  // 定时名称
+      //   concentratorBlockAddress: "",  // 集中器ID
+      //   rule: "", // 通迅规约
+      //   timerTime: "", // 定时时间
+      //   dd: "",  // 定时日
+      //   hh: "",  // 时
+      //   mm: "",  // 分
+      //   ss: ""  // 秒
+      this.form.timerName = row.timerName
+      this.form.concentratorBlockAddress = row.concentratorBlockAddress
+      if(row.timerTime) {
+        let temps = row.timerTime.split("/")
+        this.form.dd = parseInt(temps[0].substring(0, temps[0].indexOf("dd")))
+        this.form.hh = parseInt(temps[1].substring(0, temps[1].indexOf("hh")))
+        this.form.mm = parseInt(temps[2].substring(0, temps[2].indexOf("mm")))
+        this.form.ss = parseInt(temps[3].substring(0, temps[3].indexOf("ss")))
+      }
+      this.addVisible = true
     },
-    handleDelete () {
+    handleDelete (row) {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delGatherTimer(row)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    async delGatherTimer(row) {
+      let params = {
 
+      }
+      let resData = await delGatherTimer(params)
+      if (resData.status === 200 && resData.data.code === 1) {
+        this.$message.success(resData.data.message)
+      } else {
+        this.$message.warning(resData.data.message)
+      }
+      this.init()
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;
@@ -145,9 +193,24 @@ export default {
       this.init()
     },
     close () {
+      this.form = {
+        areasId: "",  // 区域ID
+        areasList: [],
+        timerName: "",  // 定时名称
+        concentratorBlockAddress: "",  // 集中器ID
+        rule: "", // 通迅规约
+        timerTime: "", // 定时时间
+        dd: "",  // 定时日
+        hh: "",  // 时
+        mm: "",  // 分
+        ss: ""  // 秒
+      }
       this.addVisible = false
+      this.init()
     },
     addTiming () {
+      this.title = "定时方案添加"
+      this.type = 0
       this.addVisible = true
     }
   }

@@ -245,3 +245,15 @@ export const getMeterRecord = params => axios.post('/watermeter/getMeterRecord',
 
 // 抄表导出
 export const recentMeterDownLoad = params => axios.post('/watermeter/recentMeterDownLoad', params)
+
+// 定时抄表添加
+export const addGatherTimer = params => axios.post('/watermeter/addGatherTimer', params)
+
+// 定时抄表查询
+export const findGatherTimer = params => axios.post('/watermeter/findGatherTimer', params)
+
+// 定时抄表修改
+export const updateGatherTimer = params => axios.post('/watermeter/updateGatherTimer', params)
+
+// 定时抄表删除
+export const delGatherTimer = params => axios.post('/watermeter/delGatherTimer', params)
