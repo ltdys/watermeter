@@ -160,7 +160,7 @@ export default {
           timerTime: timerTime
         }
       }
-      let resData = await addGatherTimer(params)
+      let resData = await updateGatherTimer(params)
       if (resData.status === 200) {
         this.form.areasList = []
         this.$message.success(resData.data.message)

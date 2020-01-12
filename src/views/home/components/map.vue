@@ -107,21 +107,24 @@ export default {
           this.regionList.forEach((item, index) => {
             if(item.distList.length > 0) {
               item.distList.forEach((item1, index1) => {
-                this.lnglatsList.push({
-                  companyName: item.company.companyName || "",
-                  latitude: item1.dist.latitude,
-                  longitude: item1.dist.longitude,
-                  name: item1.dist.name,
-                  address: item1.dist.address,
-                  meterConcentratorNum: item1.meterConcentratorNum,
-                  meterNodeNum: item1.meterNodeNum,
-                  meterNum: item1.meterNum,
-                  id: item1.id,
-                  companyId: item1.companyId
-                })
+                if(item1.dist && item1.dist.hasOwnProperty('latitude') && item1.dist.hasOwnProperty('longitude')) {
+                  this.lnglatsList.push({
+                    companyName: item.company.companyName || "",
+                    latitude: item1.dist.latitude,
+                    longitude: item1.dist.longitude,
+                    name: item1.dist.name,
+                    address: item1.dist.address,
+                    meterConcentratorNum: item1.meterConcentratorNum,
+                    meterNodeNum: item1.meterNodeNum,
+                    meterNum: item1.meterNum,
+                    id: item1.id,
+                    companyId: item1.companyId
+                  })
+                }
               })
             }
           })
+          console.log("lnglatsList", this.lnglatsList)
         }
 
         if(this.map === null) {

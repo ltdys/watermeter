@@ -123,7 +123,9 @@ export default {
     },
     async findGatherTimer() {
       let params = {
-        userId: this.userId
+        userId: this.userId,
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize
       }
       let resData = await findGatherTimer(params)
       if (resData.status === 200 && resData.data.code === 1) {
@@ -174,7 +176,8 @@ export default {
     },
     async delGatherTimer(row) {
       let params = {
-
+        userId: this.userId,
+        concentratorBlockAddress: row.concentratorBlockAddress
       }
       let resData = await delGatherTimer(params)
       if (resData.status === 200 && resData.data.code === 1) {
