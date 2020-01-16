@@ -231,6 +231,42 @@ export default {
         self.loading.close();
       }, 1500);
     }
+    // async uploadUserAndMeter () {
+    //   const self = this
+    //   self.$axios({
+    //     method: 'post',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+    //       'ziguangapi-validate-appid': '28647975',
+    //       'ziguangapi-validate-nonce': '44446543',
+    //       'ziguangapi-validate-timestamp': '1234567890'
+    //     },
+    //     url: `${process.env.VUE_APP_DOWNLOAD_API}/watermeter/uploadUserAndMeter`,
+    //     data: this.excelModel,
+    //     timeout: 20000
+    //   }).then(resData => {
+    //     console.log('res', resData)
+    //     if (resData.status === 200 && resData.data.code == 1) {
+    //       this.$message({
+    //         type: 'success',
+    //         message: resData.data.message,
+    //         duration: 2500
+    //       })
+    //     } else {
+    //       this.$message.warning(resData.data.message)
+    //     }
+    //   }).catch(resData => {
+    //     this.$message.warning(resData.data.message)
+    //   })
+    //   this.clearExcel()
+    //   this.excelModel.areasId = ""
+    //   this.areasList = []
+    //   this.$refs.upload.clearFiles()
+    //   setTimeout(() => {
+    //     self.loading.close();
+    //   }, 1500);
+    // }
   }
 }
 </script>

@@ -187,7 +187,7 @@
 </template>
 
 <script>
-import { findMeterConcentrator, getMeterNodes, getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct, meterNbIotLDownLoad } from '@/service/api'
+import { findMeterConcentrator, getMeterNodes, getMeterNbIotL, deleteMeterNbIot, findDistrict, operInstruct } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -344,13 +344,38 @@ export default {
     exportExcel () {
       this.meterNbIotLDownLoad()
     },
-    async meterNbIotLDownLoad () {
-      let params = {
-        userId: this.userId,
-        meterNbIot: this.search
+    meterNbIotLDownLoad () {
+      let that = this
+      console.log()
+      let param = {
+        userId: that.userId
       }
-      let resData = await meterNbIotLDownLoad(params);
-      console.log('res', resData)
+      that.$axios({
+        method: 'post',
+        headers: {
+          // "biz-source-param": "BLG",
+          'Content-Type': 'application/json',
+          'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+          'ziguangapi-validate-appid': '28647975',
+          'ziguangapi-validate-nonce': '44446543',
+          'ziguangapi-validate-timestamp': '1234567890'
+        },
+        url: `${process.env.VUE_APP_DOWNLOAD_API}/watermeter/meterNbIotLDownLoad`,
+        data: param,
+        responseType: 'blob',
+        timeout: 10000
+      }).then(res => {
+        console.log('res', res)
+        // that.downloadFile(res, that)
+        let blob = new Blob([res.data], { type: "application/x-xls" });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `水表管理.xlsx`;
+        link.click();
+        that.$message.success("下载成功！");
+      }).catch(resp => {
+        that.$message.error(resp.msg || '导出失败')
+      })
     },
     async getMeterNbIotL () {
       const self = this

@@ -48,35 +48,6 @@
             label="#"
           />
           <el-table-column
-            prop="meterusernum"
-            label="用户编号"
-            width="200"
-          />
-          <el-table-column
-            prop="meterusername"
-            label="用户名称"
-            width="120"
-          />
-          <!-- <el-table-column
-            prop="address"
-            :label="$t('fileManageHb.tableC')"
-          /> -->
-          <el-table-column
-            prop="telephone"
-            label="电话"
-            width="120"
-          />
-          <el-table-column
-            prop="meternbiottype"
-            label="表类型"
-            width="100"
-          />
-          <el-table-column
-            prop="meternbiotnum"
-            label="表编号"
-            width="200"
-          />
-          <el-table-column
             prop="areasname"
             label="小区"
             width="120"
@@ -85,6 +56,11 @@
             prop="meteruseraddress"
             label="楼栋"
             width="120"
+          />
+          <el-table-column
+            prop="meternbiottype"
+            label="表类型"
+            width="100"
           />
           <el-table-column
             prop="meterConcentratorNum"
@@ -97,9 +73,37 @@
             width="200"
           />
           <el-table-column
+            prop="meter_value"
+            label="表读数"
+          />
+          <el-table-column
+            prop="value"
+            label="用量"
+          />
+          <el-table-column
+            prop="meternbiotnum"
+            label="表编号"
+            width="200"
+          />
+          <el-table-column
             prop="imei"
             label="IMEI"
             width="150"
+          />
+          <el-table-column
+            prop="meterusernum"
+            label="用户编号"
+            width="200"
+          />
+          <el-table-column
+            prop="meterusername"
+            label="用户名称"
+            width="120"
+          />
+          <el-table-column
+            prop="telephone"
+            label="电话"
+            width="120"
           />
           <el-table-column
             label="安装日期"
@@ -109,14 +113,6 @@
               {{ scope.row.createtime | fFormatDate }}
             </template>
           </el-table-column>
-          <el-table-column
-            prop="meter_value"
-            label="表读数"
-          />
-          <el-table-column
-            prop="value"
-            label="用量"
-          />
           <el-table-column fixed="right" :label="$t('common.operation')" width="80">
             <template slot-scope="scope">
               <!-- <i class="el-icon-edit" @click="handleEdit(scope.row)"></i> -->

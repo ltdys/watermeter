@@ -72,10 +72,10 @@
         prop="meterNbIotNum"
         label="表编号"
       />
-      <!-- <el-table-column
-        prop="meterNbIotAddress"
-        label="表地址"
-      /> -->
+      <el-table-column
+        prop="meterType"
+        label="表类型"
+      />
       <el-table-column
         prop="value"
         label="用量"
@@ -115,10 +115,6 @@
       <el-table-column
         prop="meterState"
         label="表状态"
-      />
-      <el-table-column
-        prop="meterType"
-        label="表类型"
       />
       <!-- <el-table-column fixed="right" :label="$t('common.operation')" width="120">
         <template slot-scope="scope">
@@ -220,7 +216,6 @@ export default {
 
     },
     handleDelete () {
-      
     },
     pageChange (data) { // 每页条数切换回调事件
       this.pageObj.pageSize = data;

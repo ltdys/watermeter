@@ -34,26 +34,29 @@
         label="#"
       />
       <el-table-column
+        label="小区"
+        width="200"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.areasName }}
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="installAddress"
         label="安装地址"
         width="120"
-      />
-      <el-table-column
-        prop="specNum"
-        label="规格型号"
       />
       <el-table-column
         prop="num"
         label="表编号"
       />
       <el-table-column
-        prop="donot"
-        label="口径"
+        prop="specNum"
+        label="规格型号"
       />
       <el-table-column
-        prop="simCcid"
-        label="SIM卡CCID"
-        width="220"
+        prop="donot"
+        label="口径"
       />
       <el-table-column
         label="是否在线"
@@ -94,13 +97,10 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="小区"
-        width="200"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.areasName }}
-        </template>
-      </el-table-column>
+        prop="simCcid"
+        label="SIM卡CCID"
+        width="220"
+      />
       <el-table-column
         prop="remarks"
         label="备注"
@@ -130,7 +130,7 @@
 
 <script>
 // import axios from 'axios'
-import { getMeterBigList, deleteMeterBig, findDistrict, meterBigDownLoad } from '@/service/api'
+import { getMeterBigList, deleteMeterBig, findDistrict } from '@/service/api'
 import { treeDataUtil } from '@/utils/publicUtil'
 import myPagination from "@/components/pagination/my-pagination";
 import myEdit from './edit'
@@ -210,67 +210,39 @@ export default {
         self.pageObj.allTotal = resData.data.page.totalRow || 0
       }
     },
-    async meterBigDownLoad () { // 大表导出
+    meterBigDownLoad () { // 大表导出
+      let that = this
+      console.log()
       let param = {
-        userId: this.userId
+        userId: that.userId
       }
-      let res = await meterBigDownLoad(param);
-      console.log('res', res)
-      let data = res.data
-      let blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-      const fileName = 'ssss.xlsx'
-      if ('download' in document.createElement('a')) { // 非IE下载
-        const elink = document.createElement('a')
-        elink.download = fileName
-        elink.style.display = 'none'
-        elink.href = URL.createObjectURL(blob)
-        document.body.appendChild(elink)
-        elink.click()
-        URL.revokeObjectURL(elink.href) // 释放URL 对象
-        document.body.removeChild(elink)
-      } else { // IE10+下载
-        navigator.msSaveBlob(blob, fileName)
-      }
+      that.$axios({
+        method: 'post',
+        headers: {
+          // "biz-source-param": "BLG",
+          'Content-Type': 'application/json',
+          'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+          'ziguangapi-validate-appid': '28647975',
+          'ziguangapi-validate-nonce': '44446543',
+          'ziguangapi-validate-timestamp': '1234567890'
+        },
+        url: `${process.env.VUE_APP_DOWNLOAD_API}/watermeter/meterBigDownLoad`,
+        data: param,
+        responseType: 'blob',
+        timeout: 10000
+      }).then(res => {
+        console.log('res', res)
+        // that.downloadFile(res, that)
+        let blob = new Blob([res.data], { type: "application/x-xls" });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `大表管理.xlsx`;
+        link.click();
+        that.$message.success("下载成功！");
+      }).catch(resp => {
+        that.$message.error(resp.msg || '导出失败')
+      })
     },
-    // meterBigDownLoad () { // 大表导出
-    //   axios.create({
-    //     method: 'post',
-    //     baseURL: 'http://120.77.248.38:8099/watermeter/meterBigDownLoad',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
-    //       'ziguangapi-validate-appid': '28647975',
-    //       'ziguangapi-validate-nonce': '44446543',
-    //       'ziguangapi-validate-timestamp': '1234567890'
-    //     },
-    //     responseType: 'arraybuffer',
-    //     data: {
-    //       userId: this.userId
-    //     },
-    //     success: (res) => {
-    //       console.log(res);
-    //       let blob = new Blob([res.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-    //       const fileName = '导出信息.xlsx'
-    //       if ('download' in document.createElement('a')) { // 非IE下载
-    //         const elink = document.createElement('a')
-    //         elink.download = fileName
-    //         elink.style.display = 'none'
-    //         elink.href = URL.createObjectURL(blob)
-    //         document.body.appendChild(elink)
-    //         elink.click()
-    //         URL.revokeObjectURL(elink.href) // 释放URL 对象
-    //         document.body.removeChild(elink)
-    //       } else { // IE10+下载
-    //         navigator.msSaveBlob(blob, fileName)
-    //       }
-    //     }
-    //   })
-    //   // let param = {
-    //   //   userId: this.userId
-    //   // }
-    //   // let res = await meterBigDownLoad(param);
-    //   // console.log('res', res)
-    // },
     init () {
       this.findDistrict()
     },

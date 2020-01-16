@@ -214,7 +214,7 @@
 </template>
 
 <script>
-import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct, recentMeterDownLoad } from '@/service/api'
+import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct } from '@/service/api'
 import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -381,59 +381,52 @@ export default {
     handleDelete () {
 
     },
-    // recentMeterDownLoad () {
-    //   let that = this
-    //   let param = {
-    //     areasId: that.search.areasId
-    //   }
-    //   that.$axios({
-    //     method: 'post',
-    //     url: 'http://101.200.224.248:8099/watermeter/recentMeterDownLoad',
-    //     data: param,
-    //     responseType: 'blob'
-    //   }).then(res => {
-    //     that.downloadFile(res, that)
-    //   }).catch(resp => {
-    //     that.$message.error(resp.msg || '导出失败')
-    //   })
-    // },
-    // downloadFile (resp, that) {
-    //   let data = resp.data
-    //   // 此处提示自定义提示语，从header中获取
-    //   if (resp.headers['errormsg'] || !data) {
-    //     that.$message.error(decodeURI(resp.headers['errormsg']) || '导出失败')
-    //     return
-    //   }
-    //   let url = window.URL.createObjectURL(new Blob([data]))
-    //   let link = document.createElement('a')
-    //   link.style.display = 'none'
-    //   link.href = url
-    //   // 文件名在后端设置
-    //   link.setAttribute('download', decodeURI(resp.headers['filename']))
-    //   document.body.appendChild(link)
-    //   link.click()
-    // },
-    async recentMeterDownLoad () {
+    recentMeterDownLoad () {
+      let that = this
       let param = {
-        areasId: this.search.areasId
+        areasId: that.search.areasId
       }
-      let res = await recentMeterDownLoad(param);
-      console.log('res', res)
-      let data = res.data
-      let blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-      const fileName = '最近抄表.xlsx'
-      if ('download' in document.createElement('a')) { // 非IE下载
-        const elink = document.createElement('a')
-        elink.download = fileName
-        elink.style.display = 'none'
-        elink.href = URL.createObjectURL(blob)
-        document.body.appendChild(elink)
-        elink.click()
-        URL.revokeObjectURL(elink.href) // 释放URL 对象
-        document.body.removeChild(elink)
-      } else { // IE10+下载
-        navigator.msSaveBlob(blob, fileName)
+      that.$axios({
+        method: 'post',
+        headers: {
+          "biz-source-param": "BLG",
+          'Content-Type': 'application/json',
+          'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+          'ziguangapi-validate-appid': '28647975',
+          'ziguangapi-validate-nonce': '44446543',
+          'ziguangapi-validate-timestamp': '1234567890'
+        },
+        url: `${process.env.VUE_APP_DOWNLOAD_API}/watermeter/recentMeterDownLoad`,
+        data: param,
+        responseType: 'blob',
+        timeout: 10000
+      }).then(res => {
+        // that.downloadFile(res, that)
+        let blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `最近抄表.xlsx`;
+        link.click();
+        that.$message.success("下载成功！");
+      }).catch(resp => {
+        that.$message.error(resp.msg || '导出失败')
+      })
+    },
+    downloadFile (resp, that) {
+      let data = resp.data
+      // 此处提示自定义提示语，从header中获取
+      if (resp.headers['errormsg'] || !data) {
+        that.$message.error(decodeURI(resp.headers['errormsg']) || '导出失败')
+        return
       }
+      let url = window.URL.createObjectURL(new Blob([data]))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      // 文件名在后端设置
+      link.setAttribute('download', decodeURI(resp.headers['filename']))
+      document.body.appendChild(link)
+      link.click()
     },
     nbiotClick (item) { // 切换水表时
       console.log('水表', item)

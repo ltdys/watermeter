@@ -1,12 +1,11 @@
 import axios from 'axios'
-import { Message } from 'element-ui';
 import router from '@/router/router.js'
 // import store from '@/store/index.js'
 // console.log("--------", process.env)
 const service = axios.create({
   baseURL: "http://120.77.248.38:8099", // 120.77.248.38   101.200.224.248
   // baseURL: "http://101.200.224.248:8099", // 客户环境
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
