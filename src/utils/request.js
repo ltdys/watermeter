@@ -2,9 +2,12 @@ import axios from 'axios'
 import router from '@/router/router.js'
 // import store from '@/store/index.js'
 // console.log("--------", process.env)
+
+/* 打包文件要同时改变 .env.production  VUE_APP_DOWNLOAD_API */
+
 const service = axios.create({
-  baseURL: "http://120.77.248.38:8099", // 120.77.248.38   101.200.224.248
-  // baseURL: "http://101.200.224.248:8099", // 客户环境
+  // baseURL: "http://120.77.248.38:8099", // 120.77.248.38   101.200.224.248
+  baseURL: "http://101.200.224.248:8099", // 客户环境
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

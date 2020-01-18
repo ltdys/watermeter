@@ -87,6 +87,7 @@
           <el-table-column
             prop="meterNbIotNum"
             label="表编号"
+            width="200"
           />
           <!-- <el-table-column
             prop="meterNbIotAddress"
@@ -113,10 +114,13 @@
             label="上次读数"
           />
           <el-table-column
-            prop="readTimePrev"
             label="上次时间"
             width="160"
-          />
+          >
+            <template slot-scope="scope">
+              {{ scope.row.readTimePrev | fFormatDate }}
+            </template>
+          </el-table-column>
           <el-table-column
             label="通信状态"
           >
@@ -131,6 +135,7 @@
           <el-table-column
             prop="meterType"
             label="表类型"
+            width="160"
           />
           <!-- <el-table-column
             prop="none"

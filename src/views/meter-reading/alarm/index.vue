@@ -46,10 +46,10 @@
           :height="tableHeightPage - 30"
           highlight-current-row
         >
-          <el-table-column
+          <!-- <el-table-column
             type="selection"
             width="55"
-          />
+          /> -->
           <el-table-column
             type="index"
             width="50"
@@ -66,6 +66,7 @@
           <el-table-column
             prop="meterNbiotNum"
             label="表号"
+            width="160"
           />
           <el-table-column
             prop="meter_type"
@@ -76,13 +77,21 @@
             label="当前读数"
           />
           <el-table-column
-            prop="read_time"
             label="读取时间"
-          />
+            width="160"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.read_time | fFormatDate }}
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="read_time_pre"
             label="上次读取时间"
-          />
+            width="160"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.read_time_pre | fFormatDate }}
+            </template>
+          </el-table-column>
           <el-table-column
             prop="meter_value_pre"
             label="上次读数"

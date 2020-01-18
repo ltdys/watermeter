@@ -15,6 +15,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" class="custom-button" size="mini" @click="meterBigDownLoad">{{ $t('deviceManageLarge.toolbarA') }}</el-button>
+        <el-button type="primary" class="custom-button" icon="el-icon-refresh" @click="refresh">{{ $t('common.refresh') }}</el-button>
         <!-- <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarB') }}</el-button>
         <el-button type="primary" class="custom-button" size="mini">{{ $t('deviceManageLarge.toolbarC') }}</el-button> -->
       </el-form-item>
@@ -44,11 +45,12 @@
       <el-table-column
         prop="installAddress"
         label="安装地址"
-        width="120"
+        width="200"
       />
       <el-table-column
         prop="num"
         label="表编号"
+        width="160"
       />
       <el-table-column
         prop="specNum"
@@ -209,6 +211,16 @@ export default {
         })
         self.pageObj.allTotal = resData.data.page.totalRow || 0
       }
+    },
+    refresh () {
+      this.search = {
+        num: '',
+        installAddress: '',
+        areasId: '',
+        specNum: '',
+        simCcid: ''
+      }
+      this.init()
     },
     meterBigDownLoad () { // 大表导出
       let that = this

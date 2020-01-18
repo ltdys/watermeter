@@ -54,6 +54,9 @@
       <el-form-item v-show="search.meterNodeNum == '' || tableData.length !== 0">
         <el-button type="primary" size="mini" class="custom-button" @click="writeWaterMeter">写水表地址</el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button type="primary" class="custom-button" icon="el-icon-refresh" @click="refresh">{{ $t('common.refresh') }}</el-button>
+      </el-form-item>
     </el-form>
 
     <el-table
@@ -83,12 +86,12 @@
       <el-table-column
         prop="meterConcentratorNum"
         label="集中器编号"
-        width="120"
+        width="160"
       />
       <el-table-column
         prop="meterNodeNum"
         label="采集器编号"
-        width="120"
+        width="160"
       />
       <el-table-column
         label="当前状态"
@@ -279,6 +282,16 @@ export default {
   },
 
   methods: {
+    refresh () {
+      this.search = {
+        meterNbiotNum: '',
+        meterConcentratorNum: '',
+        meterNodeNum: '',
+        meterSpec: '',
+        simCardCcid: ''
+      }
+      this.init()
+    },
     handleValve (item) { // 阀门操作
       const self = this;
       console.log('item', item)
