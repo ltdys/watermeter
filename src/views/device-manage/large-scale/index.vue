@@ -245,7 +245,11 @@ export default {
       }).then(res => {
         console.log('res', res)
         // that.downloadFile(res, that)
-        let blob = new Blob([res.data], { type: "application/x-xls" });
+        // let blob = new Blob([res.data], { type: "application/x-xls" });
+        let blob = new Blob([res.data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
         let link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
         link.download = `大表管理.xlsx`;

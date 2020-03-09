@@ -387,6 +387,11 @@ export default {
 
     },
     recentMeterDownLoad () {
+      if(this.tableData.length === 0) {
+        this.$message.warning("抱歉，没有任何数据可导出！")
+        return
+      }
+
       let that = this
       let param = {
         areasId: that.search.areasId
@@ -407,7 +412,11 @@ export default {
         timeout: 10000
       }).then(res => {
         // that.downloadFile(res, that)
-        let blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        // let blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        let blob = new Blob([res.data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
         let link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
         link.download = `最近抄表.xlsx`;

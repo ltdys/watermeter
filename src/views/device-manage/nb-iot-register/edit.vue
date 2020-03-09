@@ -15,7 +15,7 @@
           clearable
           filterable
           :props="setParent"
-          @change="changeParent"
+          @change="changeParent(0)"
         />
       </el-form-item>
       <!-- <el-form-item label="使用状态">
@@ -49,8 +49,8 @@
         </el-select>
       </el-form-item>
       <el-form-item label="采集器编号">
-        <!-- <el-input v-model="form.meterNodeNum" clearable /> -->
-        <el-select v-model="form.meterNodeNum" clearable filterable @change="changeJzq">
+        <!-- <el-input v-model="form.meterNodeNum" clearable /> @change="changeJzq" -->
+        <el-select v-model="form.meterNodeNum" clearable filterable>
           <el-option
             v-for="item in cjqList"
             :key="item.num"
@@ -194,6 +194,19 @@ export default {
         currentPage: 1,
         pageSize: 10000
       }
+      this.form.meterNodeNum = "";
+      this.getMeterNodes(params)
+    },
+    changeJzq1() {  // 父组件调用，根据集中器查询采集器
+      let val = this.form.meterConcentratorNum
+      let id = this.jzqList.filter(item => {
+        return val == item.meterConcentratorNum
+      })[0].meterConcentratorId
+      const params = {
+        mcId: id,
+        currentPage: 1,
+        pageSize: 10000
+      }
       this.getMeterNodes(params)
     },
     async getMeterNodes (params) { // 获取采集器
@@ -229,7 +242,8 @@ export default {
         }
       }
     },
-    changeParent () {
+    // operType 操作类型，0 手动  1 父组件调用
+    changeParent (operType) {
       // if(this.areaObject.areasList && this.areaObject.areasList.length > 0) {
       //   this.form.meterAreasId = this.areaObject.areasList[this.areaObject.areasList.length - 1]
       //   console.log("this.form.meterAreasId", this.form.meterAreasId)
@@ -242,6 +256,10 @@ export default {
         console.log("this.form.meterAreasId", this.form.meterAreasId)
       } else {
         this.form.meterAreasId = ""
+      }
+      if(operType == 0) {
+        this.form.meterConcentratorNum = "";
+        this.form.meterNodeNum = "";
       }
       this.findMeterConcentrator()
     },

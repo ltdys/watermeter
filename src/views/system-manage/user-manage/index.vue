@@ -50,6 +50,11 @@
         width="180"
       />
       <el-table-column
+        prop="address"
+        label="所属区域"
+        width="180"
+      />
+      <el-table-column
         prop="rolename"
         :label="$t('systemManageUser.tableC')"
       />

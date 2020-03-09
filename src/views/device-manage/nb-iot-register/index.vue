@@ -152,7 +152,7 @@
     />
 
     <el-dialog :title="title" :visible.sync="addVisible" :close-on-click-modal="false" @close="close">
-      <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" />
+      <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" ref="editRef"/>
     </el-dialog>
 
     <!-- <el-dialog :visible="gatherVisiable" title="写水表地址" @close="gatherClose">
@@ -380,7 +380,11 @@ export default {
       }).then(res => {
         console.log('res', res)
         // that.downloadFile(res, that)
-        let blob = new Blob([res.data], { type: "application/x-xls" });
+        // let blob = new Blob([res.data], { type: "application/x-xls" });
+        let blob = new Blob([res.data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
         let link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
         link.download = `水表管理.xlsx`;
@@ -429,9 +433,14 @@ export default {
         return item.id == row.meterAreasId
       })[0].path
 
+      this.copyForm = row
+      this.form = JSON.parse(JSON.stringify(this.copyForm))
       this.$nextTick(() => {
-        this.copyForm = row
-        this.form = JSON.parse(JSON.stringify(this.copyForm))
+        this.$refs['editRef'].changeParent(1)
+
+        setTimeout(() => {
+          this.$refs['editRef'].changeJzq1()
+        }, 2000)
       })
     },
     handleDelete (row) {
