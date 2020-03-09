@@ -46,7 +46,7 @@
       />
       <el-table-column
         prop="companyname"
-        :label="$t('systemManageUser.tableB')"
+        label="所属组织"
         width="180"
       />
       <el-table-column

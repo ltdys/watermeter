@@ -121,6 +121,7 @@ export default {
       }
     },
     async showDistrictInMap () {
+      this.lnglatsList = [];
       let params = {
         userId: this.userId,
         companyId: this.companyId,

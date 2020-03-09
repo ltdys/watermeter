@@ -299,7 +299,7 @@ export default {
       this.search = {
         type: '',
         value: '',
-        areasId: "",
+        areasId: this.search.areasId,
         num: "", // 用户编号
         meterNbiotNum: "", // 编号
         meterType: "", // 表类型
