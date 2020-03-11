@@ -137,6 +137,12 @@
             label="表类型"
             width="160"
           />
+          <el-table-column fixed="right" label="操作" width="120">
+            <template slot-scope="scope">
+              <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">历史查询</el-button> -->
+              <span class="lately-historyquery" @click="handleClick(scope.row)">历史查询</span>
+            </template>
+          </el-table-column>
           <!-- <el-table-column
             prop="none"
             label="集中器编号"
@@ -215,6 +221,10 @@
         123321
       </div>
     </el-dialog>
+
+    <el-dialog title="历史查询" :visible.sync="historyVisible" :close-on-click-modal="false" @close="historyClose">
+      <my-history  @close="historyClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -223,12 +233,13 @@ import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIot
 import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
+import myHistory from "./history.vue";
 export default {
 
   name: 'lately',
 
   components: {
-    myPagination, myRegion3
+    myPagination, myRegion3, myHistory
   },
 
   mixins: [list_mixins],
@@ -283,7 +294,8 @@ export default {
       checkMeterConcentratorNum: "", // 选中的集中器编号
       checkNum: "", // 选中的采集器编号
       checkSb: {}, // 选中的水表
-      loading: false
+      loading: false,
+      historyVisible: false
     }
   },
 
@@ -379,6 +391,9 @@ export default {
     },
     searchSubmit () {
       this.init()
+    },
+    handleClick(row) {
+      this.historyVisible = true
     },
     handleEdit () {
 
@@ -530,6 +545,9 @@ export default {
     },
     readClose () {
       this.readVisiable = false
+    },
+    historyClose() {
+      this.historyVisible = false
     },
     gatherSubmit () {
 
@@ -717,7 +735,7 @@ export default {
       width: 120px !important;
     }
     .el-dialog {
-      width: 550px !important;
+      width: 650px !important;
     }
     .gather-wrap {
       height: 400px;
@@ -844,6 +862,11 @@ export default {
       font-size: 40px;
       font-weight: bold;
       color: #343844;
+    }
+    &-historyquery {
+      cursor: pointer;
+      text-decoration: underline;
+      color: #0084FF;
     }
   }
 </style>
