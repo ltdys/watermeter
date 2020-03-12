@@ -315,7 +315,7 @@ export default {
 
   created () {
     let resourcesList = JSON.parse(localStorage.getItem("USER_INFO")).resources
-    if (resourcesList.length !== 0) {
+    if (resourcesList && resourcesList.length !== 0) {
       let comL = resourcesList.filter(item => {
         if (item.resName == '用户管理' && item.oper == '1') {
           return item

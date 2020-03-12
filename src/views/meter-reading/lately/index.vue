@@ -32,6 +32,17 @@
           <el-form-item>
             <el-button type="primary" size="mini" class="custom-button" @click="handleRead">{{ $t('meterReadingLately.toolbarE') }}</el-button>
           </el-form-item>
+          <el-form-item>
+            <el-date-picker
+              v-model="syncReadDate"
+              type="date"
+              size="mini"
+              placeholder="抄表日期">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="mini" class="custom-button" @click="handleSyncRead">同步读取到到收费系统</el-button>
+          </el-form-item>
           <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarF') }}</el-button>
           </el-form-item> -->
@@ -137,6 +148,30 @@
             label="表类型"
             width="160"
           />
+          <el-table-column
+            label="电池电压"
+            width="120"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.batteryLevel || 0 }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="上行信号强度"
+            width="120"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.signalIntensity || 0 }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="下行信号强度"
+            width="120"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.signalIntensityDown || 0 }}
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
               <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">历史查询</el-button> -->
@@ -229,7 +264,7 @@
 </template>
 
 <script>
-import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct } from '@/service/api'
+import { recentMeterReading, findMeterConcentrator, getMeterNodes, getMeterNbIotL, operInstruct, synchronizeMeterData } from '@/service/api'
 import myRegion3 from '@/components/common/region3'
 import myPagination from "@/components/pagination/my-pagination";
 import { list_mixins } from '@/mixins'
@@ -295,7 +330,10 @@ export default {
       checkNum: "", // 选中的采集器编号
       checkSb: {}, // 选中的水表
       loading: false,
-      historyVisible: false
+      historyVisible: false,
+      syncReadDate: "",
+      syncCompanyId: "",
+      syncAreasId: ""
     }
   },
 
@@ -387,6 +425,15 @@ export default {
     handleNodeClick (data) {
       console.log('data', data)
       this.search.areasId = data.id
+
+      // 超级管理员,是组织还是区域,如果存在，是区域
+      if(data.path) {  // 区域
+        this.syncCompanyId = this.company_id;
+        this.syncAreasId = data.id
+      } else {
+        this.syncCompanyId = data.id;
+        this.syncAreasId = "";
+      }
       this.recentMeterReading()
     },
     searchSubmit () {
@@ -588,6 +635,44 @@ export default {
       this.gatherVisiable = true
       this.findMeterConcentrator()
     },
+    handleSyncRead() {
+      if(!this.syncReadDate) {
+        this.$message.warning("请选择抄表日期！")
+        return
+      }
+      if(this.role_name === "超级管理员") {
+        if(this.search.areasId === "") {
+          this.$message.warning("请至少选择一个组织！");
+          return
+        }
+      }
+
+      this.synchronizeMeterData()
+    },
+    async synchronizeMeterData() {
+      let params = {}
+      if(this.role_name === "超级管理员") {
+        params = {
+          Date: this.fFormatDate(this.syncReadDate, '{y}{m}{d}'),
+          userId: this.userId,
+          companyId: this.syncCompanyId,
+          areasId: this.syncAreasId
+        }
+      } else {
+        params = {
+          Date: this.fFormatDate(this.syncReadDate, '{y}{m}{d}'),
+          userId: this.userId,
+          companyId: this.company_id,
+          areasId: this.syncAreasId
+        }
+      }
+      console.log("synchronizeMeterData======", params)
+
+      let resData = await synchronizeMeterData(params);
+      if(resData.status === 200) {
+        this.$message.info(resData.data.message)
+      }
+    },
     // 集中器查询
     async findMeterConcentrator () {
       let params = {
@@ -713,6 +798,41 @@ export default {
       } else {
         return window.getComputedStyle(obj, null)[attr]; // w3c 浏览器
       }
+    },
+    fFormatDate (time, cFormat) {
+      if (!time) return ""
+      if (arguments.length === 0) return null
+      if ((time + '').length === 10) {
+        time = +time * 1000
+      }
+
+      var format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'; var date
+      if (typeof time === 'object') {
+        date = time
+      } else {
+        date = new Date(time)
+      }
+
+      var formatObj = {
+        y: date.getFullYear(),
+        m: date.getMonth() + 1,
+        d: date.getDate(),
+        h: date.getHours(),
+        i: date.getMinutes(),
+        s: date.getSeconds(),
+        a: date.getDay()
+      }
+
+      var time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+        var value = formatObj[key]
+        if (key === 'a') return ['一', '二', '三', '四', '五', '六', '日'][value - 1]
+        if (result.length > 0 && value < 10) {
+          value = '0' + value
+        }
+        return value || 0
+      })
+
+      return time_str
     }
   }
 }
@@ -732,7 +852,7 @@ export default {
       }
     }
     .el-select, .el-input {
-      width: 120px !important;
+      width: 130px !important;
     }
     .el-dialog {
       width: 650px !important;

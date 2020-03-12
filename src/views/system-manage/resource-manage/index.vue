@@ -107,6 +107,14 @@
               {{ scope.row.status | fOrgChange }}
             </template>
           </el-table-column>
+          <el-table-column
+            width="150"
+            label="拓展信息"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.dbfExport }}
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" :label="$t('common.operation')" width="120">
             <template slot-scope="scope">
               <i class="el-icon-edit" @click="handleEdit(scope.row)" />
@@ -171,6 +179,9 @@
           <el-select v-model="form.status">
             <el-option v-for="(item, index) in statusList" :key="index" :label="item.label" :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="拓展信息">
+          <el-input v-model="form.dbfExport" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('ruleForm')">{{ $t('common.determine') }}</el-button>
@@ -259,7 +270,8 @@ export default {
         status: '', // 状态
         parentId: '', // 父组织Id
         createBy: '', // 创建者
-        t3: '' // 测试图片
+        t3: '', // 测试图片
+        dbfExport: ''  // 拓展信息
       },
       logoForm: {
         logoFile: "", //logo图片
@@ -446,6 +458,7 @@ export default {
       this.form.status = data.status
       this.form.parentId = data.parentId
       this.form.createBy = data.createBy
+      this.form.dbfExport = data.dbfExport
       this.banObj.IsCode = true
       this.type = 1
       this.addType = 2
@@ -466,7 +479,8 @@ export default {
         status: '', // 状态
         parentId: '', // 父组织Id
         createBy: '', // 创建者
-        t3: '' // 测试图片
+        t3: '', // 测试图片
+        dbfExport: ''  // 拓展信息
       }
       this.banObj.IsCode = false
       this.resourceVisible = true
@@ -486,7 +500,8 @@ export default {
         status: '', // 状态
         parentId: '', // 父组织Id
         createBy: '', // 创建者
-        t3: '' // 测试图片
+        t3: '', // 测试图片
+        dbfExport: ''  // 拓展信息
       }
       this.form.parentId = this.search.parentId === '' ? '' : this.search.parentId
       this.banObj.IsCode = false
@@ -552,6 +567,7 @@ export default {
       this.form.status = data.status
       this.form.parentId = data.parentId
       this.form.createBy = data.createBy
+      this.form.dbfExport = data.dbfExport
       this.banObj.IsCode = true
       this.type = 1
       this.addType = 1
@@ -573,7 +589,8 @@ export default {
         email: this.form.email,
         status: this.form.status,
         parentId: parentId,
-        createBy: this.userName
+        createBy: this.userName,
+        dbfExport: this.form.dbfExport
       }
       let resData = await addCompany(params)
       if (resData.status === 200 && resData.data.code === 1) {
@@ -603,7 +620,8 @@ export default {
         email: this.form.email,
         status: this.form.status,
         updateBy: this.userName,
-        parentId: parentId
+        parentId: parentId,
+        dbfExport: this.form.dbfExport
       }
       let resData = await updateCompany(params)
       if (resData.status === 200 && resData.data.code === 1) {
@@ -670,7 +688,8 @@ export default {
         status: '', // 状态
         parentId: '', // 父组织Id
         createBy: '', // 创建者
-        t3: '' // 测试图片
+        t3: '', // 测试图片
+        dbfExport: ''  // 拓展信息
       }
       this.init()
     }

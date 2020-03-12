@@ -257,3 +257,6 @@ export const updateGatherTimer = params => axios.post('/watermeter/updateGatherT
 
 // 定时抄表删除
 export const delGatherTimer = params => axios.post('/watermeter/delGatherTimer', params)
+
+// 同步读数到收费系统 
+export const synchronizeMeterData = params => axios.post('/watermeter/synchronizeMeterData', params)
