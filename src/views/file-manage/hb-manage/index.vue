@@ -4,7 +4,7 @@
       <el-col :span="24">
         <el-form ref="search" :inline="true" :model="search" class="toolbar" size="mini">
           <el-form-item :label="$t('fileManageHb.toolbarA')">
-            <el-select v-model="search.type" clearable filterable>
+            <el-select v-model="search.type" clearable filterable @change="searchChange">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -63,22 +63,14 @@
             width="100"
           />
           <el-table-column
-            prop="meterConcentratorNum"
+            prop="meterconcentratornum"
             label="集中器编号"
             width="200"
           />
           <el-table-column
-            prop="meterNodeNum"
+            prop="meternodenum"
             label="采集器编号"
             width="200"
-          />
-          <el-table-column
-            prop="meter_value"
-            label="表读数"
-          />
-          <el-table-column
-            prop="value"
-            label="用量"
           />
           <el-table-column
             prop="meternbiotnum"
@@ -99,6 +91,11 @@
             prop="meterusername"
             label="用户名称"
             width="120"
+          />
+          <el-table-column
+            prop="meteruseridnumber"
+            label="身份证号码"
+            width="160"
           />
           <el-table-column
             prop="telephone"
@@ -171,8 +168,8 @@ export default {
         areasId: "",
         num: "", // 用户编号
         meterNbiotNum: "", // 编号
-        IMEI: "",
-        address: "" // 安装地址
+        imei: "",
+        installAddress: "" // 安装地址
       },
       pageObj: {
         allTotal: 0, // 总条数
@@ -197,7 +194,8 @@ export default {
         floorNo: '',
         unitNo: '',
         roomNo: '',
-        namePy: ''
+        namePy: '',
+        address: ''
       },
       options: [{
         value: 0,
@@ -249,6 +247,10 @@ export default {
       }
     },
     async getMeterUserAndMeterNbIot () {
+      this.search.num = "";
+      this.search.meterNbiotNum = "";
+      this.search.imei = "";
+      this.search.installAddress = "";
       switch (this.search.type) {
         case 0:
           this.search.num = this.search.value
@@ -257,11 +259,18 @@ export default {
           this.search.meterNbiotNum = this.search.value
           break;
         case 2:
-          this.search.IMEI = this.search.value
+          this.search.imei = this.search.value
           break;
         case 3:
-          this.search.address = this.search.value
+          this.search.installAddress = this.search.value
           break;
+      }
+      let userInfo = JSON.parse(localStorage.getItem("USER_INFO"))
+      let role_name1;
+      let company_id1;
+      if(userInfo) {
+        role_name1 = userInfo.roleName
+        company_id1 = this.role_name1 === "超级管理员" ? "" : userInfo.companyId
       }
       let params = {
         areasId: this.search.areasId,
@@ -270,11 +279,12 @@ export default {
         },
         meterNbIot: {
           meterNbiotNum: this.search.meterNbiotNum, // 编号
-          IMEI: this.search.IMEI,
-          address: this.search.address // 安装地址
+          imei: this.search.imei,
+          installAddress: this.search.installAddress // 安装地址
         },
         currentPage: this.pageObj.currentPage,
-        pageSize: this.pageObj.pageSize
+        pageSize: this.pageObj.pageSize,
+        companyId: company_id1
       }
       let resData = await getMeterUserAndMeterNbIot(params)
       if (resData.status === 200) {
@@ -364,6 +374,7 @@ export default {
       data.name = data.meterusername
       data.idNumber = data.meteruseridnumber
       data.tel = data.telephone
+      data.address = data.meteruseraddress
       this.form = JSON.parse(JSON.stringify(data))
 
       // this.form.nbiotNum = data.meternbiotnum
@@ -431,13 +442,21 @@ export default {
         floorNo: '',
         unitNo: '',
         roomNo: '',
-        namePy: ''
+        namePy: '',
+        address: ''
       }
       this.getMeterUserAndMeterNbIot()
       // this.userAddVisible = false
     },
     tableClose () {
       this.tableAddVisible = false
+    },
+    searchChange() {
+      this.search.value = "";
+      this.search.num = "";
+      this.search.meterNbiotNum = "";
+      this.search.imei = "";
+      this.search.installAddress = "";
     }
   }
 }

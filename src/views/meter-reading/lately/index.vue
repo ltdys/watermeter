@@ -33,15 +33,7 @@
             <el-button type="primary" size="mini" class="custom-button" @click="handleRead">{{ $t('meterReadingLately.toolbarE') }}</el-button>
           </el-form-item>
           <el-form-item>
-            <el-date-picker
-              v-model="syncReadDate"
-              type="date"
-              size="mini"
-              placeholder="抄表日期">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="mini" class="custom-button" @click="handleSyncRead">同步读取到到收费系统</el-button>
+            <el-button type="primary" size="mini" class="custom-button" @click="handleSync">同步读取到到收费系统</el-button>
           </el-form-item>
           <!-- <el-form-item>
             <el-button type="primary" size="mini" class="custom-button">{{ $t('meterReadingLately.toolbarF') }}</el-button>
@@ -251,9 +243,27 @@
       </div>
     </el-dialog>
 
+    
+
     <el-dialog :visible="readVisiable" title="当前读数" :close-on-click-modal="false" @close="readClose">
       <div class="read-wrap">
         123321
+      </div>
+    </el-dialog>
+
+    <el-dialog :visible="syncVisiable" title="同步读数到收费系统" :close-on-click-modal="false" @close="syncClose" class="sync-dialog">
+      <div style="margin-left: 65px">
+        抄表日期：
+        <el-date-picker
+          v-model="syncReadDate"
+          type="date"
+          size="mini"
+          placeholder="选择日期">
+        </el-date-picker>
+      </div>
+      <div style="margin-top: 20px;margin-left: 120px">
+        <el-button type="primary" @click="handleSyncRead('deployForm')" size="mini">同步</el-button>
+        <el-button size="mini" @click="syncVisiable = false">返回</el-button>
       </div>
     </el-dialog>
 
@@ -333,7 +343,8 @@ export default {
       historyVisible: false,
       syncReadDate: "",
       syncCompanyId: "",
-      syncAreasId: ""
+      syncAreasId: "",
+      syncVisiable: false
     }
   },
 
@@ -447,6 +458,9 @@ export default {
     },
     handleDelete () {
 
+    },
+    handleSync () {
+      this.syncVisiable = true
     },
     recentMeterDownLoad () {
       if(this.tableData.length === 0) {
@@ -593,6 +607,10 @@ export default {
     readClose () {
       this.readVisiable = false
     },
+    syncClose() {
+      this.syncVisiable = false
+      this.syncReadDate = ""
+    },
     historyClose() {
       this.historyVisible = false
     },
@@ -671,6 +689,7 @@ export default {
       let resData = await synchronizeMeterData(params);
       if(resData.status === 200) {
         this.$message.info(resData.data.message)
+        this.syncClose()
       }
     },
     // 集中器查询
@@ -852,10 +871,15 @@ export default {
       }
     }
     .el-select, .el-input {
-      width: 130px !important;
+      width: 140px !important;
     }
     .el-dialog {
       width: 650px !important;
+    }
+    .sync-dialog {
+      .el-dialog {
+        width: 400px !important;
+      }
     }
     .gather-wrap {
       height: 400px;

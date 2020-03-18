@@ -38,6 +38,9 @@
       <el-form-item label="用户名称" prop="name">
         <el-input v-model="form.name" clearable />
       </el-form-item>
+      <el-form-item label="楼栋地址">
+        <el-input v-model="form.address" clearable />
+      </el-form-item>
       <el-form-item label="身份证号码">
         <el-input v-model="form.idNumber" clearable />
       </el-form-item>
