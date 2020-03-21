@@ -26,6 +26,9 @@
       <el-form-item label="规格型号编码">
         <el-input v-model="form.specNum" clearable />
       </el-form-item>
+      <el-form-item label="口径">
+        <el-input v-model="form.caliber" clearable />
+      </el-form-item>
       <el-form-item label="SIM卡CCID">
         <el-input v-model="form.simCcid" clearable />
       </el-form-item>

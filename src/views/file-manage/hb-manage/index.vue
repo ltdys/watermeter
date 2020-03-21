@@ -25,6 +25,9 @@
             <!-- <el-button type="primary" size="mini" class="custom-button" @click="addUser">{{ $t('fileManageHb.toolbarB') }}</el-button>
             <el-button type="primary" size="mini" class="custom-button" @click="addTable">{{ $t('fileManageHb.toolbarC') }}</el-button> -->
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="mini" class="custom-button" @click="hbmanageDownLoad">导出EXCEL</el-button>
+          </el-form-item>
         </el-form>
       </el-col>
       <el-col :span="4" :style="{height: (tableHeightPage + 52) + 'px', background: '#E9E9E9'}">
@@ -215,7 +218,8 @@ export default {
       waterHouseTypeList: [],
       waterNatureList: [],
       nbIotList: [],
-      treeData: []
+      treeData: [],
+      exportExcelName: ""
     }
   },
 
@@ -391,7 +395,7 @@ export default {
       this.userAddVisible = true
     },
     handleDelete (row) {
-      this.$confirm(`此操作将永久删除 ${row.meterusername}, 是否继续?`, '提示', {
+      this.$confirm(`确定要解绑当前水表设备，并删除用户 ${row.meterusername}吗？, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -418,6 +422,7 @@ export default {
     },
     handleNodeClick (data) {
       this.search.areasId = data.id
+      this.exportExcelName = data.companyName || "最近抄表";
       this.init()
     },
     addUser () {
@@ -457,6 +462,81 @@ export default {
       this.search.meterNbiotNum = "";
       this.search.imei = "";
       this.search.installAddress = "";
+    },
+    hbmanageDownLoad() {
+      if(this.tableDataUser.length === 0) {
+        this.$message.warning("抱歉，没有任何数据可导出！")
+        return
+      }
+      this.search.num = "";
+      this.search.meterNbiotNum = "";
+      this.search.imei = "";
+      this.search.installAddress = "";
+      switch (this.search.type) {
+        case 0:
+          this.search.num = this.search.value
+          break;
+        case 1:
+          this.search.meterNbiotNum = this.search.value
+          break;
+        case 2:
+          this.search.imei = this.search.value
+          break;
+        case 3:
+          this.search.installAddress = this.search.value
+          break;
+      }
+      let userInfo = JSON.parse(localStorage.getItem("USER_INFO"))
+      let role_name1;
+      let company_id1;
+      if(userInfo) {
+        role_name1 = userInfo.roleName
+        company_id1 = this.role_name1 === "超级管理员" ? "" : userInfo.companyId
+      }
+      let params = {
+        areasId: this.search.areasId,
+        meterUser: {
+          num: this.search.num
+        },
+        meterNbIot: {
+          meterNbiotNum: this.search.meterNbiotNum, // 编号
+          imei: this.search.imei,
+          installAddress: this.search.installAddress // 安装地址
+        },
+        currentPage: this.pageObj.currentPage,
+        pageSize: this.pageObj.pageSize,
+        companyId: company_id1
+      }
+      let that = this
+      that.$axios({
+        method: 'post',
+        headers: {
+          "biz-source-param": "BLG",
+          'Content-Type': 'application/json',
+          'ziguangapi-validate-signature': '1172fe36b1a8c31c3580922538a91babfcf6f182096811eec5d665a78b49b0f1',
+          'ziguangapi-validate-appid': '28647975',
+          'ziguangapi-validate-nonce': '44446543',
+          'ziguangapi-validate-timestamp': '1234567890'
+        },
+        url: `${process.env.VUE_APP_DOWNLOAD_API}/watermeter/meterUserDownLoad `,
+        data: params,
+        responseType: 'blob',
+        timeout: 10000
+      }).then(res => {
+        // that.downloadFile(res, that)
+        // let blob = new Blob([res.data], { type: "application/vnd.ms-excel" });
+        let blob = new Blob([res.data], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `${this.exportExcelName}.xlsx`;
+        link.click();
+        that.$message.success("下载成功！");
+      }).catch(resp => {
+        that.$message.error(resp.msg || '导出失败')
+      })
     }
   }
 }

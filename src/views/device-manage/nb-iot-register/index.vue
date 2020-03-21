@@ -34,7 +34,7 @@
         <el-button type="primary" size="mini" class="custom-button" @click="addNbIotRegister">{{ $t('common.add') }}</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="mini" class="custom-button" @click="exportExcel">{{ $t('deviceManageRegister.toolbarB') }}</el-button>
+        <el-button type="primary" size="mini" class="custom-button" @click="exportExcel">导出EXCEL</el-button>
       </el-form-item>
       <!-- <el-form-item>
         <el-button type="primary" size="mini" class="custom-button">{{ $t('deviceManageRegister.toolbarC') }}</el-button>

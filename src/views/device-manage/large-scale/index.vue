@@ -57,7 +57,7 @@
         label="规格型号"
       />
       <el-table-column
-        prop="donot"
+        prop="caliber"
         label="口径"
       />
       <el-table-column
@@ -169,6 +169,7 @@ export default {
       form: {
         num: '', // 大表编号
         specNum: '', // 规格型号编码
+        caliber: '', // 口径
         simCcid: '', // SIM卡CCID
         isOnline: 1, // 0不在线 1在线
         rscp: '', // 信号强度
@@ -244,6 +245,8 @@ export default {
         timeout: 10000
       }).then(res => {
         console.log('res', res)
+
+        
         // that.downloadFile(res, that)
         // let blob = new Blob([res.data], { type: "application/x-xls" });
         let blob = new Blob([res.data], {
@@ -348,6 +351,7 @@ export default {
       this.form = {
         num: '', // 大表编号
         specNum: '', // 规格型号编码
+        caliber: '',
         simCcid: '', // SIM卡CCID
         isOnline: '', // 0不在线 1在线
         rscp: '', // 信号强度

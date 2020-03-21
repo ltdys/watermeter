@@ -260,3 +260,6 @@ export const delGatherTimer = params => axios.post('/watermeter/delGatherTimer',
 
 // 同步读数到收费系统 
 export const synchronizeMeterData = params => axios.post('/watermeter/synchronizeMeterData', params)
+
+// 个人用水量统计
+export const meterUserAnalysisMeterRead = params => axios.post('/watermeter/meterUserAnalysisMeterRead', params)

@@ -212,7 +212,11 @@ export default {
       }
       let resData = await addMeterUser(params)
       if (resData.status === 200) {
-        this.$message.success(resData.data.message)
+        this.$message({
+          type: 'success',
+          message: resData.data.message,
+          duration: 2500
+        })
         this.close()
       }
     },
@@ -223,7 +227,11 @@ export default {
       }
       let resData = await updateMeterUser(params)
       if (resData.status === 200) {
-        this.$message.success(resData.data.message)
+        this.$message({
+          type: 'success',
+          message: resData.data.message,
+          duration: 2500
+        })
         this.close()
       }
     },

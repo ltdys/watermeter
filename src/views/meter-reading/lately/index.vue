@@ -267,8 +267,8 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="历史查询" :visible.sync="historyVisible" :close-on-click-modal="false" @close="historyClose">
-      <my-history  @close="historyClose" />
+    <el-dialog :title="currentMeterUserName" :visible.sync="historyVisible" :close-on-click-modal="false" @close="historyClose" class="historyDialog">
+      <my-history  @close="historyClose" :currentItem="currentItem"/>
     </el-dialog>
   </div>
 </template>
@@ -291,6 +291,7 @@ export default {
 
   data () {
     return {
+      currentMeterUserName: "",
       gaType: 0, // 0 数据采集 1 数据读取
       gaTitle: '数据采集',
       gaSure: '确认采集',
@@ -344,7 +345,9 @@ export default {
       syncReadDate: "",
       syncCompanyId: "",
       syncAreasId: "",
-      syncVisiable: false
+      syncVisiable: false,
+      exportExcelName: "",
+      currentItem: null
     }
   },
 
@@ -430,12 +433,14 @@ export default {
       this.init()
     },
     currentChange (data) { // 当前页切换事件
+      debugger
       this.pageObj.currentPage = data;
       this.init()
     },
     handleNodeClick (data) {
       console.log('data', data)
       this.search.areasId = data.id
+      this.exportExcelName = data.companyName || "最近抄表";
 
       // 超级管理员,是组织还是区域,如果存在，是区域
       if(data.path) {  // 区域
@@ -451,6 +456,8 @@ export default {
       this.init()
     },
     handleClick(row) {
+      this.currentItem = row;
+      this.currentMeterUserName = row.meterUserName + " 历史查询"
       this.historyVisible = true
     },
     handleEdit () {
@@ -495,7 +502,7 @@ export default {
         });
         let link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
-        link.download = `最近抄表.xlsx`;
+        link.download = `${this.exportExcelName}.xlsx`;
         link.click();
         that.$message.success("下载成功！");
       }).catch(resp => {
@@ -879,6 +886,11 @@ export default {
     .sync-dialog {
       .el-dialog {
         width: 400px !important;
+      }
+    }
+    .historyDialog {
+      .el-dialog {
+        width: 900px !important;
       }
     }
     .gather-wrap {
