@@ -105,7 +105,7 @@
             label="警戒值"
           />
           <el-table-column
-            prop="meter_type"
+            prop="house_type"
             label="用水类型"
           />
           <el-table-column
