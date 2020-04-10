@@ -227,7 +227,11 @@ export default {
       let that = this
       console.log()
       let param = {
-        userId: that.userId
+        userId: that.userId,
+        meterBig: {
+          num: that.search.num,
+          sim_ccid: that.search.simCcid
+        }
       }
       that.$axios({
         method: 'post',
@@ -245,8 +249,6 @@ export default {
         timeout: 10000
       }).then(res => {
         console.log('res', res)
-
-        
         // that.downloadFile(res, that)
         // let blob = new Blob([res.data], { type: "application/x-xls" });
         let blob = new Blob([res.data], {

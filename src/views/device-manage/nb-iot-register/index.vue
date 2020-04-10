@@ -363,9 +363,19 @@ export default {
     },
     meterNbIotLDownLoad () {
       let that = this
-      console.log()
+      console.log('search', that.search)
+      // meterNbiotNum: '',
+      // meterConcentratorNum: '',
+      // meterNodeNum: '',
+      // meterSpec: '',
+      // simCardCcid: ''
       let param = {
-        userId: that.userId
+        userId: that.userId,
+        meterNbIot: {
+          meterNbiotNum: that.search.meterNbiotNum,
+          meterConcentratorNum: that.search.meterConcentratorNum,
+          meterNodeNum: that.search.meterNodeNum
+        }
       }
       that.$axios({
         method: 'post',
