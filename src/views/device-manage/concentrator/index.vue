@@ -7,8 +7,8 @@
       <el-form-item :label="$t('deviceManageConcentrator.toolbarB')">
         <el-input v-model="search.num" :placeholder="$t('deviceManageConcentrator.toolbarB_')" clearable />
       </el-form-item>
-      <el-form-item :label="$t('deviceManageConcentrator.toolbarC')">
-        <el-select v-model="search.useStatus" clearable filterable>
+      <el-form-item label="当前状态">
+        <el-select v-model="search.nowStatus" clearable filterable>
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -196,6 +196,7 @@ export default {
       search: {
         num: '',
         name: '',
+        nowStatus: '',
         useStatus: ''
       },
       pageObj: {
@@ -387,7 +388,8 @@ export default {
         meterConcentrator: {
           name: this.search.name,
           num: this.search.num,
-          useStatus: this.search.useStatus
+          nowStatus: this.search.nowStatus
+          // useStatus: this.search.useStatus
         },
         currentPage: this.pageObj.currentPage,
         pageSize: this.pageObj.pageSize

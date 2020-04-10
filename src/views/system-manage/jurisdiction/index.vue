@@ -484,7 +484,7 @@ export default {
       let res = await roleAuthorization(param)
       console.log('res', res)
       if (res.status === 200 && res.data.code == 1) {
-        this.$message.warning(`角色${this.currentAcc.roleName}授权成功`)
+        this.$message.success(`角色${this.currentAcc.roleName}授权成功`)
       } else {
         this.$message.warning(res.data.message)
       }

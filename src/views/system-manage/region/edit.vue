@@ -40,7 +40,7 @@
       <el-form-item label="区域名称" prop="name">
         <el-input v-model="form.name" clearable />
       </el-form-item>
-      <el-form-item label="区域地址">
+      <el-form-item label="区域地址" prop="address">
         <el-input v-model="form.address" clearable @blur="addressBlur" />
       </el-form-item>
       <el-form-item label="经度">
@@ -104,6 +104,9 @@ export default {
         // ],
         name: [
           { required: true, message: '请输入区域名称', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '请输入区域地址', trigger: 'blur' }
         ],
         state: [
           { required: true, message: '请选择区域状态', trigger: 'change' }

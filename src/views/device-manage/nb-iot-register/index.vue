@@ -97,7 +97,8 @@
         label="当前状态"
       >
         <template slot-scope="scope">
-          {{ scope.row.isOnline | fIsOnline }}
+          <!-- {{ scope.row.isOnline | fIsOnline }} -->
+          <span :class="colorStatus(scope.row.isOnline)">{{ scope.row.isOnline | fIsOnline }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -152,7 +153,7 @@
     />
 
     <el-dialog :title="title" :visible.sync="addVisible" :close-on-click-modal="false" @close="close">
-      <my-edit :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" ref="editRef"/>
+      <my-edit ref="editRef" :form="form" :type="type" :area-object="areaObject" :jzq-list="jzqList" @close="close" />
     </el-dialog>
 
     <!-- <el-dialog :visible="gatherVisiable" title="写水表地址" @close="gatherClose">
@@ -290,6 +291,7 @@ export default {
         meterSpec: '',
         simCardCcid: ''
       }
+      this.pageObj.currentPage = 1
       this.init()
     },
     handleValve (item) { // 阀门操作
@@ -319,11 +321,13 @@ export default {
       const params = {
         mcId: mcId
       }
+      this.pageObj.currentPage = 1
       this.searchSubmit()
       this.getMeterNodes(params)
     },
     changeCjqbh (val) { // 切换采集器
       console.log(val)
+      this.pageObj.currentPage = 1
       this.searchSubmit()
     },
     async findMeterConcentrator () { // 获取集中器
